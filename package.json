@@ -11,7 +11,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "@biomejs/biome lint"
+    "lint": "npx @biomejs/biome lint",
+    "fmt": "dprint fmt"
   },
   "dependencies": {
     "@astrojs/vue": "^7.0.3",

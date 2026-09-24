@@ -4,8 +4,10 @@
   "exclude": ["dist"],
   "compilerOptions": {
     "paths": {
-      "@src/*": ["./src/*"],
-      "@layouts/*": ["./src/layouts/*"]
+      "@t/*": ["./src/types/*"],
+      "@layouts/*": ["./src/layouts/*"],
+      "@home/*": ["./src/sections/home/*"],
+      "@notes/*": ["./src/sections/notes/*"]
     },
     "jsx": "preserve"
   }

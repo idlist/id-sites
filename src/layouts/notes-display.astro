@@ -1,0 +1,10 @@
+---
+import type { NotesProps } from '@t/layout'
+import NotesBase from './notes-base.astro'
+
+interface Props extends NotesProps {}
+---
+
+<NotesBase {...Astro.props}>
+  <slot></slot>
+</NotesBase>
