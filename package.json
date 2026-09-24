@@ -1,0 +1,29 @@
+{
+  "name": "id-sites",
+  "version": "1.0.0",
+  "private": "true",
+  "description": "The 7th time I guess?",
+  "license": "UNLICENSED",
+  "author": "i'DLisT",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "@biomejs/biome lint"
+  },
+  "dependencies": {
+    "@astrojs/vue": "^7.0.3",
+    "astro": "^7.3.4",
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "dprint": "^0.57.4"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "dprint@0.57.4": true
+  }
+}
