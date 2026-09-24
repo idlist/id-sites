@@ -1,7 +1,7 @@
 {
   "name": "id-sites",
   "version": "1.0.0",
-  "private": "true",
+  "private": true,
   "description": "The 7th time I guess?",
   "license": "UNLICENSED",
   "author": "i'DLisT",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@astrojs/vue": "^7.0.3",
     "astro": "^7.3.4",
+    "sass": "^1.105.0",
     "vue": "^3.5.43"
   },
   "devDependencies": {
@@ -25,6 +26,7 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
-    "dprint@0.57.4": true
+    "dprint@0.57.4": true,
+    "@parcel/watcher@2.6.0": true
   }
 }

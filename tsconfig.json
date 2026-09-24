@@ -3,12 +3,13 @@
   "include": [".astro/types.d.ts", "astro.config.ts", "src/**/*"],
   "exclude": ["dist"],
   "compilerOptions": {
+    "jsx": "preserve",
     "paths": {
       "@t/*": ["./src/types/*"],
+      "@styles/*": ["./src/styles/*"],
       "@layouts/*": ["./src/layouts/*"],
-      "@home/*": ["./src/sections/home/*"],
-      "@notes/*": ["./src/sections/notes/*"]
-    },
-    "jsx": "preserve"
+      "@home/*": ["./src/home/*"],
+      "@compo/*": ["./src/components/*"]
+    }
   }
 }
