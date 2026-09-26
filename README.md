@@ -24,7 +24,7 @@ a Vite plugin that uses the same ideology of Paraglide JS but inside the virtual
 
 - The same: Still codegen.
 - The pros: Fully customizable logic in my flavor. No more boilerplates.
-- The cons: Bind to Vue + Vite. Over-engineering. Untested. Kind of fragile.
+- The cons: Bind to Vue + Vite. Untested.
 
 ## License
 

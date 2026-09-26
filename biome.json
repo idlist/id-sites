@@ -5,7 +5,8 @@
       "src/**",
       "virtual-i18n/**",
       "tsconfig.json",
-      "astro.config.ts"
+      "astro.config.ts",
+      "vitest.config.ts"
     ]
   },
   "formatter": {

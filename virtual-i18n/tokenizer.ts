@@ -65,7 +65,7 @@ export function tokenize(input: string): Token[] {
 
   while (cursor < input.length) {
     const char = input[cursor]
-    const nextChar = cursor < input.length ? input[cursor + 1] : ''
+    const nextChar = cursor + 1 < input.length ? input[cursor + 1] : ''
 
     // {{ -> {.
     if (char === '{' && nextChar === '{') {
@@ -115,7 +115,7 @@ export function tokenize(input: string): Token[] {
         // Does not support empty {}.
         // Empty {} will be retained as text.
         if (!buffer.trim().length) {
-          buffer += `{${buffer}}`
+          buffer = `{${buffer}}`
           continue
         }
 

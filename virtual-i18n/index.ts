@@ -73,7 +73,7 @@ const viteVirtualI18n = (options: PluginOptions): Plugin => {
       for (const filePath of files) {
         const fullPath = path.resolve(localeRoot, filePath)
         if (!fs.existsSync(fullPath)) {
-          logger.warn(`File "${filePath}" does not exist.`)
+          logger.error(`File "${filePath}" does not exist.`)
           continue
         }
 
@@ -82,7 +82,7 @@ const viteVirtualI18n = (options: PluginOptions): Plugin => {
           const json = JSON.parse(fileContent)
           Object.assign(rawMessages[lang], json)
         } catch {
-          logger.warn(`File "${filePath}" contains invalid JSON.`)
+          logger.error(`File "${filePath}" contains invalid JSON.`)
         }
       }
     }
@@ -285,6 +285,7 @@ const viteVirtualI18n = (options: PluginOptions): Plugin => {
 
   return {
     name: 'vue-virtual-i18n',
+    enforce: 'pre',
 
     configResolved(config) {
       logger = config.logger

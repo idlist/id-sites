@@ -12,7 +12,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "lint": "npx @biomejs/biome lint",
-    "fmt": "dprint fmt"
+    "fmt": "dprint fmt",
+    "i18n:test": "vitest run",
+    "i18n:test-watch": "vitest"
   },
   "dependencies": {
     "@astrojs/vue": "^7.0.3",
@@ -26,7 +28,8 @@
     "@types/node": "^26.6.2",
     "dprint": "^0.57.4",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,

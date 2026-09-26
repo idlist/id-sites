@@ -1,3 +1,4 @@
 {
-  "hello": "你好， {name:num}！"
+  "hello": "你好， {name}！",
+  "notesTo": "前往"
 }
