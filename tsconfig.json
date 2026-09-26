@@ -1,6 +1,11 @@
 {
   "extends": "astro/tsconfigs/base",
-  "include": [".astro/types.d.ts", "astro.config.ts", "src/**/*"],
+  "include": [
+    ".astro/types.d.ts",
+    "astro.config.ts",
+    "src/**/*",
+    "virtual-i18n/**/*"
+  ],
   "exclude": ["dist"],
   "compilerOptions": {
     "jsx": "preserve",

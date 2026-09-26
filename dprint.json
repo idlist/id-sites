@@ -2,7 +2,6 @@
   "typescript": {
     "semiColons": "asi",
     "quoteStyle": "alwaysSingle",
-    "useBraces": "always"
   },
   "json": {
   },

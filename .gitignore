@@ -1,7 +1,11 @@
+# Environments
 node_modules/
-
 /.astro/
 /.vscode/
 /dist/
 
+# Generated files
+/src/virtual-i18n.d.ts
+
+# AI slops
 /.clinerules

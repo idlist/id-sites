@@ -3,6 +3,7 @@
   "files": {
     "includes": [
       "src/**",
+      "virtual-i18n/**",
       "tsconfig.json",
       "astro.config.ts"
     ]
