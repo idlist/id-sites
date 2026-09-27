@@ -3,4 +3,5 @@ export interface BaseProps {
   title: string
 }
 
-export interface NotesProps extends BaseProps {}
+export interface NotesProps extends BaseProps {
+}

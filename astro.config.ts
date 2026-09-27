@@ -8,6 +8,9 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
+  server: {
+    host: true,
+  },
   vite: {
     plugins: [
       vueVirtualI18n({

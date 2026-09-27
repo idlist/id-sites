@@ -1,10 +1,17 @@
 ---
-import type { NotesProps } from '@t/layout'
 import Base from './base.astro'
+import type { NotesProps } from './types'
 
-interface Props extends NotesProps {}
+interface Props extends NotesProps {
+}
 ---
 
 <Base {...Astro.props}>
   <slot />
 </Base>
+
+<style>
+body {
+  background-color: var(--color-sub);
+}
+</style>

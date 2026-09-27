@@ -9,7 +9,7 @@ Personal homepage + blog in one bundle.
 - Astro: Base multi-page backbone
 - Vue: Home page SPA and other dynamic elements
 - Biome: Linter
-- dprint: Formatter
+- dprint: Formatter (Biome's strategy on objects and arrays is horrible)
 
 ## Structure
 
