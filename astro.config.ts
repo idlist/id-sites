@@ -1,6 +1,11 @@
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
+import path from 'node:path'
 import vueVirtualI18n from './virtual-i18n'
+
+const toAbsolute = (relative: string) => {
+  return path.resolve(import.meta.dirname, relative)
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +17,11 @@ export default defineConfig({
     host: true,
   },
   vite: {
+    resolve: {
+      alias: {
+        '@assets': toAbsolute('src/assets'),
+      },
+    },
     plugins: [
       vueVirtualI18n({
         localeRoot: 'src/locales',

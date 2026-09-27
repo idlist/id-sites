@@ -4,6 +4,6 @@ import NavOverlay from './components/NavOverlay.vue'
 </script>
 
 <template>
-  <div>{{ m.hello({ name: 'you' }) }}</div>
+  <div>{{ m.hello({ name: 'idlist' }) }}</div>
   <NavOverlay />
 </template>

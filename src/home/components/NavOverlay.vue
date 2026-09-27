@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import Globe from '@assets/icons/globe.svg?url'
 import type { AnimationCanceller } from '@home/utils'
 import { useWindowSize } from '@vueuse/core'
 import { animate, spring } from 'animejs'
 import { locale, m } from 'virtual:i18n'
 import { ref, useTemplateRef, watch } from 'vue'
+import Bubble40 from './Bubble40.vue'
+import BubbleRect16 from './BubbleRect16.vue'
 
 type ActionPrompt = 'none' | 'to-notes' | 'locale-switch'
 const actionPrompt = ref<ActionPrompt>('none')
 
 const $notesEntry = useTemplateRef('$notesEntry')
+const $notesEntryText = useTemplateRef('$notesEntryText')
 const $localeSwitch = useTemplateRef('$localeSwitch')
 
 let currentAnimation: AnimationCanceller | null = null
@@ -30,8 +34,13 @@ const gotoNotes = async () => {
   }
 }
 
-const openLocaleSwitch = () => {
-  locale.value = locale.value === 'en' ? 'zh-Hans' : 'en'
+const openLocaleDialog = () => {
+  actionPrompt.value = 'locale-switch'
+}
+
+const setLocale = (newLocale: typeof locale.value) => {
+  locale.value = newLocale
+  actionPrompt.value = 'none'
 }
 
 const cancel = () => {
@@ -62,7 +71,7 @@ const expandEntry = (): AnimationCanceller => {
   })
 
   const switchAnimation = animate($localeSwitch.value!, {
-    top: 140,
+    top: 144,
     ease: spring({ bounce: 0.5, duration: 500 }),
   })
 
@@ -80,28 +89,39 @@ const expandBeforeGotoNotes = async () => {
   const h = height.value
   const radius = Math.sqrt(w * w + h * h) + 16
 
-  await animate($notesEntry.value!, {
-    top: (h - radius) / 2,
-    right: (w - radius) / 2,
-    width: radius,
-    height: radius,
-    duration: 800,
-    ease: 'out(3)',
-  })
+  if ($notesEntryText.value) {
+    $notesEntryText.value.classList.add('-centered')
+  }
+
+  await Promise.all([
+    animate($notesEntry.value!, {
+      top: (h - radius) / 2,
+      right: (w - radius) / 2,
+      width: radius,
+      height: radius,
+      duration: 800,
+      ease: 'out(3)',
+    }),
+    animate($notesEntryText.value!, {
+      opacity: 0,
+      delay: 550,
+      duration: 250,
+    }),
+  ])
 }
 
 const resumeEntry = (): AnimationCanceller => {
   currentAnimation?.cancel()
 
   const entryAnimation = animate($notesEntry.value!, {
-    width: 128,
-    height: 128,
+    width: 120,
+    height: 120,
     ease: 'outBack(0.75)',
     duration: 400,
   })
 
   const switchAnimation = animate($localeSwitch.value!, {
-    top: 110,
+    top: 108,
     ease: 'outBack(0.75)',
     duration: 400,
   })
@@ -116,16 +136,19 @@ const resumeEntry = (): AnimationCanceller => {
 
 const reset = () => {
   if ($notesEntry.value) {
-    const el = $notesEntry.value
-    el.style.width = ''
-    el.style.height = ''
-    el.style.top = ''
-    el.style.right = ''
+    $notesEntry.value.style.width = ''
+    $notesEntry.value.style.height = ''
+    $notesEntry.value.style.top = ''
+    $notesEntry.value.style.right = ''
+  }
+
+  if ($notesEntryText.value) {
+    $notesEntryText.value.classList.remove('-centered')
+    $notesEntryText.value.style.opacity = ''
   }
 
   if ($localeSwitch.value) {
-    const el = $localeSwitch.value
-    el.style.top = ''
+    $localeSwitch.value.style.top = ''
   }
 
   skipAnimation = true
@@ -141,13 +164,12 @@ window.addEventListener('pageshow', (e) => {
 
 <template>
   <div class="nav-overlay">
-    <div v-if="actionPrompt !== 'none'" class="cancel-layer" @click="cancel">
-    </div>
+    <div v-if="actionPrompt !== 'none'" class="nav-overlay-canceller" @click="cancel"></div>
 
     <div class="notes-entry" @click="gotoNotes" ref="$notesEntry">
       <div class="anchor">
-        <svg class="outer-ring" viewBox="0 0 100 100">
-          <!-- Three arcs, each starting at (50, 0) and sweeping 115 degrees clockwise. -->
+        <svg class="notes-entry-ring" viewBox="0 0 100 100">
+          <!-- Three arcs starting at (50, 0) and sweeping 115 degrees clockwise. -->
           <path
             d="M 50 0 A 50 50 0 0 1 95.3154 71.1309"
             transform="rotate(0 50 50)"
@@ -165,10 +187,10 @@ window.addEventListener('pageshow', (e) => {
           />
         </svg>
 
-        <div class="prompt-pad">
+        <div class="notes-entry-circle">
           <div class="base">
-            <div class="prompt-text">
-              <span class="to">{{ m.notesTo() }}</span>
+            <div class="notes-entry-text" ref="$notesEntryText">
+              <span class="to">{{ m.toNotes() }}</span>
               <span class="notes">NOTES</span>
             </div>
           </div>
@@ -176,13 +198,34 @@ window.addEventListener('pageshow', (e) => {
       </div>
     </div>
 
-    <div class="locale-switch" @click="openLocaleSwitch" ref="$localeSwitch">
-      <div>S</div>
+    <div class="locale-switch" ref="$localeSwitch">
+      <div class="anchor">
+        <Transition name="locale-switch-btn">
+          <Bubble40 v-if="actionPrompt !== 'locale-switch'" @click="openLocaleDialog">
+            <div class="locale-switch-btn">
+              <a class="btn">
+                <img :src="Globe" alt="locale button" />
+              </a>
+            </div>
+          </Bubble40>
+        </Transition>
+
+        <Transition name="locale-switch-dialog">
+          <div v-if="actionPrompt === 'locale-switch'" class="locale-switch-dialog">
+            <BubbleRect16>
+              <div class="locale-option-list">
+                <a class="locale-option" @click="() => setLocale('zh-Hans')">简体中文</a>
+                <a class="locale-option" @click="() => setLocale('en')">English</a>
+              </div>
+            </BubbleRect16>
+          </div>
+        </Transition>
+      </div>
     </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .nav-overlay {
   position: fixed;
   top: 0;
@@ -192,9 +235,10 @@ window.addEventListener('pageshow', (e) => {
 
   z-index: 16;
   pointer-events: none;
+  font-size: 16px;
 }
 
-.cancel-layer {
+.nav-overlay-canceller {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -206,20 +250,16 @@ window.addEventListener('pageshow', (e) => {
 
 .notes-entry {
   position: fixed;
-  width: 128px;
-  height: 128px;
-  top: -28px;
-  right: -28px;
+  width: 120px;
+  height: 120px;
+  top: -24px;
+  right: -24px;
   background-color: transparent;
   z-index: 2;
 
   cursor: pointer;
   pointer-events: all;
   user-select: none;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
   .anchor {
     position: relative;
@@ -234,7 +274,7 @@ window.addEventListener('pageshow', (e) => {
   }
 }
 
-.outer-ring {
+.notes-entry-ring {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -248,7 +288,7 @@ window.addEventListener('pageshow', (e) => {
   animation: spin 12s linear infinite;
 }
 
-.prompt-pad {
+.notes-entry-circle {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -271,23 +311,30 @@ window.addEventListener('pageshow', (e) => {
   }
 }
 
-.prompt-text {
+.notes-entry-text {
   position: relative;
-  transform: translateX(-6px) translateY(10px);
+  transform: translateX(-5px) translateY(9px);
   color: var(--color-main);
 
   > .to {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: calc(1rem + 4px);
+    bottom: 20px;
+
+    font-size: 0.75em;
     text-align: center;
-    font-size: 0.8rem;
     letter-spacing: 2px;
   }
 
   > .notes {
-    letter-spacing: 1px;
+    font-family: var(--font-unique);
+    letter-spacing: 2px;
+  }
+
+  &.-centered {
+    transform: translateX(0) translateY(0);
+    transition: transition 0.8s ease-in;
   }
 }
 
@@ -295,19 +342,99 @@ window.addEventListener('pageshow', (e) => {
   pointer-events: all;
 
   position: fixed;
-  top: 110px;
+  top: 108px;
   right: 8px;
-  width: 40px;
-  height: 40px;
-  color: var(--color-main);
-  background-color: var(--color-sub);
-  border-radius: 50%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
   cursor: pointer;
   user-select: none;
+
+  > .anchor {
+    position: relative;
+  }
+}
+
+.locale-switch-btn {
+  width: 100%;
+  height: 100%;
+
+  background-color: var(--color-sub);
+  color: var(--color-main);
+
+  .btn {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+
+    transform: rotate(15deg);
+  }
+
+  &-enter-active {
+    transition: all 0.25s ease-out;
+  }
+
+  &-leave-active {
+    transition: all 0.25s ease-in;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+.locale-switch {
+  &:hover .locale-switch-btn {
+    background-color: var(--color-sub-2);
+  }
+}
+
+.locale-switch-dialog {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+
+  &-enter-active {
+    transition: all 0.25s ease-out;
+  }
+
+  &-leave-active {
+    transition: all 0.25s ease-in;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+.locale-option-list {
+  background-color: var(--color-sub);
+  color: var(--color-main);
+}
+
+.locale-option {
+  display: block;
+  word-break: keep-all;
+  padding: 4px 8px 4px 16px;
+  text-align: right;
+
+  &:hover {
+    background-color: var(--color-sub-2);
+  }
+
+  &:first-child {
+    padding-top: 8px;
+  }
+
+  &:last-child {
+    padding-bottom: 8px;
+  }
 }
 </style>
