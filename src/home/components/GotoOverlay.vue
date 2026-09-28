@@ -195,7 +195,7 @@ window.addEventListener('pageshow', (e) => {
         <div class="notes-entry-circle">
           <div class="base">
             <div class="notes-entry-text" ref="$notesEntryText">
-              <span class="to">{{ m.toNotes() }}</span>
+              <span class="to">{{ m.gotoNotes() }}</span>
               <span class="notes">NOTES</span>
             </div>
           </div>
