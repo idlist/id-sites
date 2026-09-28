@@ -1,7 +1,6 @@
 ---
-import NotesDisplay from '@layouts/notes-display.astro'
-import { getCollection } from 'astro:content'
-import { render } from 'astro:content'
+import NotesDisplay from '@layouts/NotesDisplay.astro'
+import { getCollection, render } from 'astro:content'
 
 export const getStaticPaths = async () => {
   const notes = await getCollection('notes')

@@ -8,8 +8,10 @@ import { ref, useTemplateRef, watch } from 'vue'
 import Bubble40 from './Bubble40.vue'
 import BubbleRect16 from './BubbleRect16.vue'
 
-type ActionPrompt = 'none' | 'to-notes' | 'locale-switch'
+type ActionPrompt = 'none' | 'goto-notes' | 'locale-switch'
 const actionPrompt = ref<ActionPrompt>('none')
+const showBlocker = ref(false)
+const { width: windowWidth, height: windowHeight } = useWindowSize()
 
 const $notesEntry = useTemplateRef('$notesEntry')
 const $notesEntryText = useTemplateRef('$notesEntryText')
@@ -18,8 +20,8 @@ const $localeSwitch = useTemplateRef('$localeSwitch')
 let currentAnimation: AnimationCanceller | null = null
 
 const gotoNotes = async () => {
-  if (actionPrompt.value !== 'to-notes') {
-    actionPrompt.value = 'to-notes'
+  if (actionPrompt.value !== 'goto-notes') {
+    actionPrompt.value = 'goto-notes'
   } else {
     currentAnimation?.cancel()
     await expandBeforeGotoNotes()
@@ -55,10 +57,10 @@ watch(actionPrompt, (val, old) => {
     return
   }
 
-  if (val === 'to-notes' && old !== 'to-notes') {
+  if (val === 'goto-notes' && old !== 'goto-notes') {
     currentAnimation = expandEntry()
   }
-  if (val !== 'to-notes' && old === 'to-notes') {
+  if (val !== 'goto-notes' && old === 'goto-notes') {
     currentAnimation = resumeEntry()
   }
 })
@@ -84,10 +86,11 @@ const expandEntry = (): AnimationCanceller => {
 }
 
 const expandBeforeGotoNotes = async () => {
-  const { width, height } = useWindowSize()
-  const w = width.value
-  const h = height.value
+  const w = windowWidth.value
+  const h = windowHeight.value
   const radius = Math.sqrt(w * w + h * h) + 16
+
+  showBlocker.value = true
 
   if ($notesEntryText.value) {
     $notesEntryText.value.classList.add('-centered')
@@ -150,6 +153,8 @@ const reset = () => {
   if ($localeSwitch.value) {
     $localeSwitch.value.style.top = ''
   }
+
+  showBlocker.value = false
 
   skipAnimation = true
   actionPrompt.value = 'none'
@@ -222,28 +227,32 @@ window.addEventListener('pageshow', (e) => {
         </Transition>
       </div>
     </div>
+
+    <div v-if="showBlocker" class="blocker"></div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .nav-overlay {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0;
 
   z-index: 16;
   pointer-events: none;
   font-size: 16px;
+
+  > .blocker {
+    position: fixed;
+    inset: 0;
+
+    z-index: 16;
+    pointer-events: all;
+  }
 }
 
 .nav-overlay-canceller {
   position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0;
 
   pointer-events: all;
 }
@@ -334,7 +343,7 @@ window.addEventListener('pageshow', (e) => {
 
   &.-centered {
     transform: translateX(0) translateY(0);
-    transition: transition 0.8s ease-in;
+    transition: transform 0.8s ease-in;
   }
 }
 
@@ -410,7 +419,7 @@ window.addEventListener('pageshow', (e) => {
   &-enter-from,
   &-leave-to {
     opacity: 0;
-    transform: translateX(-24px);
+    transform: translateX(-16px);
   }
 }
 
@@ -422,7 +431,7 @@ window.addEventListener('pageshow', (e) => {
 .locale-option {
   display: block;
   word-break: keep-all;
-  padding: 4px 8px 4px 16px;
+  padding: 6px 12px 6px 16px;
   text-align: right;
 
   &:hover {

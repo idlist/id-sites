@@ -2,7 +2,7 @@
   "lineWidth": 120,
   "typescript": {
     "semiColons": "asi",
-    "quoteStyle": "alwaysSingle",
+    "quoteStyle": "alwaysSingle"
   },
   "json": {
   },
@@ -12,7 +12,8 @@
   },
   "excludes": [
     "**/node_modules",
-    "**/*-lock.json"
+    "**/*-lock.json",
+    "**/*.svg"
   ],
   "plugins": [
     "npm:@dprint/typescript@0.96.1",
