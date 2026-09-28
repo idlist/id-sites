@@ -1,0 +1,18 @@
+<div class="dot-background"></div>
+
+<style lang="scss">
+.dot-background {
+  position: fixed;
+  inset: 0;
+
+  background-image: radial-gradient(
+    circle,
+    var(--color-sub-dots) 1px,
+    color-mix(in srgb, var(--color-sub-dots) 0%, transparent) 3px
+  );
+  background-size: 32px 32px;
+
+  pointer-events: none;
+  z-index: -32;
+}
+</style>
