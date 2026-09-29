@@ -12,7 +12,7 @@ export const titles: TitleOption[] = [
   {
     id: 'webDevelopment',
     type: 'major',
-    color: '#3d6199',
+    color: '#4b74b1',
   },
   {
     id: 'webDesign',
@@ -27,7 +27,7 @@ export const titles: TitleOption[] = [
   {
     id: 'gameDevelopment',
     type: 'major',
-    color: '#37808f',
+    color: '#c05a58',
   },
   {
     id: 'graphicDesign',
@@ -37,12 +37,12 @@ export const titles: TitleOption[] = [
   {
     id: 'digitalArt',
     type: 'minor',
-    color: '#ad4a48',
+    color: '#2f8f86',
   },
   {
     id: 'desktopMusic',
     type: 'minor',
-    color: '#9a6832',
+    color: '#b07d3c',
   },
   {
     id: 'idealism',
@@ -52,6 +52,6 @@ export const titles: TitleOption[] = [
   {
     id: 'furry',
     type: 'special',
-    color: '#b0653a',
+    color: '#c47344',
   },
 ]

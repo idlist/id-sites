@@ -50,22 +50,37 @@ useIntervalFn(() => {
         <div class="home-title-badge">
           <BubbleRect16>
             <div class="home-title-content">
-              <p>{{ m.canDo() }}</p>
+              <span>{{ m.canDo() }}</span>
               <div class="relative">
                 <Transition v-for="{ id, color } of titles" name="home-title">
-                  <p
+                  <span
                     v-if="id === titleId"
                     :key="id"
                     class="home-title"
                     :style="{ color: color ?? 'var(--color-main)' }"
                   >
                     {{ m[id]() }}
-                  </p>
+                  </span>
                 </Transition>
               </div>
             </div>
           </BubbleRect16>
         </div>
+      </div>
+
+      <div class="home-divider">
+        <svg class="line">
+          <line
+            x1="0"
+            y1="50%"
+            x2="100%"
+            y2="50%"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-dasharray="12 16"
+            stroke-linecap="round"
+          />
+        </svg>
       </div>
 
       <div class="home-contacts"></div>
@@ -80,32 +95,35 @@ useIntervalFn(() => {
 
   > .main {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
   }
 }
 
 .first-row {
   display: grid;
-  grid-template-columns: min-content min-content;
+  grid-template-columns: max-content max-content;
+  column-gap: 1rem;
+  row-gap: 0.75rem;
   align-items: end;
 
   @media (max-width: 768px) {
-    grid-template-columns: min-content;
+    grid-template-columns: 1fr;
+    justify-items: start;
   }
 }
 
 .home-icon {
-  width: 12rem;
+  height: 4rem;
+
+  > svg {
+    width: auto;
+  }
 }
 
 .home-title-badge {
-  padding: 1rem 0;
-
-  @media (max-width: 768px) {
-    padding: 0 1rem 0.5rem 1rem;
-  }
+  font-family: var(--font-unique);
 }
 
 .home-title-content {
@@ -113,7 +131,7 @@ useIntervalFn(() => {
 
   color: var(--color-main);
   background-color: var(--color-sub);
-  padding: 0 0.375rem;
+  padding: 0 0.5rem;
 
   display: grid;
   grid-template-columns: max-content auto;
@@ -144,7 +162,17 @@ useIntervalFn(() => {
   }
 }
 
-.home-contacts {
-  padding: 0.5rem 1rem;
+.home-divider {
+  width: 100%;
+  max-width: 768px;
+  margin: 0.75rem 0;
+
+  > .line {
+    width: 100%;
+    height: 4px;
+    overflow: visible;
+  }
 }
+
+.home-contacts {}
 </style>
