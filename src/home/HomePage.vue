@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { m } from 'virtual:i18n'
-import { type Component, type ComponentPublicInstance, useTemplateRef } from 'vue'
+import IconHome from '@assets/icons/home.svg?component'
+import { type CommonMessageShape, m } from 'virtual:i18n'
+import { type Component, type ComponentPublicInstance } from 'vue'
 import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
+import NavOverlay from './components/NavOverlay.vue'
 import HomeScreen from './screens/HomeScreen.vue'
+import type { ImportedSvgComponent } from './utils.ts'
 
 interface NavigationSection {
   section: Component
@@ -12,21 +15,28 @@ interface NavigationSection {
 }
 
 interface NavigationGroup {
-  groupId: string
-  label: (...args: unknown[]) => unknown
-  icon?: string
+  id: string
+  icon: ImportedSvgComponent
+  label: CommonMessageShape
   sections: NavigationSection[]
 }
 
 const pageList: NavigationGroup[] = [
   {
-    groupId: 'home',
+    id: 'home',
+    icon: IconHome,
     label: m.homePage,
     sections: [
       { section: HomeScreen, id: 'home' },
     ],
   },
 ]
+
+const navItems = pageList.map((group) => ({
+  id: group.id,
+  icon: group.icon,
+  label: group.label,
+}))
 
 const collectSection = (el: ComponentPublicInstance, id: string) => {
 }
@@ -35,14 +45,15 @@ const collectSection = (el: ComponentPublicInstance, id: string) => {
 <template>
   <BackgroundDots />
 
-  <template v-for="g of pageList" :key="g.groupId">
+  <template v-for="group of pageList" :key="group.id">
     <component
-      v-for="s of g.sections"
-      :key="s.id"
-      :is="s.section"
-      :ref="(el: ComponentPublicInstance) => collectSection(el, s.id)"
+      v-for="session of group.sections"
+      :key="session.id"
+      :is="session.section"
+      :ref="(el: ComponentPublicInstance) => collectSection(el, session.id)"
     />
   </template>
 
+  <NavOverlay :nav-items="navItems" />
   <GotoOverlay />
 </template>

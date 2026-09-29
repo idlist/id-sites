@@ -1,6 +1,7 @@
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import path from 'node:path'
+import svgLoader from 'vite-svg-loader'
 import vueVirtualI18n from './virtual-i18n'
 
 const toAbsolute = (relative: string) => {
@@ -23,6 +24,7 @@ export default defineConfig({
       },
     },
     plugins: [
+      svgLoader({ svgo: false }),
       vueVirtualI18n({
         localeRoot: 'src/locales',
         localeFiles: {

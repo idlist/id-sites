@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Globe from '@assets/icons/globe.svg?url'
+import IconGlobe from '@assets/icons/globe.svg?component'
 import type { AnimationCanceller } from '@home/utils'
 import { useWindowSize } from '@vueuse/core'
 import { animate, spring } from 'animejs'
@@ -208,8 +208,8 @@ window.addEventListener('pageshow', (e) => {
         <Transition name="locale-switch-btn">
           <Bubble40 v-if="actionPrompt !== 'locale-switch'" @click="openLocaleDialog">
             <div class="locale-switch-btn">
-              <a class="btn">
-                <img :src="Globe" alt="locale button" />
+              <a class="btn" aria-label="locale button">
+                <IconGlobe />
               </a>
             </div>
           </Bubble40>

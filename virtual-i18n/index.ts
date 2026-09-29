@@ -233,6 +233,8 @@ const viteVirtualI18n = (options: PluginOptions): Plugin => {
       `declare module '${virtualModuleId}' {`,
       `  import type { Ref } from 'vue'`,
       '',
+      '  export type CommonMessageShape = (...args: unknown[]) => string',
+      '',
       `  export const locale: Ref<${locales.join(' | ')}>`,
       '',
       '  export const m: {',
