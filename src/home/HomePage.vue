@@ -7,8 +7,8 @@ import { type Component, type ComponentPublicInstance, onMounted, ref } from 'vu
 import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
+import HomeBleed from './screens/HomeBleed.vue'
 import HomeScreen from './screens/HomeScreen.vue'
-import TestScreen from './screens/TestScreen.vue'
 import type { ImportedSvgComponent } from './utils.ts'
 
 interface NavigationSection {
@@ -31,14 +31,7 @@ const pageList: NavigationGroup[] = [
     label: m.homePage,
     sections: [
       { section: HomeScreen, id: 'home' },
-    ],
-  },
-  {
-    gid: 'dummy',
-    icon: IconHome,
-    label: m.homePage,
-    sections: [
-      { section: TestScreen, id: 'dummy', query: 'dummy' },
+      { section: HomeBleed, id: 'home-bleed' },
     ],
   },
 ]
@@ -89,12 +82,12 @@ const setupNavigation = () => {
 
   for (const [gid, sections] of groupToElementSetMap.entries()) {
     if (sections.size === 0) continue
-    let border = -Infinity
+    let border = Infinity
 
     for (const section of sections.values()) {
       const el = section.$el as HTMLElement
       const top = el.getBoundingClientRect().y - rootTop
-      if (top > border) {
+      if (top < border) {
         border = top
       }
     }
@@ -208,6 +201,7 @@ const cancelScrollOnKeys = (e: KeyboardEvent) => {
   if (e.altKey || e.ctrlKey || e.metaKey) return
   if (!scrollingKeys.has(e.key)) return
   if (e.shiftKey && e.key !== ' ') return
+
   currentScroll?.cancel()
 }
 

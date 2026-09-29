@@ -1,5 +1,4 @@
 ---
-import '@styles/home.scss'
 import HomePage from '@home/HomePage.vue'
 import Base from '@layouts/Base.astro'
 ---
@@ -7,3 +6,10 @@ import Base from '@layouts/Base.astro'
 <Base title="i'DLisT | Spherical Vacuum">
   <HomePage client:only="vue" />
 </Base>
+
+<style is:global>
+body {
+  color: var(--color-sub);
+  background-color: var(--color-main);
+}
+</style>

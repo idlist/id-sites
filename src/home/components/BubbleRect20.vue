@@ -14,7 +14,7 @@
   min-height: 40px;
 
   border-width: 2px;
-  border-image-source: url("@assets/bubble-rect-20.svg");
+  border-image-source: url("@assets/bubble-rect-20-light.svg");
   border-image-slice: 31.25%;
   border-image-width: 20px;
   border-image-outset: 1px;
