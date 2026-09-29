@@ -1,5 +1,5 @@
 <template>
-  <div class="dot-background"></div>
+  <div class="dot-background" aria-hidden></div>
 </template>
 
 <style scoped lang="scss">

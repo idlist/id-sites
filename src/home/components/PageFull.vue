@@ -3,3 +3,11 @@
     <slot></slot>
   </section>
 </template>
+
+<style scoped lang="scss">
+.page-full {
+  width: 100%;
+  height: 100svh;
+  min-height: 400px;
+}
+</style>

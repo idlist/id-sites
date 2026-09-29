@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import type { ImportedSvgComponent } from '@home/utils.ts'
-import type { CommonMessageShape } from 'virtual:i18n'
-import { computed, reactive } from 'vue'
+import { animate } from 'animejs'
+import type { GeneralVirtualMessage } from 'virtual:i18n'
+import { computed, reactive, watch } from 'vue'
 import BubbleRect20 from './BubbleRect20.vue'
 
 interface NavItem {
   id: string
   icon: ImportedSvgComponent
-  label: CommonMessageShape
+  label: GeneralVirtualMessage
 }
 
-defineProps<{
-  navItems?: NavItem[]
-}>()
+const props = withDefaults(
+  defineProps<{
+    navItems?: NavItem[]
+    cursor?: string
+  }>(),
+  {
+    navItems: () => [],
+    cursor: 'home',
+  },
+)
 
-const model = defineModel<string>({ default: 'home' })
+const emit = defineEmits<{
+  requestScroll: [string]
+}>()
 
 const mask = reactive({
   top: 2,
@@ -25,6 +35,25 @@ const maskPx = computed(() => ({
   top: `${mask.top}px`,
   bottom: `${mask.bottom}px`,
 }))
+
+let currentAnimation: ReturnType<typeof animate> | null = null
+
+watch(() => props.cursor, (val, old) => {
+  if (val === old) return
+
+  let index = props.navItems.findIndex((item) => item.id === val)
+  if (index === -1) return
+
+  const baseline = index * 32
+
+  currentAnimation?.cancel()
+  currentAnimation = animate(mask, {
+    top: baseline + 2,
+    bottom: baseline + 30,
+    duration: 250,
+    ease: 'out(3)',
+  })
+})
 </script>
 
 <template>
@@ -33,10 +62,10 @@ const maskPx = computed(() => ({
       <div class="nav-overlay-list">
         <div class="layer-below">
           <a
-            v-for="item of navItems ?? []"
+            v-for="item of navItems"
             :key="item.id"
             class="nav-overlay-item"
-            @click="model = item.id"
+            @click="() => emit('requestScroll', item.id)"
           >
             <component :is="item.icon" />
           </a>
@@ -44,7 +73,7 @@ const maskPx = computed(() => ({
 
         <div class="layer-above">
           <div
-            v-for="item of navItems ?? []"
+            v-for="item of navItems"
             :key="item.id"
             class="nav-overlay-item"
           >
@@ -59,21 +88,21 @@ const maskPx = computed(() => ({
 <style scoped lang="scss">
 .nav-overlay {
   position: fixed;
-  top: 50%;
-  bottom: 50%;
+  top: 0;
+  height: 100svh;
   right: 8px;
   pointer-events: none;
   user-select: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-overlay-list {
   color: var(--color-main);
   background-color: var(--color-sub);
   position: relative;
-
-  > .layer-below, > .layer-above {
-    padding: 2px;
-  }
 
   > .layer-below {
     pointer-events: all;
@@ -91,8 +120,8 @@ const maskPx = computed(() => ({
 }
 
 .nav-overlay-item {
-  width: 28px;
-  padding: 4px;
+  width: 32px;
+  padding: 6px;
 
   display: block;
   cursor: pointer;

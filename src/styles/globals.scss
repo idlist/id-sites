@@ -32,4 +32,16 @@
 
 body {
   font-family: var(--font-main);
+
+  /* Disable default scroll bar. */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    & {
+      scrollbar-width: none;
+    }
+  }
 }
