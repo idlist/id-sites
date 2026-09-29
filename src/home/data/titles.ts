@@ -1,57 +1,57 @@
-import { m } from 'virtual:i18n'
+import type { m } from 'virtual:i18n'
 
 export type TitleType = 'major' | 'minor' | 'special'
 
-interface TitleOption {
+export interface TitleItem {
   id: keyof typeof m
   type: TitleType
-  color?: string
+  color: string
 }
 
-export const titles: TitleOption[] = [
+export const titles: TitleItem[] = [
   {
     id: 'webDevelopment',
     type: 'major',
-    color: '#4b74b1',
+    color: '#6bb5ff',
   },
   {
     id: 'webDesign',
     type: 'major',
-    color: '#6b57a8',
+    color: '#b690fd',
   },
   {
     id: 'programming',
     type: 'major',
-    color: '#3f7a4d',
+    color: '#06ca58',
   },
   {
     id: 'gameDevelopment',
     type: 'major',
-    color: '#c05a58',
+    color: '#ff6363',
   },
   {
     id: 'graphicDesign',
     type: 'minor',
-    color: '#9b55a5',
+    color: '#fc77e6',
   },
   {
     id: 'digitalArt',
     type: 'minor',
-    color: '#2f8f86',
+    color: '#06cfd6',
   },
   {
     id: 'desktopMusic',
     type: 'minor',
-    color: '#b07d3c',
+    color: '#e7be08',
   },
   {
     id: 'idealism',
     type: 'special',
-    color: '#555555',
+    color: '#aaaaaa',
   },
   {
     id: 'furry',
     type: 'special',
-    color: '#c47344',
+    color: '#f07d0b',
   },
 ]

@@ -433,6 +433,7 @@ window.addEventListener('pageshow', (e) => {
   word-break: keep-all;
   padding: 6px 12px 6px 16px;
   text-align: right;
+  transition: background-color 0.25s ease;
 
   &:hover {
     background-color: var(--color-sub-2);

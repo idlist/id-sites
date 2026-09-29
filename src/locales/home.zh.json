@@ -2,13 +2,14 @@
   "gotoNotes": "前往",
   "homePage": "首页",
   "canDo": "会一点",
-  "webDevelopment": "网页前端",
+  "webDevelopment": "网页前端开发",
   "webDesign": "网页设计",
   "programming": "通用编程",
   "gameDevelopment": "2D游戏开发",
   "graphicDesign": "平面设计",
   "digitalArt": "数字绘画",
-  "desktopMusic": "电子音乐创作",
+  "desktopMusic": "电子音乐编写",
   "idealism": "理想主义",
-  "furry": "福瑞要素"
+  "furry": "福瑞要素",
+  "email": "邮箱"
 }

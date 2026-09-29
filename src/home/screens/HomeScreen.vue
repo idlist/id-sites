@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import IconIdlist from '@assets/idlist-light.svg?component'
 import BubbleRect16 from '@home/components/BubbleRect16.vue'
+import BubbleRect20 from '@home/components/BubbleRect20.vue'
 import PageFull from '@home/components/PageFull.vue'
+import { contacts } from '@home/data/contacts'
 import { titles, type TitleType } from '@home/data/titles'
 import { useIntervalFn } from '@vueuse/core'
 import { shuffle, swapIndices } from 'remeda'
-import { m } from 'virtual:i18n'
+import { m, toMessage } from 'virtual:i18n'
 import { computed, ref } from 'vue'
 
 const chances: Record<TitleType, number> = {
@@ -26,6 +28,7 @@ const generateTitleQueue = (lastId?: string): string[] => {
 
 let titleQueue = generateTitleQueue()
 
+// Change titleId to a fixed value to debug.
 const titleQueueIdx = ref(0)
 const titleId = computed(() => titleQueue[titleQueueIdx.value])
 
@@ -57,7 +60,10 @@ useIntervalFn(() => {
                     v-if="id === titleId"
                     :key="id"
                     class="home-title"
-                    :style="{ color: color ?? 'var(--color-main)' }"
+                    :style="{
+                      color: color,
+                      textShadow: `${color} 0 0 0.25rem`,
+                    }"
                   >
                     {{ m[id]() }}
                   </span>
@@ -83,7 +89,25 @@ useIntervalFn(() => {
         </svg>
       </div>
 
-      <div class="home-contacts"></div>
+      <div class="home-contacts">
+        <BubbleRect20 v-for="contact of contacts">
+          <a
+            class="home-contacts-item"
+            :href="contact.link"
+            target="_blank"
+            noopener
+            noreferer
+          >
+            <div class="platform">
+              <div class="icon">
+                <component :is="contact.icon" />
+              </div>
+              <p class="text">{{ toMessage(contact.platform) }}</p>
+            </div>
+            <p class="id">{{ contact.id }}</p>
+          </a>
+        </BubbleRect20>
+      </div>
     </div>
   </PageFull>
 </template>
@@ -95,9 +119,17 @@ useIntervalFn(() => {
 
   > .main {
     position: absolute;
-    bottom: 1rem;
-    left: 1rem;
-    right: 1rem;
+    bottom: 2rem;
+    left: 2rem;
+    right: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    & > .main {
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+    }
   }
 }
 
@@ -128,9 +160,6 @@ useIntervalFn(() => {
 
 .home-title-content {
   width: 16rem;
-
-  color: var(--color-main);
-  background-color: var(--color-sub);
   padding: 0 0.5rem;
 
   display: grid;
@@ -144,7 +173,6 @@ useIntervalFn(() => {
 
 .home-title {
   position: absolute;
-  font-weight: bold;
 
   &-enter-active,
   &-leave-active {
@@ -174,5 +202,61 @@ useIntervalFn(() => {
   }
 }
 
-.home-contacts {}
+.home-contacts {
+  display: flex;
+  column-gap: 0.75rem;
+  row-gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.home-contacts-item {
+  background-color: var(--color-main);
+
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  text-decoration: none;
+
+  > .platform {
+    display: flex;
+    align-items: center;
+    padding: 0 0.125rem;
+    color: var(--color-sub);
+  }
+
+  > .platform > .icon {
+    width: 2rem;
+    height: 2rem;
+    padding: 0.125rem;
+  }
+
+  > .platform > .text {
+    padding: 0 0.125rem 0 0.25rem;
+  }
+
+  @media (max-width: 480px) {
+    > .platform > .text {
+      display: none;
+    }
+  }
+
+  > .id {
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    color: var(--color-main);
+    background-color: var(--color-sub);
+
+    border-radius: 8px 16px 16px 8px;
+    padding: 0 0.5rem 0 0.25rem;
+    height: 100%;
+
+    transition: background-color 0.25s ease;
+  }
+
+  &:hover > .id {
+    background-color: var(--color-sub-2);
+  }
+}
 </style>
