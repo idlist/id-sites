@@ -2,7 +2,7 @@
 import IconIdlist from '@assets/idlist-light.svg?component'
 import HomeContact from '@home/components/HomeContact.vue'
 import HomePulse from '@home/components/HomePulse.vue'
-import HomeTitleBadge from '@home/components/HomeTitleBadge.vue'
+import HomeTitleCarousel from '@home/components/HomeTitleCarousel.vue'
 import HomeWaves from '@home/components/HomeWaves.vue'
 import PageFull from '@home/components/PageFull.vue'
 import { contacts } from '@home/data/contacts'
@@ -24,7 +24,7 @@ import { contacts } from '@home/data/contacts'
           <IconIdlist />
         </div>
 
-        <HomeTitleBadge />
+        <HomeTitleCarousel />
       </div>
 
       <div class="home-divider">
@@ -71,12 +71,17 @@ import { contacts } from '@home/data/contacts'
 
   > .waves {
     position: absolute;
-    bottom: 0;
+    z-index: -2;
+
+    bottom: -100px;
     left: 0;
+    width: 800px;
   }
 
   > .pulse {
     position: absolute;
+    z-index: -1;
+
     top: 0;
     right: 0;
   }
@@ -106,7 +111,7 @@ import { contacts } from '@home/data/contacts'
 .home-divider {
   width: 100%;
   max-width: 768px;
-  margin: 0.75rem 0;
+  margin: 0.5rem 0;
 
   > .line {
     width: 100%;

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import BubbleRect20 from '@home/components/BubbleRect20.vue'
 import type { ContactItem } from '@home/data/contacts'
 import { toMessage } from 'virtual:i18n'
+import BubbleRect16 from './BubbleRect16.vue'
 
 defineProps<{
   contact: ContactItem
@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <BubbleRect20>
+  <BubbleRect16>
     <a class="home-contact" :href="contact.link" target="_blank" noopener noreferer>
       <div class="platform">
         <div class="icon">
@@ -19,7 +19,7 @@ defineProps<{
       </div>
       <p class="id">{{ contact.id }}</p>
     </a>
-  </BubbleRect20>
+  </BubbleRect16>
 </template>
 
 <style scoped lang="scss">
@@ -39,19 +39,13 @@ defineProps<{
   }
 
   > .platform > .icon {
-    width: 2rem;
-    height: 2rem;
+    width: 1.5rem;
+    height: 1.5rem;
     padding: 0.125rem;
   }
 
   > .platform > .text {
-    padding: 0 0.125rem 0 0.25rem;
-  }
-
-  @media (max-width: 480px) {
-    > .platform > .text {
-      display: none;
-    }
+    padding: 0 0.125rem;
   }
 
   > .id {

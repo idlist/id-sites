@@ -1,3 +1,14 @@
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    noClip?: boolean
+  }>(),
+  {
+    noClip: false,
+  },
+)
+</script>
+
 <template>
   <div class="bubble-rect-16">
     <div class="inner">
@@ -30,7 +41,7 @@
     width: 100%;
     height: 100%;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: v-bind("noClip ? 'visible' : 'hidden'");
   }
 }
 </style>

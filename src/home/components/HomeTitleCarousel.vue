@@ -40,7 +40,7 @@ useIntervalFn(() => {
 
 <template>
   <div class="home-title-badge">
-    <BubbleRect16>
+    <BubbleRect16 no-clip>
       <div class="home-title-content">
         <span>{{ m.canDo() }}</span>
         <div class="relative">
