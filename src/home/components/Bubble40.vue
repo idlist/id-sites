@@ -1,6 +1,20 @@
+<script setup lang="ts">
+const props = withDefaults(
+  defineProps<{
+    dark?: boolean
+  }>(),
+  {
+    dark: false,
+  },
+)
+
+// This value does not need responsiveness.
+const useDark = props.dark ? '-dark' : ''
+</script>
+
 <template>
   <div class="bubble-40">
-    <svg class="frame" viewBox="0 0 40 40">
+    <svg class="frame" :class="useDark" viewBox="0 0 40 40">
       <!-- A 10 degree arc drawn from the top center. -->
       <path
         d="M 20 0 A 20 20 0 0 1 23.4730 0.3038"
@@ -43,6 +57,10 @@
     fill: none;
 
     pointer-events: none;
+  }
+
+  > .frame.-dark {
+    stroke: var(--color-main);
   }
 
   > .inner {

@@ -4,7 +4,7 @@ import type { AnimationCanceller } from '@home/utils'
 import { useWindowSize } from '@vueuse/core'
 import { animate, spring } from 'animejs'
 import { m, type SupportedLocales } from 'virtual:i18n'
-import { ref, useTemplateRef, watch } from 'vue'
+import { computed, ref, useTemplateRef, watch } from 'vue'
 import Bubble40 from './Bubble40.vue'
 import BubbleRect16 from './BubbleRect16.vue'
 
@@ -177,6 +177,10 @@ window.addEventListener('pageshow', (e) => {
     reset()
   }
 })
+
+// These values do not need responsiveness.
+const isDark = props.where === 'notes'
+const useDark = isDark ? '-dark' : ''
 </script>
 
 <template>
@@ -185,7 +189,7 @@ window.addEventListener('pageshow', (e) => {
 
     <div class="notes-entry" @click="gotoNotes" ref="$notesEntry">
       <div class="anchor">
-        <svg class="notes-entry-ring" viewBox="0 0 100 100">
+        <svg class="notes-entry-ring" :class="useDark" viewBox="0 0 100 100">
           <!-- Three arcs starting at (50, 0) and sweeping 115 degrees clockwise. -->
           <path
             d="M 50 0 A 50 50 0 0 1 95.3154 71.1309"
@@ -204,9 +208,9 @@ window.addEventListener('pageshow', (e) => {
           />
         </svg>
 
-        <div class="notes-entry-circle">
+        <div class="notes-entry-circle" :class="useDark">
           <div class="base">
-            <div class="notes-entry-text" ref="$notesEntryText">
+            <div class="notes-entry-text" :class="useDark" ref="$notesEntryText">
               <span class="to">{{ m.gotoNotes() }}</span>
               <span class="notes">{{ destination[props.where] }}</span>
             </div>
@@ -218,8 +222,12 @@ window.addEventListener('pageshow', (e) => {
     <div class="locale-switch" ref="$localeSwitch">
       <div class="anchor">
         <Transition name="locale-switch-btn">
-          <Bubble40 v-if="actionPrompt !== 'locale-switch'" @click="openLocaleDialog">
-            <div class="locale-switch-btn">
+          <Bubble40
+            v-if="actionPrompt !== 'locale-switch'"
+            :dark="isDark"
+            @click="openLocaleDialog"
+          >
+            <div class="locale-switch-btn" :class="useDark">
               <a class="btn" aria-label="locale button">
                 <IconGlobe />
               </a>
@@ -229,10 +237,18 @@ window.addEventListener('pageshow', (e) => {
 
         <Transition name="locale-switch-dialog">
           <div v-if="actionPrompt === 'locale-switch'" class="locale-switch-dialog">
-            <BubbleRect16>
-              <div class="locale-option-list">
-                <a class="locale-option" @click="() => setLocale('zh-Hans')">简体中文</a>
-                <a class="locale-option" @click="() => setLocale('en')">English</a>
+            <BubbleRect16 :dark="isDark">
+              <div class="locale-option-list" :class="useDark">
+                <a
+                  class="locale-option"
+                  :class="useDark"
+                  @click="() => setLocale('zh-Hans')"
+                >简体中文</a>
+                <a
+                  class="locale-option"
+                  :class="useDark"
+                  @click="() => setLocale('en')"
+                >English</a>
               </div>
             </BubbleRect16>
           </div>
@@ -307,6 +323,10 @@ window.addEventListener('pageshow', (e) => {
   fill: none;
 
   animation: spin 12s linear infinite;
+
+  &.-dark {
+    stroke: var(--color-main);
+  }
 }
 
 .notes-entry-circle {
@@ -319,7 +339,7 @@ window.addEventListener('pageshow', (e) => {
   justify-content: center;
   align-items: center;
 
-  .base {
+  > .base {
     width: 100%;
     height: 100%;
 
@@ -330,12 +350,20 @@ window.addEventListener('pageshow', (e) => {
     border-radius: 50%;
     background-color: var(--color-sub);
   }
+
+  &.-dark > .base {
+    background-color: var(--color-main);
+  }
 }
 
 .notes-entry-text {
   position: relative;
   transform: translateX(-5px) translateY(9px);
   color: var(--color-main);
+
+  &.-dark {
+    color: var(--color-sub);
+  }
 
   > .to {
     position: absolute;
@@ -381,6 +409,11 @@ window.addEventListener('pageshow', (e) => {
   background-color: var(--color-sub);
   color: var(--color-main);
 
+  &.-dark {
+    background-color: var(--color-main);
+    color: var(--color-sub);
+  }
+
   .btn {
     width: 100%;
     height: 100%;
@@ -413,6 +446,10 @@ window.addEventListener('pageshow', (e) => {
   &:hover .locale-switch-btn {
     background-color: var(--color-sub-2);
   }
+
+  &:hover .locale-switch-btn.-dark {
+    background-color: var(--color-main-2);
+  }
 }
 
 .locale-switch-dialog {
@@ -438,6 +475,11 @@ window.addEventListener('pageshow', (e) => {
 .locale-option-list {
   background-color: var(--color-sub);
   color: var(--color-main);
+
+  &.-dark {
+    background-color: var(--color-main);
+    color: var(--color-sub);
+  }
 }
 
 .locale-option {
@@ -449,6 +491,10 @@ window.addEventListener('pageshow', (e) => {
 
   &:hover {
     background-color: var(--color-sub-2);
+  }
+
+  &.-dark:hover {
+    background-color: var(--color-main-2);
   }
 
   &:first-child {
