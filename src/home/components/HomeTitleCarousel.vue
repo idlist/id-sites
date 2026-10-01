@@ -12,7 +12,7 @@ const chances: Record<TitleType, number> = {
   special: 0.01,
 }
 
-const generateTitleQueue = (lastId?: string): string[] => {
+function generateTitleQueue(lastId?: string): string[] {
   const candidates = titles
     .filter((t) => Math.random() < chances[t.type])
     .map((t) => t.id)

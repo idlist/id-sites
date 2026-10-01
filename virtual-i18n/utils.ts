@@ -1,7 +1,7 @@
-export const joinText = (...text: string[]): string => {
+export function joinText(...text: string[]): string {
   return text.join('')
 }
 
-export const joinLines = (...lines: string[]): string => {
+export function joinLines(...lines: string[]): string {
   return lines.join('\n')
 }

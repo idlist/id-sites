@@ -15,7 +15,11 @@ export interface CustomI18nSlot<T extends readonly string[] = string[]> {
   generateCode: (options: SlotCodeOptions<T>) => string
 }
 
-export const defineSlot = <const T extends string[]>(slot: CustomI18nSlot<T>): CustomI18nSlot => slot
+export function defineSlot<const T extends string[]>(
+  slot: CustomI18nSlot<T>,
+): CustomI18nSlot {
+  return slot
+}
 
 export const strSlot = defineSlot({
   id: 'str',

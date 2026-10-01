@@ -27,7 +27,7 @@ export interface SlotToken {
 
 export type Token = TextToken | SlotToken
 
-const parseSlotToken = (input: string): SlotToken => {
+function parseSlotToken(input: string): SlotToken {
   const parts = input.split('|')
   const [header, ...rawBranches] = parts
   const [slotName, slotType = 'str'] = header.split(':').map(s => s.trim())

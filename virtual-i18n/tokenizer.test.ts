@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { type SlotToken, type TextToken, tokenize } from './tokenizer'
 
-const text = (content: string): TextToken => ({ type: 'text', text: content })
+function text(content: string): TextToken {
+  return { type: 'text', text: content }
+}
 
-const slot = (
+function slot(
   slotName: string,
   slotType = 'str',
   branches: Record<string, string> = {},
-): SlotToken => ({ type: 'slot', slotName, slotType, branches })
+): SlotToken {
+  return { type: 'slot', slotName, slotType, branches }
+}
 
 describe('tokenize', () => {
   it('returns no tokens for an empty string', () => {

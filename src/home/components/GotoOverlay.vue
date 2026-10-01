@@ -19,7 +19,7 @@ const $localeSwitch = useTemplateRef('$localeSwitch')
 
 let currentAnimation: AnimationCanceller | null = null
 
-const gotoNotes = async () => {
+async function gotoNotes() {
   if (actionPrompt.value !== 'goto-notes') {
     actionPrompt.value = 'goto-notes'
   } else {
@@ -36,16 +36,16 @@ const gotoNotes = async () => {
   }
 }
 
-const openLocaleDialog = () => {
+function openLocaleDialog() {
   actionPrompt.value = 'locale-switch'
 }
 
-const setLocale = (newLocale: typeof locale.value) => {
+function setLocale(newLocale: typeof locale.value) {
   locale.value = newLocale
   actionPrompt.value = 'none'
 }
 
-const cancel = () => {
+function cancel() {
   actionPrompt.value = 'none'
 }
 
@@ -65,7 +65,7 @@ watch(actionPrompt, (val, old) => {
   }
 })
 
-const expandEntry = (): AnimationCanceller => {
+function expandEntry(): AnimationCanceller {
   const entryAnimation = animate($notesEntry.value!, {
     width: 160,
     height: 160,
@@ -85,7 +85,7 @@ const expandEntry = (): AnimationCanceller => {
   }
 }
 
-const expandBeforeGotoNotes = async () => {
+async function expandBeforeGotoNotes() {
   const w = windowWidth.value
   const h = windowHeight.value
   const radius = Math.sqrt(w * w + h * h) + 16
@@ -113,7 +113,7 @@ const expandBeforeGotoNotes = async () => {
   ])
 }
 
-const resumeEntry = (): AnimationCanceller => {
+function resumeEntry(): AnimationCanceller {
   currentAnimation?.cancel()
 
   const entryAnimation = animate($notesEntry.value!, {
@@ -137,7 +137,7 @@ const resumeEntry = (): AnimationCanceller => {
   }
 }
 
-const reset = () => {
+function reset() {
   if ($notesEntry.value) {
     $notesEntry.value.style.width = ''
     $notesEntry.value.style.height = ''

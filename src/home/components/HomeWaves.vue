@@ -17,8 +17,8 @@ const WaveSampleStep = 4
 const FadeOutTop = 680
 const FadeOutRight = 560
 
-const FromColor = 0x40
-const ToColor = 0x60
+const ColorBegin = 0x40
+const ColorEnd = 0x60
 
 interface WaveComponent {
   wl: number
@@ -37,7 +37,7 @@ interface Wave {
   draw(ctx: CanvasContext): void
 }
 
-const createWave = (options: WaveOptions): Wave => {
+function createWave(options: WaveOptions): Wave {
   const {
     components,
     color,
@@ -53,7 +53,7 @@ const createWave = (options: WaveOptions): Wave => {
     }
 
     const p = x / DesignWidth
-    const shape = 1 - eases.in(2)(p)
+    const shape = 1 - eases.inSine(p)
     return WaveBaseline + yOffset * shape
   }
 
@@ -81,18 +81,20 @@ const createWave = (options: WaveOptions): Wave => {
   }
 }
 
-const randomPhase = () => 2 * Math.PI * Math.random()
+function randomPhase() {
+  return 2 * Math.PI * Math.random()
+}
 
-const randomSpread = (base: number, spread: number) => {
+function randomSpread(base: number, spread: number) {
   return base * (1 + spread * (Math.random() * 2 - 1))
 }
 
-const generateWaves = () => {
+function generateWaves() {
   const waves: Wave[] = []
 
   for (const i of range(0, WaveCount)) {
     const p = WaveCount > 1 ? i / (WaveCount - 1) : 0
-    const channel = Math.round(FromColor + (ToColor - FromColor) * p)
+    const channel = Math.round(ColorBegin + (ColorEnd - ColorBegin) * p)
 
     const baseAmp = WaveMaxAmp * (1 - 0.6 * p)
     const baseWl = 400 + 400 * p
@@ -132,21 +134,21 @@ const generateWaves = () => {
 let waves: Wave[] = []
 let timer: Timer | null = null
 
-const createMaskV = (ctx: CanvasContext) => {
+function createMaskV(ctx: CanvasContext) {
   const gradient = ctx.createLinearGradient(0, FadeOutTop, 0, DesignHeight)
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
   gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
   return gradient
 }
 
-const createMaskH = (ctx: CanvasContext) => {
+function createMaskH(ctx: CanvasContext) {
   const gradient = ctx.createLinearGradient(FadeOutRight, 0, DesignWidth, 0)
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
   gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
   return gradient
 }
 
-const applyMask = (ctx: CanvasContext, gradient: CanvasGradient) => {
+function applyMask(ctx: CanvasContext, gradient: CanvasGradient) {
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
   ctx.fillStyle = gradient
@@ -154,7 +156,7 @@ const applyMask = (ctx: CanvasContext, gradient: CanvasGradient) => {
   ctx.restore()
 }
 
-const setupCanvas = (canvas: HTMLCanvasElement) => {
+function setupCanvas(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return null
 

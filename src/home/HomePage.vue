@@ -45,11 +45,11 @@ const navItems = pageList.map((group) => ({
 const groupToElementSetMap = new Map<string, Map<string, ComponentPublicInstance>>()
 const queryToElementMap = new Map<string, ComponentPublicInstance>()
 
-const collectSection = (
+function collectSection(
   el: ComponentPublicInstance,
   group: NavigationGroup,
   section: NavigationSection,
-) => {
+) {
   const groupInfo = groupToElementSetMap.getOrInsert(group.gid, new Map())
 
   if (el) {
@@ -73,7 +73,7 @@ const navContentHeight = ref(0)
 const { y: scrollY } = useWindowScroll()
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 
-const setupNavigation = () => {
+function setupNavigation() {
   navGroupBorders.value = []
   navQueryBorders.value = {}
 
@@ -106,7 +106,7 @@ const setupNavigation = () => {
   navContentHeight.value = root.scrollHeight
 }
 
-const updateNavCursor = () => {
+function updateNavCursor() {
   if (!navGroupBorders.value.length) return
 
   const y = scrollY.value
@@ -148,7 +148,7 @@ onMounted(() => {
 
 let currentScroll: ReturnType<typeof animate> | null = null
 
-const scroll = (y: number) => {
+function scroll(y: number) {
   currentScroll?.cancel()
   currentScroll = animate(scrollY, {
     value: y,
@@ -157,14 +157,14 @@ const scroll = (y: number) => {
   })
 }
 
-const scrollToGroup = (gid: string) => {
+function scrollToGroup(gid: string) {
   const group = navGroupBorders.value.find((g) => g.gid === gid)
   if (!group) return
 
   scroll(group.border)
 }
 
-const jumpFromQuery = () => {
+function jumpFromQuery() {
   const url = new URL(window.location.href)
   const query = url.searchParams.get('to')
   if (!query) return
@@ -183,7 +183,7 @@ onMounted(() => {
   jumpFromQuery()
 })
 
-const cancelScroll = () => {
+function cancelScroll() {
   currentScroll?.cancel()
 }
 
@@ -197,7 +197,7 @@ const scrollingKeys = new Set([
   ' ',
 ])
 
-const cancelScrollOnKeys = (e: KeyboardEvent) => {
+function cancelScrollOnKeys(e: KeyboardEvent) {
   if (e.altKey || e.ctrlKey || e.metaKey) return
   if (!scrollingKeys.has(e.key)) return
   if (e.shiftKey && e.key !== ' ') return

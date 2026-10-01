@@ -20,16 +20,17 @@ const defaultDtsEmitPath = './src/virtual-i18n.d.ts'
 
 const validKeyPattern = /^[A-Za-z_$][\w$]*$/
 
-const escapeMessage = (message: string): string =>
-  message
+function escapeMessage(message: string): string {
+  return message
     .replace(/\\/g, '\\\\')
     .replace(/`/g, '\\`')
     .replace(/\$\{/g, '\\${')
+}
 
-const compileBranches = (
+function compileBranches(
   name: string,
   branches: Record<string, string>,
-): Record<string, string> => {
+): Record<string, string> {
   const escapedBranches: Record<string, string> = {}
 
   for (const [branchName, branchString] of Object.entries(branches)) {
@@ -40,7 +41,7 @@ const compileBranches = (
   return escapedBranches
 }
 
-const viteVirtualI18n = (options: PluginOptions): Plugin => {
+function viteVirtualI18n(options: PluginOptions): Plugin {
   const virtualModuleId = 'virtual:i18n'
   const resolvedModuleId = `\0${virtualModuleId}`
 
@@ -189,7 +190,7 @@ const viteVirtualI18n = (options: PluginOptions): Plugin => {
       '',
       `export const locale = ref('${defaultLocale}')`,
       '',
-      'export const toMessage = (stringOrMessage) => {',
+      'export function toMessage(stringOrMessage) {',
       `  if (typeof stringOrMessage === 'string') {`,
       '    return stringOrMessage',
       '  } else {',
@@ -247,7 +248,7 @@ const viteVirtualI18n = (options: PluginOptions): Plugin => {
       '',
       `  export const locale: Ref<${locales.join(' | ')}>`,
       '',
-      '  export const toMessage: (stringOrMessage: string | GeneralVirtualMessage) => string',
+      '  export function toMessage(stringOrMessage: string | GeneralVirtualMessage): string',
       '',
       '  export const m: {',
       ...dtsTemplates,
