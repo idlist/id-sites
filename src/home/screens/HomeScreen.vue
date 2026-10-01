@@ -36,7 +36,7 @@ import { contacts } from '@home/data/contacts'
             y2="50%"
             stroke="currentColor"
             stroke-width="2"
-            stroke-dasharray="12 16"
+            stroke-dasharray="10 16"
             stroke-linecap="round"
           />
         </svg>
@@ -52,6 +52,7 @@ import { contacts } from '@home/data/contacts'
 <style scoped lang="scss">
 .home-screen {
   position: relative;
+  overflow-x: hidden;
   user-select: none;
 
   > .main {
@@ -84,6 +85,7 @@ import { contacts } from '@home/data/contacts'
 
     top: 0;
     right: 0;
+    width: 400px;
   }
 }
 

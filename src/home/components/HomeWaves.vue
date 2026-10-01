@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { createTimer, eases, type Timer } from 'animejs'
+import { useElementVisibility } from '@vueuse/core'
+import { createTimer, eases, lerp, type Timer } from 'animejs'
 import { range } from 'remeda'
-import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
+import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
+
+type CanvasCtx = CanvasRenderingContext2D
 
 const $canvas = useTemplateRef<HTMLCanvasElement>('$canvas')
-type CanvasContext = CanvasRenderingContext2D
+const canvasVisible = useElementVisibility($canvas)
 
 const DesignWidth = 640
 const DesignHeight = 800
@@ -18,7 +21,7 @@ const FadeOutTop = 680
 const FadeOutRight = 560
 
 const ColorBegin = 0x40
-const ColorEnd = 0x60
+const ColorEnd = 0x66
 
 interface WaveComponent {
   wl: number
@@ -32,52 +35,48 @@ interface WaveOptions {
   color: string
 }
 
-interface Wave {
-  update(): void
-  draw(ctx: CanvasContext): void
-}
+class Wave {
+  private components: WaveComponent[]
+  private color: string
+  private time = 0
 
-function createWave(options: WaveOptions): Wave {
-  const {
-    components,
-    color,
-  } = options
+  constructor(options: WaveOptions) {
+    this.components = options.components
+    this.color = options.color
+  }
 
-  let time = 0
-
-  const calcY = (x: number) => {
+  private calcY(x: number) {
     let yOffset = 0
-    for (const sine of components) {
-      const f = (x - time * sine.speed) / sine.wl
+    for (const sine of this.components) {
+      const f = (x - this.time * sine.speed) / sine.wl
       yOffset += sine.amp * Math.sin(2 * Math.PI * f + sine.phase)
     }
 
-    const p = x / DesignWidth
-    const shape = 1 - eases.inSine(p)
+    const step = x / DesignWidth
+    const shape = 1 - eases.inSine(step)
     return WaveBaseline + yOffset * shape
   }
 
-  return {
-    update() {
-      time += 1
-    },
-    draw(ctx) {
-      ctx.beginPath()
-      ctx.strokeStyle = color
+  draw(ctx: CanvasCtx) {
+    ctx.beginPath()
+    ctx.strokeStyle = this.color
 
-      let x = 0
-      let y = calcY(x)
-      ctx.moveTo(x, y)
+    let x = 0
+    let y0 = this.calcY(x)
+    ctx.moveTo(x, y0)
 
-      while (x <= DesignWidth) {
-        const y = calcY(x)
-        ctx.lineTo(x, y)
+    while (x <= DesignWidth) {
+      const y = this.calcY(x)
+      ctx.lineTo(x, y)
 
-        x += WaveSampleStep
-      }
+      x += WaveSampleStep
+    }
 
-      ctx.stroke()
-    },
+    ctx.stroke()
+  }
+
+  update() {
+    this.time++
   }
 }
 
@@ -89,16 +88,16 @@ function randomSpread(base: number, spread: number) {
   return base * (1 + spread * (Math.random() * 2 - 1))
 }
 
-function generateWaves() {
+function generateWaves(): Wave[] {
   const waves: Wave[] = []
 
   for (const i of range(0, WaveCount)) {
-    const p = WaveCount > 1 ? i / (WaveCount - 1) : 0
-    const channel = Math.round(ColorBegin + (ColorEnd - ColorBegin) * p)
+    const step = WaveCount > 1 ? i / (WaveCount - 1) : 0
+    const channel = Math.round(lerp(ColorBegin, ColorEnd, step))
 
-    const baseAmp = WaveMaxAmp * (1 - 0.6 * p)
-    const baseWl = 400 + 400 * p
-    const baseSpeed = 1 + 0.5 * p
+    const baseAmp = WaveMaxAmp * (1 - 0.6 * step)
+    const baseWl = 400 + 400 * step
+    const baseSpeed = 1 + 0.5 * step
 
     const ampsRatio: number[] = [1]
     const subWaveCount = 4
@@ -122,37 +121,43 @@ function generateWaves() {
       })
     }
 
-    waves.push(createWave({
-      components,
-      color: `rgb(${channel}, ${channel}, ${channel})`,
-    }))
+    waves.push(
+      new Wave({
+        components,
+        color: `rgb(${channel}, ${channel}, ${channel})`,
+      }),
+    )
   }
 
   return waves
 }
 
-let waves: Wave[] = []
 let timer: Timer | null = null
 
-function createMaskV(ctx: CanvasContext) {
+function createMaskV(ctx: CanvasCtx) {
   const gradient = ctx.createLinearGradient(0, FadeOutTop, 0, DesignHeight)
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
   gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
   return gradient
 }
 
-function createMaskH(ctx: CanvasContext) {
+function createMaskH(ctx: CanvasCtx) {
   const gradient = ctx.createLinearGradient(FadeOutRight, 0, DesignWidth, 0)
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
   gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
   return gradient
 }
 
-function applyMask(ctx: CanvasContext, gradient: CanvasGradient) {
+function applyMasks(ctx: CanvasCtx, maskV: CanvasGradient, maskH: CanvasGradient) {
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
-  ctx.fillStyle = gradient
+
+  ctx.fillStyle = maskV
   ctx.fillRect(0, 0, DesignWidth, DesignHeight)
+
+  ctx.fillStyle = maskH
+  ctx.fillRect(0, 0, DesignWidth, DesignHeight)
+
   ctx.restore()
 }
 
@@ -160,7 +165,7 @@ function setupCanvas(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return null
 
-  const dpr = window.devicePixelRatio ?? 1
+  const dpr = window.devicePixelRatio || 1
   canvas.width = DesignWidth * dpr
   canvas.height = DesignHeight * dpr
   canvas.style.width = `${DesignWidth}px`
@@ -180,7 +185,7 @@ onMounted(() => {
   const ctx = setupCanvas(canvas)
   if (!ctx) return
 
-  waves = generateWaves()
+  const waves = generateWaves()
   const maskV = createMaskV(ctx)
   const maskH = createMaskH(ctx)
 
@@ -195,11 +200,18 @@ onMounted(() => {
         wave.draw(ctx)
       }
 
-      applyMask(ctx, maskV)
-      applyMask(ctx, maskH)
+      applyMasks(ctx, maskV, maskH)
     },
   })
 })
+
+watch(canvasVisible, (val) => {
+  if (val) {
+    timer?.resume()
+  } else {
+    timer?.pause()
+  }
+}, { immediate: true })
 
 onBeforeUnmount(() => {
   timer?.cancel()
