@@ -15,6 +15,7 @@
       "@styles/*": ["./src/styles/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@home/*": ["./src/home/*"],
+      "@virtual-i18n/*": ["./virtual-i18n/*"]
     }
   }
 }

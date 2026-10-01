@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { type Logger, normalizePath, type Plugin } from 'vite'
-import { type CustomI18nSlot, numSlot, oneOtherSlot, strSlot } from './slots'
+import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots'
 import { type Token, tokenize } from './tokenizer'
 import { joinLines, joinText } from './utils'
 
@@ -10,7 +10,7 @@ export interface PluginOptions {
   localeFiles: Record<string, string[]>
   defaultLocale?: string
   dtsEmitPath?: string
-  customSlotHandlers?: CustomI18nSlot[]
+  customSlotHandlers?: VirtualI18nSlot[]
 }
 
 type LangTokensMap = Record<string, Token[]>
@@ -28,8 +28,8 @@ function escapeMessage(message: string): string {
 }
 
 function compileBranches(
-  name: string,
   branches: Record<string, string>,
+  name: string,
 ): Record<string, string> {
   const escapedBranches: Record<string, string> = {}
 
@@ -54,7 +54,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
   let messagesMapCache: MessagesMap
 
   // Setup slot handlers.
-  const slotHandlers: Record<string, CustomI18nSlot> = {}
+  const slotHandlers: Record<string, VirtualI18nSlot> = {}
   slotHandlers[strSlot.id] = strSlot
   slotHandlers[numSlot.id] = numSlot
   slotHandlers[oneOtherSlot.id] = oneOtherSlot
@@ -161,7 +161,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
             const slotTemplate = handler.generateCode({
               key,
               name: token.slotName,
-              branches: compileBranches(token.slotName, token.branches),
+              branches: compileBranches(token.branches, token.slotName),
             })
             template.push(slotTemplate)
           }

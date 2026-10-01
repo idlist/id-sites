@@ -11,6 +11,7 @@ const notes = defineCollection({
     lang: z.string().default('zh-Hans'),
     title: z.string(),
     route: z.string(),
+    topic: z.string().optional(),
     created: z.coerce.date(),
     updated: z.coerce.date().optional(),
   }),

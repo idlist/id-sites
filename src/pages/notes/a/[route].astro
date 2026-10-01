@@ -1,6 +1,7 @@
 ---
 import NotesDisplay from '@layouts/NotesDisplay.astro'
 import { getCollection, render } from 'astro:content'
+import type { SupportedLocales } from 'virtual:i18n'
 
 export const getStaticPaths = async () => {
   const notes = await getCollection('notes')
@@ -16,6 +17,6 @@ const { title, lang } = note.data
 const { Content } = await render(note)
 ---
 
-<NotesDisplay locale={lang} title={`${title} | i'D Notes`}>
+<NotesDisplay locale={lang as SupportedLocales} title={`${title} | i'D Notes`}>
   <Content />
 </NotesDisplay>

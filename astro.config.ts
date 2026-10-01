@@ -4,7 +4,7 @@ import path from 'node:path'
 import svgLoader from 'vite-svg-loader'
 import vueVirtualI18n from './virtual-i18n'
 
-const toAbsolute = (relative: string) => {
+function toAbsolute(relative: string) {
   return path.resolve(import.meta.dirname, relative)
 }
 
@@ -31,7 +31,7 @@ export default defineConfig({
           en: ['home.en.json'],
           'zh-Hans': ['home.zh.json'],
         },
-        defaultLocale: 'zh-Hans',
+        defaultLocale: 'en',
       }),
     ],
   },

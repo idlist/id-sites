@@ -1,5 +1,5 @@
 <template>
-  <div class="home-bleed"></div>
+  <section class="home-bleed"></section>
 </template>
 
 <style scoped lang="scss">

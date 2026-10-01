@@ -1,22 +1,28 @@
 ---
 import type { SupportedLocales } from 'virtual:i18n'
 import GotoOverlayAstro from './components/GotoOverlayAstro.vue'
+import { useI18n } from './i18n'
 import NotesBase from './NotesBase.astro'
 import type { NotesProps } from './types'
 
 interface Props extends NotesProps {
 }
 
+const { locale = 'en' } = Astro.props
+const { m } = useI18n(locale)
+
 const localePageMap: Record<SupportedLocales, string> = {
   en: '/notes/en',
   'zh-Hans': '/notes/zh',
 }
-
-const { locale = 'en' } = Astro.props
 ---
 
 <NotesBase {...Astro.props}>
-  <slot></slot>
+  <main class="notes-list">
+    <h1 class="notes-list-title">{m('notesListTitle')}</h1>
+
+    <slot />
+  </main>
 
   <GotoOverlayAstro
     client:only="vue"
@@ -24,3 +30,14 @@ const { locale = 'en' } = Astro.props
     locale-page-map={localePageMap}
   />
 </NotesBase>
+
+<style lang="scss">
+.notes-list {
+  padding: 1rem;
+}
+
+.notes-list-title {
+  font-family: var(--font-unique);
+  letter-spacing: 0.25rem;
+}
+</style>
