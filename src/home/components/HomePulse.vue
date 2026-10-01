@@ -59,6 +59,7 @@ class Pulse {
   }
 
   draw(ctx: CanvasCtx) {
+    ctx.save()
     ctx.translate(this.xOffset, this.yOffset)
     ctx.strokeStyle = this.color
 
@@ -76,7 +77,7 @@ class Pulse {
     ctx.bezierCurveTo(p1.cx1, p1.cy1, p2.cx, p2.cy, p2.x, p2.y)
     ctx.stroke()
 
-    ctx.translate(-this.xOffset, -this.yOffset)
+    ctx.restore()
   }
 
   update() {
@@ -89,7 +90,7 @@ function generatePulses(): Pulse[] {
   const lineCount = 12
 
   for (const i of range(0, lineCount)) {
-    const step = (i + 1) / lineCount // Intentinoal.
+    const step = (i + 1) / lineCount // Intentional
     const channel = Math.round(lerp(ColorBegin, ColorEnd, step))
 
     const maxLineWidth = 18
@@ -100,8 +101,8 @@ function generatePulses(): Pulse[] {
     if (lineWidth > maxLineWidth) lineWidth = maxLineWidth
 
     const r = angle / 180 * Math.PI
-    const xOffset = r + Math.cos(r) * disp
-    const yOffset = r + Math.sin(r) * disp
+    const xOffset = Math.cos(r) * disp
+    const yOffset = Math.sin(r) * disp
 
     pulses.push(
       new Pulse({
@@ -154,15 +155,15 @@ onMounted(() => {
       }
     },
   })
-})
 
-watch(canvasVisible, (val) => {
-  if (val) {
-    timer?.resume()
-  } else {
-    timer?.pause()
-  }
-}, { immediate: true })
+  watch(canvasVisible, (val) => {
+    if (val) {
+      timer?.resume()
+    } else {
+      timer?.pause()
+    }
+  }, { immediate: true })
+})
 
 onBeforeUnmount(() => {
   timer?.cancel()

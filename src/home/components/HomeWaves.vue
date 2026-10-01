@@ -203,15 +203,15 @@ onMounted(() => {
       applyMasks(ctx, maskV, maskH)
     },
   })
-})
 
-watch(canvasVisible, (val) => {
-  if (val) {
-    timer?.resume()
-  } else {
-    timer?.pause()
-  }
-}, { immediate: true })
+  watch(canvasVisible, (val) => {
+    if (val) {
+      timer?.resume()
+    } else {
+      timer?.pause()
+    }
+  }, { immediate: true })
+})
 
 onBeforeUnmount(() => {
   timer?.cancel()

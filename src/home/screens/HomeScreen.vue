@@ -11,11 +11,15 @@ import { contacts } from '@home/data/contacts'
 <template>
   <PageFull class="home-screen">
     <div class="waves">
-      <HomeWaves />
+      <div class="waves-canvas">
+        <HomeWaves />
+      </div>
     </div>
 
     <div class="pulse">
-      <HomePulse />
+      <div class="pulse-canvas">
+        <HomePulse />
+      </div>
     </div>
 
     <div class="main">
@@ -52,7 +56,6 @@ import { contacts } from '@home/data/contacts'
 <style scoped lang="scss">
 .home-screen {
   position: relative;
-  overflow-x: hidden;
   user-select: none;
 
   > .main {
@@ -76,7 +79,9 @@ import { contacts } from '@home/data/contacts'
 
     bottom: -100px;
     left: 0;
-    width: 800px;
+
+    max-width: 100%;
+    overflow: hidden;
   }
 
   > .pulse {
@@ -85,8 +90,18 @@ import { contacts } from '@home/data/contacts'
 
     top: 0;
     right: 0;
-    width: 400px;
+
+    max-width: 100%;
+    overflow: hidden;
   }
+}
+
+.waves-canvas {
+  width: 800px;
+}
+
+.pulse-canvas {
+  width: 400px;
 }
 
 .first-row {
