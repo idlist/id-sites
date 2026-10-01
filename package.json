@@ -9,7 +9,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "generate": "tsx scripts/meta.ts",
+    "build": "npm run generate && astro build",
     "preview": "astro preview",
     "lint": "npx @biomejs/biome lint",
     "fmt": "dprint fmt",

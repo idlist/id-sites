@@ -1,0 +1,18 @@
+---
+import NotesBase from '@layouts/NotesBase.astro'
+---
+
+<NotesBase title="Redirecting..."></NotesBase>
+
+<script>
+import { detectLocaleWithStorage } from '@client/detect-locale'
+
+const localeDetected = detectLocaleWithStorage()
+
+function getLocale() {
+  if (localeDetected.startsWith('zh')) return 'zh'
+  return 'en'
+}
+
+window.location.href = `/notes/${getLocale()}`
+</script>

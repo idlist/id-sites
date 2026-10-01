@@ -5,6 +5,7 @@
     "astro.config.ts",
     "vitest.config.ts",
     "src/**/*",
+    "scripts/**/*",
     "virtual-i18n/**/*"
   ],
   "exclude": ["dist"],
@@ -13,9 +14,10 @@
     "paths": {
       "@assets/*": ["./src/assets/*"],
       "@styles/*": ["./src/styles/*"],
+      "@virtual-i18n/*": ["./virtual-i18n/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@home/*": ["./src/home/*"],
-      "@virtual-i18n/*": ["./virtual-i18n/*"]
+      "@client/*": ["./src/client/*"],
     }
   }
 }

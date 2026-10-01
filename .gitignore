@@ -6,6 +6,7 @@ node_modules/
 
 # Generated files
 /src/virtual-i18n.d.ts
+/src/meta.g.ts
 
 # AI slops
 /.clinerules

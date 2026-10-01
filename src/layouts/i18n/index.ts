@@ -43,7 +43,7 @@ export function useI18n(locale: SupportedLocales) {
     if (message === undefined) return key
 
     let translated = ''
-    let index = 0
+    const index = 0
 
     for (const token of tokenize(message)) {
       if (token.type === 'text') {

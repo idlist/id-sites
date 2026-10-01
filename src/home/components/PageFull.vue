@@ -10,7 +10,6 @@
   height: 100vh;
   height: 100svh;
 
-  min-width: 375px;
   min-height: 400px;
 }
 </style>

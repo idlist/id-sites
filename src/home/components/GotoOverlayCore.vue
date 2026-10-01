@@ -409,6 +409,8 @@ const useDark = isDark ? '-dark' : ''
   background-color: var(--color-sub);
   color: var(--color-main);
 
+  transition: all 0.25s ease;
+
   &.-dark {
     background-color: var(--color-main);
     color: var(--color-sub);

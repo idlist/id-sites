@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { detectLocale } from '@client/detect-locale.ts'
 import { useLocalStorage } from '@vueuse/core'
 import { locale, type SupportedLocales } from 'virtual:i18n'
 import { onBeforeMount } from 'vue'
@@ -21,30 +22,14 @@ function updateLocale(newLocale: SupportedLocales) {
   localeStorage.value = newLocale
 }
 
-function tryGetLocaleFromBrowserArray(): string | null {
-  const languages = navigator.languages
-  if (!languages) return null
-  if (!languages.length) return null
-  return languages[0]
-}
-
-function tryGetLocaleFromBrowser(): string | null {
-  const language = navigator.language
-  if (!language) return null
-  return language
-}
-
 function tryGetInitialLocale() {
+  let localeDetected = detectLocale()
+
   // Because this site only supports en & zh-Hans, the logic becomes:
   // language tag starts with zh => zh-Hans
   // other situations => en
   // This is a hard-coded solution.
-
-  let initial = tryGetLocaleFromBrowserArray()
-  if (!initial) initial = tryGetLocaleFromBrowser()
-  if (!initial) initial = locale.value // Default locale
-
-  if (initial.startsWith('zh')) return 'zh-Hans'
+  if (localeDetected.startsWith('zh')) return 'zh-Hans'
   return 'en'
 }
 

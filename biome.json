@@ -2,11 +2,11 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
     "includes": [
-      "src/**",
-      "virtual-i18n/**",
-      "tsconfig.json",
       "astro.config.ts",
       "vitest.config.ts",
+      "src/**",
+      "scripts/**/*",
+      "virtual-i18n/**",
       "!**/*.svg"
     ]
   },
