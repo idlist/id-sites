@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import IconIdlist from '@assets/idlist-light.svg?component'
 import HomeContact from '@home/components/HomeContact.vue'
-import HomePulse from '@home/components/HomePulse.vue'
+import HomePulses from '@home/components/HomePulses.vue'
 import HomeTitleCarousel from '@home/components/HomeTitleCarousel.vue'
 import HomeWaves from '@home/components/HomeWaves.vue'
 import PageFull from '@home/components/PageFull.vue'
@@ -18,7 +18,7 @@ import { contacts } from '@home/data/contacts'
 
     <div class="pulse">
       <div class="pulse-canvas">
-        <HomePulse />
+        <HomePulses />
       </div>
     </div>
 

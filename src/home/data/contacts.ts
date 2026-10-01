@@ -4,7 +4,7 @@ import IconEmail from '@assets/icons/email.svg?component'
 import IconGitHub from '@assets/icons/github.svg?component'
 import IconSoundCloud from '@assets/icons/soundcloud.svg?component'
 import IconX from '@assets/icons/x.svg?component'
-import type { ImportedSvgComponent } from '@home/utils'
+import type { ViteSvgComponent } from '@home/utils'
 import { type GeneralVirtualMessage, m } from 'virtual:i18n'
 
 export interface ContactItem {
@@ -12,7 +12,7 @@ export interface ContactItem {
   platform: string | GeneralVirtualMessage
   id: string
   link: string
-  icon: ImportedSvgComponent
+  icon: ViteSvgComponent
 }
 
 export const contacts: ContactItem[] = [

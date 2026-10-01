@@ -185,10 +185,14 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       ))
     }
 
+    const locales = Object.keys(options.localeFiles).map(lang => `'${lang}'`)
+
     return joinLines(
       `import { ref } from 'vue'`,
       '',
       `export const locale = ref('${defaultLocale}')`,
+      '',
+      `export const supportedLocales = new Set([${locales.join(', ')}])`,
       '',
       'export function toMessage(stringOrMessage) {',
       `  if (typeof stringOrMessage === 'string') {`,
@@ -246,7 +250,11 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       '',
       '  export type GeneralVirtualMessage = (...args: unknown[]) => string',
       '',
-      `  export const locale: Ref<${locales.join(' | ')}>`,
+      `  export type SupportedLocales = ${locales.join(' | ')}`,
+      '',
+      `  export const locale: Ref<SupportedLocales>`,
+      '',
+      '  export const supportedLocales: Set<string>',
       '',
       '  export function toMessage(stringOrMessage: string | GeneralVirtualMessage): string',
       '',

@@ -16,6 +16,6 @@ const { title, lang } = note.data
 const { Content } = await render(note)
 ---
 
-<NotesDisplay lang={lang} title={`${title} | i'D Notes`}>
+<NotesDisplay locale={lang} title={`${title} | i'D Notes`}>
   <Content />
 </NotesDisplay>

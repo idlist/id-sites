@@ -9,7 +9,7 @@ import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
 import HomeBleed from './screens/HomeBleed.vue'
 import HomeScreen from './screens/HomeScreen.vue'
-import type { ImportedSvgComponent } from './utils.ts'
+import type { ViteSvgComponent } from './utils.ts'
 
 interface NavigationSection {
   section: Component
@@ -19,7 +19,7 @@ interface NavigationSection {
 
 interface NavigationGroup {
   gid: string
-  icon: ImportedSvgComponent
+  icon: ViteSvgComponent
   label: GeneralVirtualMessage
   sections: NavigationSection[]
 }

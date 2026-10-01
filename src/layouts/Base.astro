@@ -7,14 +7,14 @@ interface Props extends BaseProps {
 }
 
 const {
-  lang = 'en',
+  locale = 'en',
   title,
 } = Astro.props
 ---
 
 <!DOCTYPE html>
 
-<html lang={lang}>
+<html lang={locale}>
   <head>
     <title>{title}</title>
     <meta charset="UTF-8" />

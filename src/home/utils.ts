@@ -4,4 +4,4 @@ export interface AnimationCanceller {
   cancel(): void
 }
 
-export type ImportedSvgComponent = FunctionalComponent<SVGAttributes>
+export type ViteSvgComponent = FunctionalComponent<SVGAttributes>

@@ -1,5 +1,7 @@
+import type { SupportedLocales } from 'virtual:i18n'
+
 export interface BaseProps {
-  lang?: string
+  locale?: SupportedLocales
   title: string
 }
 
