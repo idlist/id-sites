@@ -236,13 +236,16 @@ const useDark = isDark ? '-dark' : ''
         </Transition>
 
         <Transition name="locale-switch-dialog">
-          <div v-if="actionPrompt === 'locale-switch'" class="locale-switch-dialog">
+          <div
+            v-if="actionPrompt === 'locale-switch'"
+            class="locale-switch-dialog"
+          >
             <BubbleRect16 :dark="isDark">
               <div class="locale-option-list" :class="useDark">
                 <a
                   class="locale-option"
                   :class="useDark"
-                  @click="() => setLocale('zh-Hans')"
+                  @click="() => setLocale('zh')"
                 >简体中文</a>
                 <a
                   class="locale-option"

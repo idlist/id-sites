@@ -6,14 +6,9 @@ const localeFiles: string[] = [
   'notes-list',
 ]
 
-const suffixMap: Record<string, SupportedLocales> = {
-  en: 'en',
-  zh: 'zh-Hans',
-}
-
 const messageCollection: Record<SupportedLocales, Record<string, string>> = {
   en: {},
-  'zh-Hans': {},
+  zh: {},
 }
 
 const localeModules = import.meta.glob('/src/locales/*.json', {
@@ -22,11 +17,11 @@ const localeModules = import.meta.glob('/src/locales/*.json', {
 }) as Record<string, Record<string, string>>
 
 for (const localeFile of localeFiles) {
-  for (const [suffix, locale] of Object.entries(suffixMap)) {
+  for (const suffix of Object.keys(messageCollection)) {
     const json = localeModules[`/src/locales/${localeFile}.${suffix}.json`]
     if (!json) continue
 
-    Object.assign(messageCollection[locale], json)
+    Object.assign(messageCollection[suffix as SupportedLocales], json)
   }
 }
 

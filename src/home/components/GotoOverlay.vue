@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { detectLocale } from '@client/detect-locale.ts'
 import { useLocalStorage } from '@vueuse/core'
-import { locale, type SupportedLocales } from 'virtual:i18n'
+import { locale, type SupportedLocales, supportedLocales } from 'virtual:i18n'
 import { onBeforeMount } from 'vue'
 import GotoOverlayCore from './GotoOverlayCore.vue'
 
-const localeStorage = useLocalStorage<SupportedLocales>('locale', tryGetInitialLocale())
+const localeStorage = useLocalStorage<SupportedLocales>('locale', tryDetectLocale())
 
 function goto() {
   switch (locale.value) {
-    case 'zh-Hans':
+    case 'zh':
       window.location.href = '/notes/zh'
       break
     default:
@@ -22,18 +22,22 @@ function updateLocale(newLocale: SupportedLocales) {
   localeStorage.value = newLocale
 }
 
-function tryGetInitialLocale() {
-  let localeDetected = detectLocale()
+function tryDetectLocale() {
+  let localeDetected = detectLocale(locale.value)
 
-  // Because this site only supports en & zh-Hans, the logic becomes:
-  // language tag starts with zh => zh-Hans
+  // Because this site only supports en & zh, the logic becomes:
+  // language tag starts with zh => zh
   // other situations => en
   // This is a hard-coded solution.
-  if (localeDetected.startsWith('zh')) return 'zh-Hans'
+  if (localeDetected.startsWith('zh')) return 'zh'
   return 'en'
 }
 
 onBeforeMount(() => {
+  if (!supportedLocales.has(localeStorage.value)) {
+    localeStorage.value = tryDetectLocale()
+  }
+
   locale.value = localeStorage.value
 })
 </script>

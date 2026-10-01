@@ -1,7 +1,9 @@
 ---
 import BackgroundDots from '@layouts/components/BackgroundDots.astro'
-import Base from './Base.astro'
-import type { NotesProps } from './types'
+import Base, { type BaseProps } from './Base.astro'
+
+export interface NotesProps extends BaseProps {
+}
 
 interface Props extends NotesProps {
 }

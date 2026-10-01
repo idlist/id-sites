@@ -29,7 +29,7 @@ export default defineConfig({
         localeRoot: 'src/locales',
         localeFiles: {
           en: ['home.en.json'],
-          'zh-Hans': ['home.zh.json'],
+          zh: ['home.zh.json'],
         },
         defaultLocale: 'en',
       }),

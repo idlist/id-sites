@@ -1,20 +1,27 @@
 ---
 import '@styles/reset.css'
 import '@styles/globals.scss'
-import type { BaseProps } from './types'
+import type { SupportedLocales } from 'virtual:i18n'
+
+export interface BaseProps {
+  locale?: SupportedLocales
+  title: string
+}
 
 interface Props extends BaseProps {
 }
 
-const {
-  locale = 'en',
-  title,
-} = Astro.props
+const { locale = 'en', title } = Astro.props
+
+const langMap = {
+  en: 'en',
+  zh: 'zh-Hans',
+}
 ---
 
 <!DOCTYPE html>
 
-<html lang={locale}>
+<html lang={langMap[locale]}>
   <head>
     <title>{title}</title>
     <meta charset="UTF-8" />
