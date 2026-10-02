@@ -1,54 +1,96 @@
 ---
+import type { MDXInstance } from 'astro'
 import type { SupportedLocales } from 'virtual:i18n'
+import BubbleRect20 from './components/BubbleRect20.astro'
 import GotoOverlayAstro from './components/GotoOverlayAstro.vue'
+import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
+import NotesByTopic from './components/NotesByTopic.astro'
+import ShowdownMask from './components/ShowdownMask.astro'
 import { useI18n } from './i18n'
 import NotesBase, { type NotesProps } from './NotesBase.astro'
 
-export interface NoteEntry {
-  title: string
-  route: string
-  date: string
-}
-
-export interface NotesByTopic {
-  name: string
-  notes: NoteEntry[]
-}
+export type NotesTopicMap = Map<string, NoteEntryProps[]>
 
 interface Props extends NotesProps {
-  topics?: NotesByTopic[]
+  topics: NotesTopicMap
 }
 
-const { locale = 'en', topics = [] } = Astro.props
+const { locale = 'en', topics } = Astro.props
 const { m } = useI18n(locale)
 
 const localePageMap: Record<SupportedLocales, string> = {
   en: '/notes/en',
   zh: '/notes/zh',
 }
+
+const NoteListPreface = (await import(
+  `./components/NotesListPreface.${locale}.mdx`
+) as MDXInstance<{}>).default
 ---
 
 <NotesBase {...Astro.props}>
-  <main class="notes-list">
-    <h1 class="notes-list-title">{m('notesListTitle')}</h1>
+  <div class="notes-list">
+    <main class="main">
+      <h1 class="notes-list-title">{m('notesListTitle')}</h1>
 
-    <slot />
-  </main>
+      <BubbleRect20>
+        <div class="notes-list-content">
+          <div class="preface">
+            <NoteListPreface />
+            {topics.size == 0
+              ? <div>No notes</div>
+              : topics.entries().map(([name, entries]) => (
+                <NotesByTopic name={name}>
+                  {entries.map((note) => <NoteEntry entry={note} /><NoteEntry entry={note} />)}
+                </NotesByTopic>
+              ))}
+          </div>
+        </div>
+      </BubbleRect20>
+    </main>
+  </div>
 
   <GotoOverlayAstro
     client:only="vue"
     locale={locale}
     locale-page-map={localePageMap}
   />
+  <ShowdownMask />
 </NotesBase>
 
 <style lang="scss">
 .notes-list {
-  padding: 1rem;
+  padding: 4rem 1rem 2rem 1rem;
+  display: flex;
+  justify-content: center;
+
+  > .main {
+    width: 100%;
+    max-width: 800px;
+  }
+
+  @media (max-width: 800px) {
+    padding: 7rem 0.5rem 2rem 0.5rem;
+  }
 }
 
 .notes-list-title {
-  font-family: var(--font-unique);
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
   letter-spacing: 0.25rem;
+
+  font-family: var(--font-unique);
+}
+
+.notes-list-content {
+  width: 100%;
+
+  background-color: white;
+  padding: 0.25rem;
+
+  > .preface :global(p) {
+    margin: 0.5rem;
+    vertical-align: text-bottom;
+  }
 }
 </style>

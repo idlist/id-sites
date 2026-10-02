@@ -1,0 +1,24 @@
+<div class="showdown-mask"></div>
+
+<style>
+@keyframes showdown-mask {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.showdown-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  pointer-events: none;
+  background-color: var(--color-sub);
+
+  /* Start the fade at the element's first paint, so no frame shows the opaque mask. */
+  animation: showdown-mask 0.5s ease-out forwards;
+}
+</style>

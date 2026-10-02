@@ -8,7 +8,7 @@ const notes = defineCollection({
     pattern: '**/*.{md,mdx}',
   }),
   schema: z.object({
-    lang: z.string().default('zh'),
+    lang: z.literal(['en', 'zh']).default('zh'),
     title: z.string(),
     route: z.string(),
     topic: z.string().optional(),

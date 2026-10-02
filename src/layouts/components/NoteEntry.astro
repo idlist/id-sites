@@ -1,0 +1,91 @@
+---
+import NewBadge from './NewBadge.astro'
+
+export interface NoteEntryProps {
+  title: string
+  route: string
+  date: Date
+}
+
+interface Props {
+  entry: NoteEntryProps
+}
+
+const { entry } = Astro.props
+const date = entry.date
+const strDate = `${date.getFullYear()} / ${date.getMonth() + 1} / ${date.getDate()}`
+const isoDate = date.toISOString()
+---
+
+<a class="note-entry" href={`/notes/a/${entry.route}`}>
+  <h2 class="note-title">{entry.title}</h2>
+  <div class="note-date">
+    <div class="note-date-string">{strDate}</div>
+    <div class="note-new-badge" data-date={isoDate}>
+      <NewBadge />
+    </div>
+  </div>
+</a>
+
+<style lang="scss">
+.note-entry {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+
+  margin: 0.25rem 0;
+  text-decoration: none;
+}
+
+.note-title {
+  flex-grow: 1;
+  font-size: 1.25rem;
+  font-weight: normal;
+  color: var(--color-main);
+  text-decoration: underline;
+
+  transition: color 0.125s ease;
+}
+
+.note-entry:hover > .note-title {
+  color: var(--color-main-3);
+}
+
+.note-date {
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+
+  margin-left: auto;
+}
+
+.note-date-string {
+  font-size: 0.875rem;
+  color: var(--color-main-2);
+}
+
+.note-new-badge {
+  display: none;
+  align-items: center;
+
+  &.-new {
+    display: flex;
+  }
+}
+</style>
+
+<script>
+document.querySelectorAll('.note-new-badge').forEach((el) => {
+  const $badge = el as HTMLDivElement
+  const isoDate = $badge.dataset.date
+  if (!isoDate) return
+
+  const date = new Date(isoDate)
+  const now = new Date()
+  const sevenDays = 7 * 24 * 60 * 60 * 1000
+
+  if (now.getTime() - date.getTime() <= sevenDays) {
+    $badge.classList.add('-new')
+  }
+})
+</script>

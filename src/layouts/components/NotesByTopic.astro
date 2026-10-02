@@ -1,0 +1,43 @@
+---
+interface Props {
+  name: string
+}
+
+const { name } = Astro.props
+---
+<fieldset class="notes-by-topic">
+  <legend class="topic-name">{name}</legend>
+  <div class="topic-contents">
+    <slot />
+  </div>
+</fieldset>
+
+<style lang="scss">
+.notes-by-topic {
+  margin: 1rem 0.5rem;
+  position: relative;
+
+  border-width: 2px;
+  border-image-source: url("@assets/bubble-rect-20-dark.svg");
+  border-image-slice: 31.25%;
+  border-image-width: 20px;
+  border-image-outset: 1px;
+  border-image-repeat: stretch;
+}
+
+.topic-name {
+  padding: 0 0.25rem;
+  margin-left: -0.125rem;
+
+  font-family: var(--font-unique);
+  font-weight: bold;
+  font-size: 1.5rem;
+  line-height: 1.25;
+
+  background-color: white;
+}
+
+.topic-contents {
+  margin: -0.5rem 0;
+}
+</style>

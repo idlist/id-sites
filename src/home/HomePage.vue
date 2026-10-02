@@ -7,6 +7,7 @@ import { type Component, type ComponentPublicInstance, onMounted, ref } from 'vu
 import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
+import ShowdownMask from './components/ShowdownMask.vue'
 import HomeBleed from './screens/HomeBleed.vue'
 import HomeScreen from './screens/HomeScreen.vue'
 import type { ViteSvgComponent } from './utils.ts'
@@ -229,4 +230,5 @@ useEventListener('keydown', cancelScrollOnKeys)
     @request-scroll="scrollToGroup"
   />
   <GotoOverlay />
+  <ShowdownMask />
 </template>

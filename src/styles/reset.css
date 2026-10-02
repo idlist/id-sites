@@ -40,17 +40,9 @@ p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
-/* 9. Improve line wrapping */
-p {
-  text-wrap: pretty;
-}
-h1, h2, h3, h4, h5, h6 {
-  text-wrap: balance;
-}
+/* The 9th point doesn't work on my machine */
 
-/*
-  10. Create a root stacking context
-*/
+/* 10. Create a root stacking context */
 #root, #__next {
   isolation: isolate;
 }

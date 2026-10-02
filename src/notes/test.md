@@ -1,8 +1,8 @@
 ---
-lang: "en"
 title: "Test Title"
 route: "test"
-created: 2026-09-24
+topic: "Test"
+created: 2026-10-01
 ---
 
 Content.
