@@ -30,7 +30,7 @@ export const headingLinks = defineHastPlugin({
         children: [icon],
       }
 
-      ctx.prependChild(node, anchor)
+      ctx.insertChildAt(node, node.children.length, anchor)
     },
   },
 })

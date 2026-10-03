@@ -12,7 +12,7 @@ I'll try to cover them from the more basic ones to more Godot-specific ones. Als
 
 ## Level 1: Pure C# Singleton
 
-Pure singleton is useful when it does not utilize the node system that Godot provides, like those related to the save data. Tutorial of this can be found everywhere, so I'm only putting the basic one here.
+Pure singleton is useful when it does not utilize the node system that Godot provides, like those related to the save data. Tutorials of this can be found everywhere, so I'm only putting the basic one here.
 
 ```csharp
 public class Singleton {
@@ -31,8 +31,8 @@ public class Singleton {
 
 This case is usually when you:
 
-- Decide to stick to `[Signal]` for the global event bus in favor of `static event`, or
-- Want to utilize the hooks that Godot provides, usually `_Input()`.
+- decide to stick to `[Signal]` for the global event bus in favor of `static event`, or
+- want to utilize the hooks that Godot provides, usually `_Input()`.
 
 It can be done by:
 
@@ -48,23 +48,19 @@ public partial class Singleton : Node { // Usually Node is the type
       // Initialization goes here...
     }
     else {
-      QueueFree(); // Ensure the uniqueness of the node
+      QueueFree(); // Ensure the node is unique
     }
   }
 }
 ```
 
-And then, directly add the script under the *Globals - Autoload* tag in *Project Settings*. It's not necessary to attach the script to a scene.
+...and then directly add the script under the *Globals - Autoload* tag in *Project Settings*. It's not necessary to attach the script to a scene.
 
 If you've enabled nullability check (a.k.a. nullable reference type, or `<Nullable>enable</Nullable>`) in your project, [`CS8618`](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/nullable-warnings#nonnullable-reference-not-initialized) will be reported on `Instance`, complaining it's not initialized since the compiler has no way to know the singleton *will* be initialized by Godot. There is not much you can do other than silencing the warning.
 
-Or rather, enabling nullability check without extra settings in a Godot project is *not* really a good idea, because every `[Export]` becomes `CS8618`. I myself have made a custom Roslyn analyzer named `LateInitSuppressor` (inspired by Kotlin keyword `lateinit`) to solely suppress `CS8618` on fields or properties attributed by `[Export]`, and I'm also using it to suppress other `CS8618`s that *I know* will definitely not be null *after* certain lifecycle. Nullability check is handy when the object might *actually* be null, but not in these cases.
-
-Though being a bit of off-topic, the custom analyzer itself is quite simple to figure out. I'm not opening-source it or publishing it only because my code is too spaghetti: it works, but it only works.
-
 ## Level 3: C# Script Attaching to a Simple Scene
 
-By "simple scene", I mean a scene that does not have any child nodes (it's okay to have resources as its property), or does not interact with its child node during its initialization, so that the initialization does not need to be postponed to `_Ready()`. It is sometimes a kind of extension of the previous case with the difference where you want to set some value for the singleton via the editor, which requires a scene.
+By "simple scene", I mean a scene that does not have any child nodes (it's okay to have resources as its property), or one does not interact with its child node during its initialization. The point is that the initialization of those scenes doesn't need to be postponed to `_Ready()`. It is some kind of variation of the previous case with the difference where you want to set some value for the singleton via the editor, which requires a scene.
 
 The setup for the **previous** case (script extending from a node) can again be used here. The difference comes within the *Project Settings*: the **scene** instead of the script is to be added to *Autoload*.
 
@@ -124,12 +120,6 @@ public partial class AnotherNode : Node {
 }
 ```
 
-Here, `OnReady` is a custom extension method to delay the code execution (in its `Action` parameter) until the the node is ready. ~~Well, I just kind of want to show off my over-sugared Godot C# utilities without exposing the underlying code.~~
+Here, `OnReady` is a custom extension method to delay the code execution (in its `Action` parameter) until the the node is ready. ~~Well, I just want to show off my over-sugared Godot C# utilities without exposing the underlying code.~~
 
 To make it clear, things that are not related to the child nodes (e.g., `[Signal]`s and resources at the root node) are still available as soon as possible via `Instance`, and the only thing matters might be the order in *Autoload*.
-
-## Afterwords
-
-The patterns mentioned above are based on my own experience, and it is possible (and *very likely*) that there's better setup than mine. But at least, I'm using those setups and it works fine.
-
-I might or might not expand on `[LateInitSuppressor]` or the `OnReady` stuff in later articles, but that would quite depend on my mood. Maybe I'll do so if someone really interested in it? I dunno. 🤔

@@ -414,11 +414,6 @@ const useDark = isDark ? '-dark' : ''
 
   transition: all 0.125s ease;
 
-  &.-dark {
-    background-color: var(--color-main);
-    color: var(--color-sub);
-  }
-
   .btn {
     width: 100%;
     height: 100%;
@@ -430,6 +425,11 @@ const useDark = isDark ? '-dark' : ''
     padding: 2px;
 
     transform: rotate(15deg);
+  }
+
+  &.-dark .btn {
+    background-color: var(--color-main);
+    color: var(--color-sub);
   }
 
   &-enter-active {
@@ -496,6 +496,10 @@ const useDark = isDark ? '-dark' : ''
 
   &:hover {
     background-color: var(--color-sub-2);
+  }
+
+  &.-dark {
+    color: var(--color-sub);
   }
 
   &.-dark:hover {

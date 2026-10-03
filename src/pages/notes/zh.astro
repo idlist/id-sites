@@ -1,22 +1,7 @@
 ---
 import NoteList, { type NotesByTopic } from '@layouts/NoteList.astro'
 
-const topics: NotesByTopic[] = [
-  {
-    name: 'Test',
-    info: 'Test',
-    entries: [
-      'test.md',
-    ],
-  },
-  {
-    name: 'Test',
-    info: 'Test',
-    entries: [
-      'test.md',
-    ],
-  },
-]
+const topics: NotesByTopic[] = []
 ---
 
 <NoteList locale="zh" title="i'D Notes" topics={topics} />

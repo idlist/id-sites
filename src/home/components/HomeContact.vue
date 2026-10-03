@@ -14,7 +14,7 @@ defineProps<{
       class="home-contact"
       :href="contact.link"
       target="_blank"
-      rel="noreferrer noopener"
+      rel="noopener noreferrer"
     >
       <div class="platform">
         <div class="icon">

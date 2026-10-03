@@ -1,5 +1,4 @@
 ---
-import IconIdlist from '@assets/idlist-dark.svg'
 import IconIslandSmall from '@assets/island-small.svg'
 import IconIsland from '@assets/island.svg'
 import type { MDXInstance } from 'astro'
@@ -55,17 +54,19 @@ for (const rawTopic of rawTopics) {
     return filePaths.has(note.filePath ?? '')
   })
 
-  const topic: NoteEntriesByTopic = {
-    name: rawTopic.name,
-    info: rawTopic.info,
-    entries: notes.map((note) => ({
+  const entries = notes
+    .map((note) => ({
       title: note.data.title,
       route: note.data.route,
       date: note.data.created,
-    })),
-  }
+    }))
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
 
-  topics.push(topic)
+  topics.push({
+    name: rawTopic.name,
+    info: rawTopic.info,
+    entries,
+  })
 }
 
 const localePageMap: Record<SupportedLocales, string> = {
@@ -104,10 +105,6 @@ const NoteListPreface = (await import(
           <div class="epilog-text">
             <div class="icon"><IconIslandSmall /></div>
             <p>{m('noteListEpilog')}</p>
-          </div>
-
-          <div class="author-icon">
-            <div class="icon"><IconIdlist /></div>
           </div>
 
           <NoteFooter locale={locale} />
@@ -201,16 +198,5 @@ const NoteListPreface = (await import(
 
 .topic-info {
   color: var(--color-main-2);
-}
-
-.author-icon {
-  margin: 2.5rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  > .icon {
-    width: 4rem;
-  }
 }
 </style>

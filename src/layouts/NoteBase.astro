@@ -16,9 +16,18 @@ const { locale, title } = Astro.props
   <slot />
 </Base>
 
-<style>
+<style is:global>
 body {
   background-color: var(--color-sub);
   color: var(--color-main);
+}
+
+a {
+  color: var(--color-main);
+  transition: color 0.125s ease;
+}
+
+a:hover {
+  color: var(--color-main-3);
 }
 </style>
