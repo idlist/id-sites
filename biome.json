@@ -6,6 +6,7 @@
       "vitest.config.ts",
       "src/**",
       "scripts/**/*",
+      "plugins/**/*",
       "virtual-i18n/**",
       "!**/*.svg"
     ]

@@ -2,5 +2,11 @@
   "notesListTitle": "ISOLATED ISLE",
   "noNotes": "Unfortunately, there are no notes in this language yet.",
   "notesEpilog": "The world, an ocean; you and I, islands adrift.",
+  "backToNotesList": "Back to Notes",
+  "dateCreated": "Created at ",
+  "dateUpdated": "Updated at ",
+  "licenseReserved": "Rights reserved",
+  "licenseCc": "CC BY-NC-SA 4.0",
+  "toc": "Table of Contents",
   "lastUpdate": "Last Update: "
 }

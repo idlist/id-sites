@@ -11,7 +11,7 @@ const notes = defineCollection({
     lang: z.literal(['en', 'zh']).default('zh'),
     title: z.string(),
     route: z.string(),
-    license: z.string().optional(),
+    license: z.string().default('reserved'),
     created: z.coerce.date(),
     updated: z.coerce.date().optional(),
   }),

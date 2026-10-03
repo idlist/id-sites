@@ -1,0 +1,1 @@
+import { defineHastPlugin } from 'satteri'

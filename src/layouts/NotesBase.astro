@@ -7,9 +7,11 @@ export interface NotesProps extends BaseProps {
 
 interface Props extends NotesProps {
 }
+
+const { locale, title } = Astro.props
 ---
 
-<Base {...Astro.props}>
+<Base locale={locale} title={title}>
   <BackgroundDots />
   <slot />
 </Base>

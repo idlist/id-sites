@@ -1,0 +1,186 @@
+.note-article {
+  margin: 1rem 0 1rem 1.5rem;
+
+  @media (max-width: 800px) {
+    margin-left: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    position: relative;
+    font-family: var(--font-unique);
+
+    margin: 1rem 0 0.5rem 0;
+
+    @media (max-width: 800px) {
+      margin-left: 1.5rem;
+    }
+  }
+
+  /* Tighten the gap between two adjacent headings of different levels. */
+  h1 + h2,
+  h1 + h3,
+  h1 + h4,
+  h1 + h5,
+  h1 + h6,
+  h2 + h3,
+  h2 + h4,
+  h2 + h5,
+  h2 + h6,
+  h3 + h4,
+  h3 + h5,
+  h3 + h6,
+  h4 + h5,
+  h4 + h6,
+  h5 + h6 {
+    margin-top: 0rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: normal;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: normal;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: normal;
+  }
+
+  h4 {
+    font-size: 1.125rem;
+  }
+
+  h5 {
+    font-size: 1rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+    color: var(--color-main-3);
+  }
+
+  p, ol, ul {
+    line-height: 1.5;
+    margin: 0.5rem 0;
+    vertical-align: middle;
+  }
+
+  ol ol, ol ul, ul ol, ul ul {
+    margin-top: 0;
+  }
+
+  ol, ul {
+    padding-left: 1rem;
+  }
+
+  li::marker {
+    font-weight: bold;
+    color: var(--color-accent-2);
+  }
+
+  blockquote {
+    margin: 0;
+    padding-left: 0.75rem;
+    color: var(--color-main-2);
+    border: none;
+    border-left: 0.25rem solid var(--color-sub-2);
+  }
+
+  table,
+  img {
+    margin: 0;
+    margin-top: 0.5rem;
+  }
+
+  table {
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  th,
+  td {
+    padding: 0.25rem 0.5rem;
+
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: var(--color-sub);
+  }
+
+  tr:nth-child(even) {
+    background-color: var(--color-code);
+  }
+
+  img {
+    border-radius: 0.25rem;
+  }
+
+  hr {
+    width: 80%;
+
+    margin: 0 auto;
+    border: none;
+    border-bottom: 1px solid var(--color-sub-2);
+  }
+
+  pre {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+
+    min-height: 2rem;
+    max-height: 30rem;
+
+    overflow-x: auto;
+    overflow-y: auto;
+
+    color: var(--color-main);
+    background-color: var(--color-pre);
+  }
+
+  pre code {
+    display: block;
+    padding: 0;
+
+    background-color: transparent;
+    margin-right: 2.5rem;
+  }
+
+  code {
+    display: inline;
+    vertical-align: baseline;
+
+    font-size: 0.875em;
+    line-height: 1.375rem;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.5rem;
+
+    font-family: var(--font-mono);
+    background-color: var(--color-code);
+  }
+
+  a {
+    color: var(--color-main);
+  }
+
+  a:hover {
+    color: var(--color-main-3);
+  }
+
+  b,
+  strong {
+    color: var(--color-accent-2);
+  }
+
+  s,
+  del {
+    color: var(--color-main-3);
+    text-decoration: line-through;
+  }
+}

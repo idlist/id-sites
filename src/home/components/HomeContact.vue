@@ -10,7 +10,12 @@ defineProps<{
 
 <template>
   <BubbleRect16>
-    <a class="home-contact" :href="contact.link" target="_blank" noopener noreferer>
+    <a
+      class="home-contact"
+      :href="contact.link"
+      target="_blank"
+      rel="noreferrer noopener"
+    >
       <div class="platform">
         <div class="icon">
           <component :is="contact.icon" />

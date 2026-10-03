@@ -1,8 +1,10 @@
+import { satteri, satteriHeadingIdsPlugin as headingIds } from '@astrojs/markdown-satteri'
 import mdx from '@astrojs/mdx'
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import path from 'node:path'
 import svgLoader from 'vite-svg-loader'
+import { externalLinks } from './plugins/external-links'
 import vueVirtualI18n from './virtual-i18n'
 
 function toAbsolute(relative: string) {
@@ -17,6 +19,17 @@ export default defineConfig({
   },
   server: {
     host: true,
+  },
+  markdown: {
+    shikiConfig: {
+      theme: 'one-light',
+    },
+    processor: satteri({
+      hastPlugins: [
+        headingIds(),
+        externalLinks,
+      ],
+    }),
   },
   vite: {
     resolve: {

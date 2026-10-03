@@ -1,0 +1,132 @@
+---
+import { useI18n } from '@layouts/i18n'
+import type { MarkdownHeading } from 'astro'
+import { clone } from 'remeda'
+import type { SupportedLocales } from 'virtual:i18n'
+
+interface Props {
+  locale: SupportedLocales
+  headings: MarkdownHeading[]
+}
+
+const { locale, headings } = Astro.props
+const { m } = useI18n(locale)
+const italicTitle = locale !== 'zh'
+
+const filtered = headings.filter((heading) => heading.depth <= 4)
+
+function normalizeDepths(headings: MarkdownHeading[]): MarkdownHeading[] {
+  if (headings.length <= 1) {
+    return clone(headings).map((heading, i) => {
+      heading.depth = 1
+      return heading
+    })
+  }
+
+  let normedDepth = 1
+  const normed: number[] = [normedDepth]
+
+  for (let i = 1; i < headings.length; i++) {
+    if (headings[i].depth > headings[i - 1].depth) {
+      normedDepth++
+      normed.push(normedDepth)
+    } else if (headings[i].depth === headings[i - 1].depth) {
+      normed.push(normedDepth)
+    } else {
+      let jumpedDepth = new Set<number>()
+      let jumpedHeadings = 0
+      let j = i - 1
+
+      while (j > 0 && headings[j].depth > headings[i].depth) {
+        jumpedDepth.add(headings[j].depth)
+        jumpedHeadings++
+        j--
+      }
+
+      const largeThan = headings[i].depth > headings[j].depth
+
+      if (largeThan) {
+        for (let k = i - 1; k > i - 1 - jumpedHeadings; k--) {
+          normed[k]++
+        }
+        normedDepth -= jumpedDepth.size - 1
+      } else {
+        normedDepth -= jumpedDepth.size
+      }
+
+      if (normedDepth < 1) normedDepth = 1
+      normed.push(normedDepth)
+    }
+  }
+
+  return clone(headings).map((heading, i) => {
+    heading.depth = normed[i]
+    return heading
+  })
+}
+
+const items = normalizeDepths(filtered)
+---
+
+<nav class="note-toc">
+  <div class:list={['title', { '-italic': italicTitle }]}>
+    {m('toc')}
+  </div>
+
+  <ul class="list">
+    {items.map((item) => (
+      <li class:list={['note-toc-item', `-depth-${item.depth}`]}>
+        <a href={`#${item.slug}`}>{item.text}</a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style lang="scss">
+.note-toc {
+  margin: 0.5rem 0;
+  padding: 0.5rem 1rem;
+
+  background-color: var(--color-sub);
+  border-radius: 1rem;
+
+  > .title {
+    font-weight: bold;
+    color: var(--color-main);
+  }
+
+  > .title.-italic {
+    font-style: italic;
+  }
+
+  > .list {
+    list-style: none;
+    padding: 0;
+  }
+}
+
+.note-toc-item {
+  line-height: 1.5;
+
+  &.-depth-2 {
+    padding-left: 1rem;
+  }
+
+  &.-depth-3 {
+    padding-left: 2em;
+  }
+
+  &.-depth-4 {
+    padding-left: 3rem;
+  }
+
+  > a {
+    color: var(--color-main);
+    transition: color 0.125s ease;
+  }
+
+  > a:hover {
+    color: var(--color-main-3);
+  }
+}
+</style>

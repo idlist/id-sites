@@ -35,7 +35,11 @@ interface Props extends NotesProps {
   topics: NotesByTopic[]
 }
 
-const { locale = 'en', topics: rawTopics } = Astro.props
+const {
+  locale = 'en',
+  title,
+  topics: rawTopics,
+} = Astro.props
 const { m } = useI18n(locale)
 
 const topics: NoteEntriesByTopic[] = []
@@ -74,7 +78,7 @@ const NoteListPreface = (await import(
 ) as MDXInstance<{}>).default
 ---
 
-<NotesBase {...Astro.props}>
+<NotesBase locale={locale} title={title}>
   <div class="notes-list">
     <main class="main">
       <div class="notes-header">
