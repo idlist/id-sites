@@ -1,6 +1,6 @@
 <div class="showdown-mask"></div>
 
-<style>
+<style lang="scss">
 @keyframes showdown-mask {
   from {
     opacity: 1;
@@ -18,7 +18,10 @@
   pointer-events: none;
   background-color: var(--color-sub);
 
-  /* Start the fade at the element's first paint, so no frame shows the opaque mask. */
-  animation: showdown-mask 0.5s ease-out forwards;
+  animation-name: showdown-mask;
+  animation-duration: 0.5s;
+  animation-delay: 0.25s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
 </style>

@@ -1,33 +1,44 @@
 ---
+import IconDown from '@assets/icons/down.svg'
+import Bubble40 from './Bubble40.astro'
+
 interface Props {
   name: string
 }
 
 const { name } = Astro.props
 ---
-<fieldset class="notes-by-topic">
+<fieldset class="notes-topic-group">
   <legend class="topic-name">{name}</legend>
-  <div class="topic-contents">
+
+  <a class="collapse-btn">
+    <Bubble40>
+      <div class="collapse-btn-icon"><IconDown /></div>
+    </Bubble40>
+  </a>
+
+  <div class="topic-content">
     <slot />
   </div>
 </fieldset>
 
 <style lang="scss">
-.notes-by-topic {
-  margin: 1rem 0.5rem;
-  position: relative;
-
+.notes-topic-group {
   border-width: 2px;
-  border-image-source: url("@assets/bubble-rect-20-dark.svg");
-  border-image-slice: 31.25%;
-  border-image-width: 20px;
+  border-image-source: url("@assets/bubble-rect-16-dark.svg");
+  border-image-slice: 25%;
+  border-image-width: 16px;
   border-image-outset: 1px;
   border-image-repeat: stretch;
+
+  margin: 1.25rem 0;
+  position: relative;
+  padding: 0 0.75rem;
 }
 
 .topic-name {
+  margin: 0 3rem 0 -0.25rem;
   padding: 0 0.25rem;
-  margin-left: -0.125rem;
 
   font-family: var(--font-unique);
   font-weight: bold;
@@ -37,7 +48,71 @@ const { name } = Astro.props
   background-color: white;
 }
 
-.topic-contents {
-  margin: -0.5rem 0;
+.collapse-btn {
+  display: none;
+
+  position: absolute;
+  right: 0.75rem;
+
+  padding: 4px;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+
+  &.-display {
+    display: block;
+  }
+}
+
+.collapse-btn-icon {
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+
+  transition: transform 0.25s ease;
+
+  .collapse-btn.-collapsed & {
+    transform: rotate(90deg);
+  }
+}
+
+.topic-content {
+  overflow: hidden;
+  min-height: 16px;
 }
 </style>
+
+<script>
+import { animate } from 'animejs'
+
+document.querySelectorAll('.notes-topic-group').forEach((group) => {
+  const $name = group.querySelector('.topic-name') as HTMLLegendElement
+  const $button = group.querySelector('.collapse-btn') as HTMLAnchorElement
+  const $content = group.querySelector('.topic-content') as HTMLDivElement
+  if (!$name || !$button || !$content) return
+
+  function placeButton() {
+    const top = -24 - $name.offsetHeight / 2
+    $button.style.top = `${top}px`
+  }
+
+  placeButton()
+  $button.classList.add('-display')
+  new ResizeObserver(placeButton).observe($name)
+
+  let isCollapsed = false
+
+  $button.addEventListener('click', () => {
+    isCollapsed = !isCollapsed
+    $button.classList.toggle('-collapsed', isCollapsed)
+    $content.classList.toggle('-collapsed', isCollapsed)
+
+    animate($content, {
+      height: isCollapsed ? 0 : $content.scrollHeight,
+      opacity: isCollapsed ? 0 : 1,
+      duration: 250,
+      ease: isCollapsed ? 'in(2)' : 'out(2)',
+    })
+  })
+})
+</script>

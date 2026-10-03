@@ -12,6 +12,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "paths": {
+      "@src/*": ["./src/*"],
       "@assets/*": ["./src/assets/*"],
       "@styles/*": ["./src/styles/*"],
       "@virtual-i18n/*": ["./virtual-i18n/*"],
