@@ -17,7 +17,7 @@ const filtered = headings.filter((heading) => heading.depth <= 4)
 
 function normalizeDepths(headings: MarkdownHeading[]): MarkdownHeading[] {
   if (headings.length <= 1) {
-    return clone(headings).map((heading, i) => {
+    return clone(headings).map((heading) => {
       heading.depth = 1
       return heading
     })
@@ -87,7 +87,7 @@ const items = normalizeDepths(filtered)
   margin: 0.5rem 0;
   padding: 0.5rem 1rem;
 
-  background-color: var(--color-sub);
+  background-color: var(--color-sub-alt);
   border-radius: 1rem;
 
   > .title {

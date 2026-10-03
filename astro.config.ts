@@ -5,6 +5,7 @@ import { defineConfig } from 'astro/config'
 import path from 'node:path'
 import svgLoader from 'vite-svg-loader'
 import { externalLinks } from './plugins/external-links'
+import { headingLinks } from './plugins/heading-links'
 import vueVirtualI18n from './virtual-i18n'
 
 function toAbsolute(relative: string) {
@@ -27,6 +28,7 @@ export default defineConfig({
     processor: satteri({
       hastPlugins: [
         headingIds(),
+        headingLinks,
         externalLinks,
       ],
     }),

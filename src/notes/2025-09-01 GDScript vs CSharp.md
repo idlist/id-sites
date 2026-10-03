@@ -2,6 +2,7 @@
 lang: "en"
 title: "Writing GDScript vs. C# in Godot"
 route: "godot-gdscript-vs-csharp"
+license: "cc"
 created: 2025-09-03
 ---
 

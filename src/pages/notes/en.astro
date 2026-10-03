@@ -1,7 +1,16 @@
 ---
 import NotesList, { type NotesByTopic } from '@layouts/NotesList.astro'
 
-const topics: NotesByTopic[] = []
+const topics: NotesByTopic[] = [
+  {
+    name: 'Godot and/or C#',
+    info: 'To be honest, I don\'t really dare to name myself as a Godot developer.',
+    entries: [
+      '2025-09-01 GDScript vs CSharp.md',
+      '2025-11-14 Godot CSharp Singleton.md',
+    ],
+  },
+]
 ---
 
 <NotesList title="i'D Notes" topics={topics} />

@@ -75,7 +75,7 @@ const localePageMap: Record<SupportedLocales, string> = {
 
 const NoteListPreface = (await import(
   `./components/NotesListPreface.${locale}.mdx`
-) as MDXInstance<{}>).default
+) as MDXInstance<object>).default
 ---
 
 <NotesBase locale={locale} title={title}>
