@@ -8,11 +8,11 @@ import type { SupportedLocales } from 'virtual:i18n'
 import BubbleRect20 from './components/BubbleRect20.astro'
 import GotoOverlayAstro from './components/GotoOverlayAstro.vue'
 import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
-import NotesFooter from './components/NotesFooter.astro'
-import NotesTopicGroup from './components/NotesTopicGroup.astro'
+import NoteFooter from './components/NoteFooter.astro'
+import NoteTopicGroup from './components/NoteTopicGroup.astro'
 import ShowdownMask from './components/ShowdownMask.astro'
 import { useI18n } from './i18n'
-import NotesBase, { type NotesProps } from './NotesBase.astro'
+import NoteBase, { type NoteProps } from './NoteBase.astro'
 
 interface NoteTopic {
   /** Topic name. */
@@ -31,7 +31,7 @@ interface NoteEntriesByTopic extends NoteTopic {
   entries: NoteEntryProps[]
 }
 
-interface Props extends NotesProps {
+interface Props extends NoteProps {
   topics: NotesByTopic[]
 }
 
@@ -74,20 +74,20 @@ const localePageMap: Record<SupportedLocales, string> = {
 }
 
 const NoteListPreface = (await import(
-  `./components/NotesListPreface.${locale}.mdx`
+  `./components/NoteListPreface.${locale}.mdx`
 ) as MDXInstance<object>).default
 ---
 
-<NotesBase locale={locale} title={title}>
-  <div class="notes-list">
+<NoteBase locale={locale} title={title}>
+  <div class="note-list">
     <main class="main">
-      <div class="notes-header">
+      <div class="note-header">
         <div class="title-icon"><IconIsland /></div>
-        <h1 class="title-name">{m('notesListTitle')}</h1>
+        <h1 class="title-name">{m('noteListTitle')}</h1>
       </div>
 
       <BubbleRect20>
-        <div class="notes-list-content">
+        <div class="note-list-content">
           <div class="preface">
             <NoteListPreface />
           </div>
@@ -95,22 +95,22 @@ const NoteListPreface = (await import(
           {topics.length == 0
             ? <div class="no-notes">{m('noNotes')}</div>
             : topics.map((topic) => (
-              <NotesTopicGroup name={topic.name}>
+              <NoteTopicGroup name={topic.name}>
                 {topic.info && <div class="topic-info">{topic.info}</div>}
                 {topic.entries.map((entry) => <NoteEntry entry={entry} />)}
-              </NotesTopicGroup>
+              </NoteTopicGroup>
             ))}
 
           <div class="epilog-text">
             <div class="icon"><IconIslandSmall /></div>
-            <p>{m('notesEpilog')}</p>
+            <p>{m('noteListEpilog')}</p>
           </div>
 
           <div class="author-icon">
             <div class="icon"><IconIdlist /></div>
           </div>
 
-          <NotesFooter locale={locale} />
+          <NoteFooter locale={locale} />
         </div>
       </BubbleRect20>
     </main>
@@ -122,10 +122,10 @@ const NoteListPreface = (await import(
     locale-page-map={localePageMap}
   />
   <ShowdownMask />
-</NotesBase>
+</NoteBase>
 
 <style lang="scss">
-.notes-list {
+.note-list {
   padding: 2rem 1rem 2rem 1rem;
   display: flex;
   justify-content: center;
@@ -136,7 +136,7 @@ const NoteListPreface = (await import(
   }
 }
 
-.notes-header {
+.note-header {
   display: flex;
   align-items: baseline;
   column-gap: 0.75rem;
@@ -170,7 +170,7 @@ const NoteListPreface = (await import(
   font-style: italic;
 }
 
-.notes-list-content {
+.note-list-content {
   width: 100%;
 
   background-color: white;

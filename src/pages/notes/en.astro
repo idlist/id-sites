@@ -1,5 +1,5 @@
 ---
-import NotesList, { type NotesByTopic } from '@layouts/NotesList.astro'
+import NoteList, { type NotesByTopic } from '@layouts/NoteList.astro'
 
 const topics: NotesByTopic[] = [
   {
@@ -13,4 +13,4 @@ const topics: NotesByTopic[] = [
 ]
 ---
 
-<NotesList title="i'D Notes" topics={topics} />
+<NoteList title="i'D Notes" topics={topics} />

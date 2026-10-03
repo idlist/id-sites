@@ -1,8 +1,8 @@
 {
-  "notesListTitle": "ISOLATED ISLE",
+  "noteListTitle": "ISOLATED ISLE",
   "noNotes": "Unfortunately, there are no notes in this language yet.",
-  "notesEpilog": "The world, an ocean; you and I, islands adrift.",
-  "backToNotesList": "Back to Notes",
+  "noteListEpilog": "The world, an ocean; you and I, islands adrift.",
+  "backToNoteList": "Back to Notes",
   "dateCreated": "Created at ",
   "dateUpdated": "Updated at ",
   "licenseReserved": "Rights reserved",

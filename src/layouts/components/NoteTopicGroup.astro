@@ -8,7 +8,7 @@ interface Props {
 
 const { name } = Astro.props
 ---
-<fieldset class="notes-topic-group">
+<fieldset class="note-topic-group">
   <legend class="topic-name">{name}</legend>
 
   <a class="collapse-btn">
@@ -23,7 +23,7 @@ const { name } = Astro.props
 </fieldset>
 
 <style lang="scss">
-.notes-topic-group {
+.note-topic-group {
   border-width: 2px;
   border-image-source: url("@assets/bubble-rect-16-dark.svg");
   border-image-slice: 25%;
@@ -85,7 +85,7 @@ const { name } = Astro.props
 <script>
 import { animate } from 'animejs'
 
-document.querySelectorAll('.notes-topic-group').forEach((group) => {
+document.querySelectorAll('.note-topic-group').forEach((group) => {
   const $name = group.querySelector('.topic-name') as HTMLLegendElement
   const $button = group.querySelector('.collapse-btn') as HTMLAnchorElement
   const $content = group.querySelector('.topic-content') as HTMLDivElement

@@ -187,9 +187,9 @@ const useDark = isDark ? '-dark' : ''
   <div class="nav-overlay">
     <div v-if="actionPrompt !== 'none'" class="nav-overlay-canceller" @click="cancel"></div>
 
-    <div class="notes-entry" @click="gotoNotes" ref="$notesEntry">
+    <div class="note-entry" @click="gotoNotes" ref="$notesEntry">
       <div class="anchor">
-        <svg class="notes-entry-ring" :class="useDark" viewBox="0 0 100 100">
+        <svg class="note-entry-ring" :class="useDark" viewBox="0 0 100 100">
           <!-- Three arcs starting at (50, 0) and sweeping 115 degrees clockwise. -->
           <path
             d="M 50 0 A 50 50 0 0 1 95.3154 71.1309"
@@ -208,9 +208,9 @@ const useDark = isDark ? '-dark' : ''
           />
         </svg>
 
-        <div class="notes-entry-circle" :class="useDark">
+        <div class="note-entry-circle" :class="useDark">
           <div class="base">
-            <div class="notes-entry-text" :class="useDark" ref="$notesEntryText">
+            <div class="note-entry-text" :class="useDark" ref="$notesEntryText">
               <span class="to">{{ m.gotoNotes() }}</span>
               <span class="notes">{{ destination[props.where] }}</span>
             </div>
@@ -288,7 +288,7 @@ const useDark = isDark ? '-dark' : ''
   pointer-events: all;
 }
 
-.notes-entry {
+.note-entry {
   position: fixed;
   width: 120px;
   height: 120px;
@@ -314,7 +314,7 @@ const useDark = isDark ? '-dark' : ''
   }
 }
 
-.notes-entry-ring {
+.note-entry-ring {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -332,7 +332,7 @@ const useDark = isDark ? '-dark' : ''
   }
 }
 
-.notes-entry-circle {
+.note-entry-circle {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -359,7 +359,7 @@ const useDark = isDark ? '-dark' : ''
   }
 }
 
-.notes-entry-text {
+.note-entry-text {
   position: relative;
   transform: translateX(-5px) translateY(9px);
   color: var(--color-main);

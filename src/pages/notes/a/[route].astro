@@ -1,5 +1,5 @@
 ---
-import NotesDisplay from '@layouts/NotesDisplay.astro'
+import NoteDisplay from '@layouts/NoteDisplay.astro'
 import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
@@ -14,4 +14,4 @@ export async function getStaticPaths() {
 const { note } = Astro.props
 ---
 
-<NotesDisplay note={note} />
+<NoteDisplay note={note} />
