@@ -9,7 +9,7 @@ import { render } from 'astro:content'
 import { capitalize } from 'remeda'
 import BubbleRect16 from './components/BubbleRect16.astro'
 import BubbleRect20 from './components/BubbleRect20.astro'
-import DiscussionPrompt from './components/DiscussionPrompt.astro'
+import DiscussPrompt from './components/DiscussPrompt.astro'
 import NoteFooter from './components/NoteFooter.astro'
 import TableOfContents from './components/TableOfContents.astro'
 import { useI18n } from './i18n'
@@ -109,7 +109,7 @@ const hasRefLink = typeof licenseRefLink !== 'undefined'
             </svg>
           </div>
 
-          <DiscussionPrompt />
+          <DiscussPrompt locale={locale} />
           <NoteFooter />
         </div>
       </BubbleRect20>

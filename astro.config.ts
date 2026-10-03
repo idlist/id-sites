@@ -27,9 +27,9 @@ export default defineConfig({
     },
     processor: satteri({
       hastPlugins: [
+        externalLinks,
         headingIds(),
         headingLinks,
-        externalLinks,
       ],
     }),
   },

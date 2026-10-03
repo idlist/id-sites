@@ -8,5 +8,7 @@
   "licenseReserved": "保留版权",
   "licenseCc": "CC BY-NC-SA 4.0",
   "toc": "目录",
+  "discussPrompt": "真的很想找我聊聊？{br}去这个站点的 GitHub 仓库{link}吧。",
+  "discussLink": "开个新讨论",
   "lastUpdate": "最近更新："
 }

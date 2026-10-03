@@ -1,0 +1,35 @@
+---
+import { useI18n } from '@layouts/i18n'
+import type { SupportedLocales } from 'virtual:i18n'
+
+interface Props {
+  locale?: SupportedLocales
+}
+
+const { locale = 'en' } = Astro.props
+const { m } = useI18n(locale)
+
+const url = 'https://github.com/idlist/id-sites/discussions'
+const link = `<a href="${url}" target="_blank" rel="noopener noreferrer">${m('discussLink')}</a>`
+const prompt = m('discussPrompt', { br: `<br class="break">`, link })
+---
+
+<p class="discuss-prompt" set:html={prompt} />
+
+<style lang="scss">
+.discuss-prompt {
+  color: var(--color-main-3);
+  font-size: 0.875rem;
+  text-align: center;
+
+  margin: 0.75rem 0;
+
+  > :global(.break) {
+    display: none;
+
+    @media (max-width: 640px) {
+      display: block;
+    }
+  }
+}
+</style>

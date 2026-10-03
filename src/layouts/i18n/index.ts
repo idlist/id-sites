@@ -33,12 +33,11 @@ slotHandlers[oneOtherSlot.id] = oneOtherSlot
 export function useI18n(locale: SupportedLocales) {
   const messages = messageCollection[locale]
 
-  const m = (key: string, ...values: unknown[]): string => {
+  const m = (key: string, values?: Record<string, unknown>): string => {
     const message = messages[key]
     if (message === undefined) return key
 
     let translated = ''
-    const index = 0
 
     for (const token of tokenize(message)) {
       if (token.type === 'text') {
@@ -46,8 +45,14 @@ export function useI18n(locale: SupportedLocales) {
       }
 
       if (token.type === 'slot') {
+        if (!values) continue
+
         const handler = slotHandlers[token.slotType] ?? strSlot
-        const value = values[index]
+        const value = values[token.slotName]
+        if (!value) {
+          translated += key
+          continue
+        }
 
         let segment = handler.translate({
           key,

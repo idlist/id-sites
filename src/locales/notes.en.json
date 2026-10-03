@@ -8,5 +8,7 @@
   "licenseReserved": "Rights reserved",
   "licenseCc": "CC BY-NC-SA 4.0",
   "toc": "Table of Contents",
+  "discussPrompt": "Really wanna discuss something with me? {br}{link} in the GitHub repository of this site.",
+  "discussLink": "Start a new discussion",
   "lastUpdate": "Last Update: "
 }

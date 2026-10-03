@@ -12,6 +12,17 @@ body {
   color: var(--color-sub);
   background-color: var(--color-main);
 
+  /* Disable default scroll bar. */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    & {
+      scrollbar-width: none;
+    }
+  }
+
   /* Temporary hack until there's more content */
   overflow-y: hidden;
 }

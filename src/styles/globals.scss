@@ -75,18 +75,5 @@ body {
   font-family: var(--font-main);
 
   /* Minimum width to prevent the layout get too cramped. */
-
   min-width: 360px;
-
-  /* Disable default scroll bar. */
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @supports not selector(::-webkit-scrollbar) {
-    & {
-      scrollbar-width: none;
-    }
-  }
 }
