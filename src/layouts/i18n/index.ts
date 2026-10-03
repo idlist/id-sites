@@ -3,7 +3,7 @@ import type { SupportedLocales } from 'virtual:i18n'
 import { numSlot, oneOtherSlot, type SimpleI18nSlot, strSlot } from './slots'
 
 const localeFiles: string[] = [
-  'notes-list',
+  'notes',
 ]
 
 const messageCollection: Record<SupportedLocales, Record<string, string>> = {

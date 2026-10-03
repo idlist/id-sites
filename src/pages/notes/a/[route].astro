@@ -3,7 +3,7 @@ import NotesDisplay from '@layouts/NotesDisplay.astro'
 import { getCollection, render } from 'astro:content'
 import type { SupportedLocales } from 'virtual:i18n'
 
-export const getStaticPaths = async () => {
+export async function getStaticPaths() {
   const notes = await getCollection('notes')
 
   return notes.map((note) => ({

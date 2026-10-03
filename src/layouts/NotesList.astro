@@ -1,22 +1,61 @@
 ---
 import type { MDXInstance } from 'astro'
+import { getCollection } from 'astro:content'
 import type { SupportedLocales } from 'virtual:i18n'
 import BubbleRect20 from './components/BubbleRect20.astro'
 import GotoOverlayAstro from './components/GotoOverlayAstro.vue'
 import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
-import NotesByTopic from './components/NotesByTopic.astro'
+import NotesTopicGroup from './components/NotesTopicGroup.astro'
 import ShowdownMask from './components/ShowdownMask.astro'
 import { useI18n } from './i18n'
 import NotesBase, { type NotesProps } from './NotesBase.astro'
 
-export type NotesTopicMap = Map<string, NoteEntryProps[]>
-
-interface Props extends NotesProps {
-  topics: NotesTopicMap
+interface NoteTopic {
+  /** Topic name. */
+  name: string
+  /** Brief introduction to the topic.  */
+  info?: string
 }
 
-const { locale = 'en', topics } = Astro.props
+export interface NotesByTopic extends NoteTopic {
+  /** File path related to `/notes`. */
+  entries: string[]
+}
+
+interface NoteEntriesByTopic extends NoteTopic {
+  entries: NoteEntryProps[]
+}
+
+interface Props extends NotesProps {
+  topics: NotesByTopic[]
+}
+
+const { locale = 'en', topics: rawTopics } = Astro.props
 const { m } = useI18n(locale)
+
+const topics: NoteEntriesByTopic[] = []
+
+for (const rawTopic of rawTopics) {
+  const filePaths = new Set(
+    rawTopic.entries.map((entry) => `src/notes/${entry}`),
+  )
+
+  const notes = await getCollection('notes', (note) => {
+    return filePaths.has(note.filePath ?? '')
+  })
+
+  const topic: NoteEntriesByTopic = {
+    name: rawTopic.name,
+    info: rawTopic.info,
+    entries: notes.map((note) => ({
+      title: note.data.title,
+      route: note.data.route,
+      date: note.data.created,
+    })),
+  }
+
+  topics.push(topic)
+}
 
 const localePageMap: Record<SupportedLocales, string> = {
   en: '/notes/en',
@@ -37,12 +76,12 @@ const NoteListPreface = (await import(
         <div class="notes-list-content">
           <div class="preface">
             <NoteListPreface />
-            {topics.size == 0
+            {topics.length == 0
               ? <div>No notes</div>
-              : topics.entries().map(([name, entries]) => (
-                <NotesByTopic name={name}>
-                  {entries.map((note) => <NoteEntry entry={note} /><NoteEntry entry={note} />)}
-                </NotesByTopic>
+              : topics.map((topic) => (
+                <NotesTopicGroup name={topic.name}>
+                  {topic.entries.map((entry) => <NoteEntry entry={entry} />)}
+                </NotesTopicGroup>
               ))}
           </div>
         </div>

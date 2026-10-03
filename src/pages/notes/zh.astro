@@ -1,22 +1,15 @@
 ---
-import NotesList, { type NotesTopicMap } from '@layouts/NotesList.astro'
-import { getCollection } from 'astro:content'
+import NotesList, { type NotesByTopic } from '@layouts/NotesList.astro'
 
-const notes = await getCollection('notes', ({ data }) => {
-  return data.lang === 'zh' && typeof data.topic === 'string'
-})
-
-const topics: NotesTopicMap = new Map()
-
-for (const note of notes) {
-  const entries = topics.getOrInsert(note.data.topic!, [])
-
-  entries.push({
-    title: note.data.title,
-    route: note.data.route,
-    date: note.data.created,
-  })
-}
+const topics: NotesByTopic[] = [
+  {
+    name: 'Test',
+    info: 'Test',
+    entries: [
+      'test.md',
+    ],
+  },
+]
 ---
 
 <NotesList locale="zh" title="i'D Notes" topics={topics} />

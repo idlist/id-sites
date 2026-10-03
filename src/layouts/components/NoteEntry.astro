@@ -81,10 +81,10 @@ document.querySelectorAll('.note-new-badge').forEach((el) => {
   if (!isoDate) return
 
   const date = new Date(isoDate)
-  const now = new Date()
+  const now = Date.now()
   const sevenDays = 7 * 24 * 60 * 60 * 1000
 
-  if (now.getTime() - date.getTime() <= sevenDays) {
+  if (now - date.getTime() <= sevenDays) {
     $badge.classList.add('-new')
   }
 })

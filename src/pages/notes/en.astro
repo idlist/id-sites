@@ -1,5 +1,7 @@
 ---
-import NotesList from '@layouts/NotesList.astro'
+import NotesList, { type NotesByTopic } from '@layouts/NotesList.astro'
+
+const topics: NotesByTopic[] = []
 ---
 
-<NotesList title="i'D Notes" topics={new Map()} />
+<NotesList title="i'D Notes" topics={topics} />
