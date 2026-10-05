@@ -1,20 +1,41 @@
 ---
-import { useI18n } from '@layouts/i18n'
 import type { SupportedLocales } from 'virtual:i18n'
 
 interface Props {
-  locale?: SupportedLocales
+  locale: SupportedLocales
 }
 
-const { locale = 'en' } = Astro.props
-const { m } = useI18n(locale)
+const { locale } = Astro.props
 
-const url = 'https://github.com/idlist/id-sites/discussions'
-const link = `<a href="${url}" target="_blank" rel="noopener noreferrer">${m('discussLink')}</a>`
-const prompt = m('discussPrompt', { br: `<br class="break">`, link })
+function linkTemplate(text: string) {
+  return `
+<a
+  href="https://github.com/idlist/id-sites/discussions"
+  target="_blank"
+  rel="noopener noreferrer"
+>${text}</a>
+`.trim()
+}
 ---
 
-<p class="discuss-prompt" set:html={prompt} />
+<div class="discuss-prompt">
+  {locale === 'en' && (
+    <p>Really wanna discuss something with me?</p>
+    <p>
+      <span>Reach me via the contacts in my homepage, or </span>
+      <Fragment set:html={linkTemplate('start a discussion')} />
+      <span> in the GitHub repository of this site.</span>
+    </p>
+  )}
+  {locale === 'zh' && (
+    <p>真的很想找我聊聊？</p>
+    <p>
+      <span>通过首页的联系方式找到我，或者去这个站点的 GitHub 仓库</span>
+      <Fragment set:html={linkTemplate('开个新讨论')} />
+      <span>吧。</span>
+    </p>
+  )}
+</div>
 
 <style lang="scss">
 .discuss-prompt {
@@ -23,13 +44,5 @@ const prompt = m('discussPrompt', { br: `<br class="break">`, link })
   text-align: center;
 
   margin: 0.75rem 0;
-
-  > :global(.break) {
-    display: none;
-
-    @media (max-width: 640px) {
-      display: block;
-    }
-  }
 }
 </style>

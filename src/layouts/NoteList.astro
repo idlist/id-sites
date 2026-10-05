@@ -89,7 +89,7 @@ const NoteListPreface = (await import(
 
       <BubbleRect20>
         <div class="note-list-content">
-          <div class="preface">
+          <div class="article-typeface preface">
             <NoteListPreface />
           </div>
 
@@ -172,10 +172,6 @@ const NoteListPreface = (await import(
 
   background-color: white;
   padding: 0.25rem 0.75rem;
-
-  > .preface :global(p) {
-    margin: 0.5rem 0;
-  }
 }
 
 .epilog-text {
@@ -197,6 +193,8 @@ const NoteListPreface = (await import(
 }
 
 .topic-info {
-  color: var(--color-main-2);
+  color: var(--color-main-3);
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
 }
 </style>

@@ -15,7 +15,7 @@ const italicTitle = locale !== 'zh'
 
 const filtered = headings.filter((heading) => heading.depth <= 4)
 
-function normalizeDepths(headings: MarkdownHeading[]): MarkdownHeading[] {
+function flattenDepth(headings: MarkdownHeading[]): MarkdownHeading[] {
   if (headings.length <= 1) {
     return clone(headings).map((heading) => {
       heading.depth = 1
@@ -23,15 +23,15 @@ function normalizeDepths(headings: MarkdownHeading[]): MarkdownHeading[] {
     })
   }
 
-  let normedDepth = 1
-  const normed: number[] = [normedDepth]
+  let newDepth = 1
+  const flattened: number[] = [newDepth]
 
   for (let i = 1; i < headings.length; i++) {
     if (headings[i].depth > headings[i - 1].depth) {
-      normedDepth++
-      normed.push(normedDepth)
+      newDepth++
+      flattened.push(newDepth)
     } else if (headings[i].depth === headings[i - 1].depth) {
-      normed.push(normedDepth)
+      flattened.push(newDepth)
     } else {
       let jumpedDepth = new Set<number>()
       let jumpedHeadings = 0
@@ -47,25 +47,25 @@ function normalizeDepths(headings: MarkdownHeading[]): MarkdownHeading[] {
 
       if (largeThan) {
         for (let k = i - 1; k > i - 1 - jumpedHeadings; k--) {
-          normed[k]++
+          flattened[k]++
         }
-        normedDepth -= jumpedDepth.size - 1
+        newDepth -= jumpedDepth.size - 1
       } else {
-        normedDepth -= jumpedDepth.size
+        newDepth -= jumpedDepth.size
       }
 
-      if (normedDepth < 1) normedDepth = 1
-      normed.push(normedDepth)
+      if (newDepth < 1) newDepth = 1
+      flattened.push(newDepth)
     }
   }
 
   return clone(headings).map((heading, i) => {
-    heading.depth = normed[i]
+    heading.depth = flattened[i]
     return heading
   })
 }
 
-const items = normalizeDepths(filtered)
+const items = flattenDepth(filtered)
 ---
 
 <nav class="note-toc">
@@ -84,7 +84,7 @@ const items = normalizeDepths(filtered)
 
 <style lang="scss">
 .note-toc {
-  margin: 0.5rem 0;
+  margin: 1rem 0;
   padding: 0.5rem 1rem;
 
   background-color: var(--color-sub-alt);
@@ -107,6 +107,7 @@ const items = normalizeDepths(filtered)
 
 .note-toc-item {
   line-height: 1.5;
+  margin: 0.25rem 0;
 
   &.-depth-2 {
     padding-left: 1rem;

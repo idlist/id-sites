@@ -77,3 +77,14 @@ body {
   /* Minimum width to prevent the layout get too cramped. */
   min-width: 360px;
 }
+
+.article-typeface {
+  p, ul, ol {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+    vertical-align: baseline;
+
+    letter-spacing: -0.015em;
+    word-spacing: 0.05em;
+  }
+}

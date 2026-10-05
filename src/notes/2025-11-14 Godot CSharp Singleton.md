@@ -1,6 +1,6 @@
 ---
 lang: "en"
-title: "Many Patterns of Singletons in Godot with C#"
+title: "Many patterns of singletons in Godot with C#"
 route: "godot-csharp-singleton"
 license: "cc"
 created: 2025-11-14

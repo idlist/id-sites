@@ -45,7 +45,10 @@ export function useI18n(locale: SupportedLocales) {
       }
 
       if (token.type === 'slot') {
-        if (!values) continue
+        if (!values) {
+          translated += key
+          continue
+        }
 
         const handler = slotHandlers[token.slotType] ?? strSlot
         const value = values[token.slotName]

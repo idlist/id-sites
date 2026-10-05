@@ -10,7 +10,7 @@
  *
  * The tokenizer is to split texts and slots.
  * It does not convert slot value into the type and process the # symbol.
- * # literal cannot be used inside a branch.
+ * # or | literals cannot be used inside a branch.
  */
 
 export interface TextToken {
@@ -39,7 +39,6 @@ function parseSlotToken(input: string): SlotToken {
 
     const branchName = branch.slice(0, colonIndex).trim()
     const branchString = branch.slice(colonIndex + 1)
-    if (!branchString) continue
     branches[branchName] = branchString
   }
 
