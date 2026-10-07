@@ -4,8 +4,8 @@ import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import path from 'node:path'
 import svgLoader from 'vite-svg-loader'
-import { externalLinks } from './plugins/external-links'
-import { headingLinks } from './plugins/heading-links'
+import { externalLinks } from './satteri-plugins/external-links'
+import { headingLinks } from './satteri-plugins/heading-links'
 import vueVirtualI18n from './virtual-i18n'
 
 function toAbsolute(relative: string) {

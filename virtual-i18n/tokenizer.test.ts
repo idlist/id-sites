@@ -138,12 +138,8 @@ describe('tokenize branches', () => {
     expect(tokenize('{a:b|noColon}')).toEqual([slot('a', 'b')])
   })
 
-  it('ignores a branch with an empty branch string', () => {
-    expect(tokenize('{a:b|x:}')).toEqual([slot('a', 'b')])
-  })
-
-  it('ignores branches without a colon and an empty branch string', () => {
-    expect(tokenize('{a:b|noColon|x:}')).toEqual([slot('a', 'b')])
+  it('keeps an empty branch string', () => {
+    expect(tokenize('{a:b|x:}')).toEqual([slot('a', 'b', { x: '' })])
   })
 
   it('keeps a colon inside the branch string', () => {

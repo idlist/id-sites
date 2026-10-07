@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { detectLocale } from '@client/detect-locale.ts'
+import { guessLocale } from '@src/client/guess-locale.ts'
 import { useLocalStorage } from '@vueuse/core'
 import { locale, type SupportedLocales, supportedLocales } from 'virtual:i18n'
 import { onBeforeMount } from 'vue'
 import GotoOverlayCore from './GotoOverlayCore.vue'
 
-const localeStorage = useLocalStorage<SupportedLocales>('locale', tryDetectLocale())
+const localeStorage = useLocalStorage<SupportedLocales>('locale', tryGuessLocale())
 
 function goto() {
   switch (locale.value) {
@@ -22,20 +22,20 @@ function updateLocale(newLocale: SupportedLocales) {
   localeStorage.value = newLocale
 }
 
-function tryDetectLocale() {
-  let localeDetected = detectLocale(locale.value)
+function tryGuessLocale() {
+  let localeGuessed = guessLocale(locale.value)
 
   // Because this site only supports en & zh, the logic becomes:
   // language tag starts with zh => zh
   // other situations => en
   // This is a hard-coded solution.
-  if (localeDetected.startsWith('zh')) return 'zh'
+  if (localeGuessed.startsWith('zh')) return 'zh'
   return 'en'
 }
 
 onBeforeMount(() => {
   if (!supportedLocales.has(localeStorage.value)) {
-    localeStorage.value = tryDetectLocale()
+    localeStorage.value = tryGuessLocale()
   }
 
   locale.value = localeStorage.value
