@@ -1,6 +1,10 @@
 {
   "gotoNotes": "前往",
-  "homePage": "首页",
+  "groupHome": "首页",
+  "groupSkills": "技能",
+  "groupWorks": "作品",
+  "groupFooter": "尾声",
+  "skills": "技能",
   "canDo": "会一点",
   "webDevelopment": "网页前端开发",
   "webDesign": "网页设计",

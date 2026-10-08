@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import IconAtom from '@assets/icons/atom.svg?component'
+import IconBulb from '@assets/icons/bulb.svg?component'
 import IconHome from '@assets/icons/home.svg?component'
+import IconStars from '@assets/icons/stars.svg?component'
 import { useEventListener, useWindowScroll, useWindowSize, watchThrottled } from '@vueuse/core'
 import { animate } from 'animejs'
 import { type GeneralVirtualMessage, m } from 'virtual:i18n'
@@ -8,36 +11,78 @@ import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
 import ShowdownMask from './components/ShowdownMask.vue'
+import FooterScreen from './screens/FooterScreen.vue'
 import HomeBleed from './screens/HomeBleed.vue'
 import HomeScreen from './screens/HomeScreen.vue'
+import SkillsGacha from './screens/SkillsGacha.vue'
+import SkillsHeader from './screens/SkillsHeader.vue'
+import WorksDiamond from './screens/WorksDiamond.vue'
+import WorksFlakepiles from './screens/WorksFlakepiles.vue'
+import WorksHeader from './screens/WorksHeader.vue'
+
 import type { ViteSvgComponent } from './utils.ts'
 
 interface NavigationSection {
   section: Component
   id: string
+  draft?: boolean
   query?: string
 }
 
 interface NavigationGroup {
   gid: string
+  draft?: boolean
   icon: ViteSvgComponent
   label: GeneralVirtualMessage
   sections: NavigationSection[]
 }
 
+/** The structure of the page. */
 const pageList: NavigationGroup[] = [
   {
     gid: 'home',
     icon: IconHome,
-    label: m.homePage,
+    label: m.groupHome,
     sections: [
       { section: HomeScreen, id: 'home' },
       { section: HomeBleed, id: 'home-bleed' },
     ],
   },
+  {
+    gid: 'skills',
+    draft: true,
+    icon: IconAtom,
+    label: m.groupSkills,
+    sections: [
+      { section: SkillsHeader, id: 'skills' },
+      { section: SkillsGacha, id: 'skill-gacha', query: 'gacha' },
+    ],
+  },
+  {
+    gid: 'works',
+    draft: true,
+    icon: IconBulb,
+    label: m.groupWorks,
+    sections: [
+      { section: WorksHeader, id: 'works' },
+      { section: WorksDiamond, id: 'diamond', query: 'diamond-palette' },
+      { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
+    ],
+  },
+  {
+    gid: 'footer',
+    draft: true,
+    icon: IconStars,
+    label: m.groupFooter,
+    sections: [
+      { section: FooterScreen, id: 'footer' },
+    ],
+  },
 ]
 
-const navItems = pageList.map((group) => ({
+const navItems = pageList.filter((group) => {
+  return !group.draft && group.sections.filter((section) => !section.draft).length > 0
+}).map((group) => ({
   id: group.gid,
   icon: group.icon,
   label: group.label,
@@ -216,12 +261,14 @@ useEventListener('keydown', cancelScrollOnKeys)
   <BackgroundDots />
 
   <template v-for="group of pageList" :key="group.gid">
-    <component
-      v-for="section of group.sections"
-      :key="section.id"
-      :is="section.section"
-      :ref="(el: ComponentPublicInstance) => collectSection(el, group, section)"
-    />
+    <template v-for="section of group.sections">
+      <component
+        v-if="!group.draft && !section.draft"
+        :key="section.id"
+        :is="section.section"
+        :ref="(el: ComponentPublicInstance) => collectSection(el, group, section)"
+      />
+    </template>
   </template>
 
   <NavOverlay

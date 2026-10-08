@@ -33,12 +33,16 @@ function formatDate(date: Date) {
   return `${date.getFullYear()} / ${date.getMonth() + 1} / ${date.getDate()}`
 }
 
-const licenseKey = capitalize(license)
-const licenseRefLinkMap: Record<string, string> = {
-  cc: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+const licenseName: Record<string, string> = {
+  cc4: 'CC BY-NC-SA 4.0',
 }
-const licenseRefLink: string | undefined = licenseRefLinkMap[license]
-const hasRefLink = typeof licenseRefLink !== 'undefined'
+const i18nLicenseName = licenseName[license] ?? m(`license${capitalize(license)}`)
+
+const licenseRefLinkMap: Record<string, string> = {
+  cc4: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+}
+const licenseRefLink: string | null = licenseRefLinkMap[license] ?? null
+const hasRefLink = licenseRefLink != null
 ---
 
 <NoteBase locale={locale} title={title}>
@@ -78,7 +82,7 @@ const hasRefLink = typeof licenseRefLink !== 'undefined'
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {m(`license${licenseKey}`)}
+                {i18nLicenseName}
               </a>
             </div>
           </div>
@@ -198,8 +202,16 @@ const hasRefLink = typeof licenseRefLink !== 'undefined'
     height: 1rem;
   }
 
+  > .name {
+    text-decoration: none;
+  }
+
   > .name.-link {
     text-decoration: underline;
+    color: var(--color-main-2);
+  }
+
+  &:hover > .name {
     color: var(--color-main-2);
   }
 

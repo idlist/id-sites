@@ -64,6 +64,7 @@ watch(() => props.cursor, (val, old) => {
           <a
             v-for="item of navItems"
             :key="item.id"
+            :aria-label="item.label()"
             class="nav-overlay-item"
             @click="() => emit('requestScroll', item.id)"
           >

@@ -1,7 +1,15 @@
 ---
 import NoteList, { type NotesByTopic } from '@layouts/NoteList.astro'
 
-const topics: NotesByTopic[] = []
+const topics: NotesByTopic[] = [
+  {
+    'name': '新卢德主义',
+    'info': '我不认同当下 LLM AI 的存在方式。不接受反驳。',
+    'entries': [
+      '2026-10-07 智识枪支.md',
+    ],
+  },
+]
 ---
 
 <NoteList locale="zh" title="i'D Notes" topics={topics} />

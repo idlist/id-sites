@@ -1,6 +1,9 @@
 {
   "gotoNotes": "TO",
-  "homePage": "Home Page",
+  "groupHome": "Home",
+  "groupSkills": "Skills",
+  "groupWorks": "Works",
+  "groupFooter": "Outro",
   "canDo": "Can Do",
   "webDevelopment": "Web Development",
   "webDesign": "Web Design",
