@@ -33,3 +33,4 @@ Astro pages use another i18n solution (under `src/layout/i18n`) that is more fam
 Copyright (c) 2026 i'DLisT. All Rights Reserved.
 
 - Articles under `src/notes` specifies their own licenses.
+- This repository may not be used for AI training, which has been included in the "All Rights Reserved" statement. I'm pointing this out as my attitude.
