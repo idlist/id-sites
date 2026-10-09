@@ -89,7 +89,7 @@ const NoteListPreface = (await import(
 
       <BubbleRect20>
         <div class="note-list-content">
-          <div class="ideal-typeface preface">
+          <div class="id-typeface preface">
             <NoteListPreface />
           </div>
 
@@ -97,7 +97,7 @@ const NoteListPreface = (await import(
             ? <div class="no-notes">{m('noNotes')}</div>
             : topics.map((topic) => (
               <NoteTopicGroup name={topic.name}>
-                {topic.info && <div class="topic-info">{topic.info}</div>}
+                {topic.info && <div class="id-typeface topic-info">{topic.info}</div>}
                 {topic.entries.map((entry) => <NoteEntry entry={entry} />)}
               </NoteTopicGroup>
             ))}
@@ -195,6 +195,6 @@ const NoteListPreface = (await import(
 .topic-info {
   color: var(--color-main-3);
   font-size: 0.875rem;
-  letter-spacing: -0.01em;
+  margin: 0;
 }
 </style>

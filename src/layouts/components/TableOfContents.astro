@@ -33,12 +33,12 @@ function flattenDepth(headings: MarkdownHeading[]): MarkdownHeading[] {
     } else if (headings[i].depth === headings[i - 1].depth) {
       flattened.push(newDepth)
     } else {
-      let jumpedDepth = new Set<number>()
+      let jumpedDepths = new Set<number>()
       let jumpedHeadings = 0
       let j = i - 1
 
       while (j > 0 && headings[j].depth > headings[i].depth) {
-        jumpedDepth.add(headings[j].depth)
+        jumpedDepths.add(headings[j].depth)
         jumpedHeadings++
         j--
       }
@@ -49,9 +49,9 @@ function flattenDepth(headings: MarkdownHeading[]): MarkdownHeading[] {
         for (let k = i - 1; k > i - 1 - jumpedHeadings; k--) {
           flattened[k]++
         }
-        newDepth -= jumpedDepth.size - 1
+        newDepth -= jumpedDepths.size - 1
       } else {
-        newDepth -= jumpedDepth.size
+        newDepth -= jumpedDepths.size
       }
 
       if (newDepth < 1) newDepth = 1

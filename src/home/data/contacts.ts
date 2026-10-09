@@ -1,3 +1,4 @@
+import IconBilibili from '@assets/icons/bilibili.svg?component'
 import IconBluesky from '@assets/icons/bluesky.svg?component'
 import IconDiscord from '@assets/icons/discord.svg?component'
 import IconEmail from '@assets/icons/email.svg?component'
@@ -5,7 +6,8 @@ import IconGitHub from '@assets/icons/github.svg?component'
 import IconSoundCloud from '@assets/icons/soundcloud.svg?component'
 import IconX from '@assets/icons/x.svg?component'
 import type { ViteSvgComponent } from '@home/utils'
-import { type GeneralVirtualMessage, m } from 'virtual:i18n'
+import { type GeneralVirtualMessage, locale, m, type SupportedLocales } from 'virtual:i18n'
+import { computed } from 'vue'
 
 export interface ContactItem {
   type: string
@@ -58,4 +60,20 @@ export const contacts: ContactItem[] = [
     link: 'https://soundcloud.com/idlist',
     icon: IconSoundCloud,
   },
+  {
+    type: 'bilibili',
+    platform: '哔哩哔哩',
+    id: 'i_dlist',
+    link: 'https://space.bilibili.com/86588569',
+    icon: IconBilibili,
+  },
 ]
+
+const excludedContacts: Record<SupportedLocales, Set<string>> = {
+  en: new Set(['bilibili']),
+  zh: new Set(['discord', 'soundcloud']),
+}
+
+export const contactsLocaled = computed<ContactItem[]>(() => {
+  return contacts.filter((contact) => !excludedContacts[locale.value].has(contact.type))
+})

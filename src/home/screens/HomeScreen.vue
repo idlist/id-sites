@@ -5,7 +5,7 @@ import HomePulses from '@home/components/HomePulses.vue'
 import HomeTitleCarousel from '@home/components/HomeTitleCarousel.vue'
 import HomeWaves from '@home/components/HomeWaves.vue'
 import PageFull from '@home/components/PageFull.vue'
-import { contacts } from '@home/data/contacts'
+import { contactsLocaled } from '@home/data/contacts'
 </script>
 
 <template>
@@ -47,7 +47,7 @@ import { contacts } from '@home/data/contacts'
       </div>
 
       <div class="home-contacts">
-        <HomeContact v-for="contact of contacts" :contact="contact" />
+        <HomeContact v-for="contact of contactsLocaled" :contact="contact" />
       </div>
     </div>
   </PageFull>
