@@ -9,7 +9,6 @@ import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
 import NoteFooter from './components/NoteFooter.astro'
 import NoteListEpilogue from './components/NoteListEpilogue.astro'
 import NoteTopicGroup from './components/NoteTopicGroup.astro'
-import ShowdownMask from './components/ShowdownMask.astro'
 import { useI18n } from './i18n'
 import NoteBase, { type NoteProps } from './NoteBase.astro'
 
@@ -80,6 +79,35 @@ const NoteListPreface = (await import(
 ---
 
 <NoteBase locale={locale} title={title}>
+  <Fragment slot="head">
+    <style>
+    @keyframes showdown-mask {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 24;
+      pointer-events: none;
+      background-color: var(--color-sub);
+
+      animation-name: showdown-mask;
+      animation-duration: 0.5s;
+      animation-timing-function: ease-out;
+      animation-fill-mode: forwards;
+      will-change: opacity;
+    }
+    </style>
+  </Fragment>
+
   <div class="note-list">
     <main class="main">
       <div class="note-header">
@@ -114,7 +142,6 @@ const NoteListPreface = (await import(
     locale={locale}
     locale-page-map={localePageMap}
   />
-  <ShowdownMask />
 </NoteBase>
 
 <style lang="scss">

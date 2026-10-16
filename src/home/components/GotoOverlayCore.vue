@@ -32,8 +32,8 @@ const actionPrompt = ref<ActionPrompt>('none')
 const showBlocker = ref(false)
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 
-const $notesEntry = useTemplateRef('$notesEntry')
-const $notesEntryText = useTemplateRef('$notesEntryText')
+const $noteEntry = useTemplateRef('$noteEntry')
+const $noteEntryText = useTemplateRef('$noteEntryText')
 const $localeSwitch = useTemplateRef('$localeSwitch')
 
 let currentAnimation: AnimationCanceller | null = null
@@ -78,7 +78,7 @@ watch(actionPrompt, (val, old) => {
 })
 
 function expandEntry(): AnimationCanceller {
-  const entryAnimation = animate($notesEntry.value!, {
+  const entryAnimation = animate($noteEntry.value!, {
     width: 160,
     height: 160,
     ease: spring({ bounce: 0.5, duration: 500 }),
@@ -104,12 +104,12 @@ async function expandBeforeGotoNotes() {
 
   showBlocker.value = true
 
-  if ($notesEntryText.value) {
-    $notesEntryText.value.classList.add('-centered')
+  if ($noteEntryText.value) {
+    $noteEntryText.value.classList.add('-centered')
   }
 
   await Promise.all([
-    animate($notesEntry.value!, {
+    animate($noteEntry.value!, {
       top: (h - radius) / 2,
       right: (w - radius) / 2,
       width: radius,
@@ -117,7 +117,7 @@ async function expandBeforeGotoNotes() {
       duration: 800,
       ease: 'out(3)',
     }),
-    animate($notesEntryText.value!, {
+    animate($noteEntryText.value!, {
       opacity: 0,
       delay: 550,
       duration: 250,
@@ -128,7 +128,7 @@ async function expandBeforeGotoNotes() {
 function resumeEntry(): AnimationCanceller {
   currentAnimation?.cancel()
 
-  const entryAnimation = animate($notesEntry.value!, {
+  const entryAnimation = animate($noteEntry.value!, {
     width: 120,
     height: 120,
     ease: 'outBack(0.75)',
@@ -150,16 +150,16 @@ function resumeEntry(): AnimationCanceller {
 }
 
 function reset() {
-  if ($notesEntry.value) {
-    $notesEntry.value.style.width = ''
-    $notesEntry.value.style.height = ''
-    $notesEntry.value.style.top = ''
-    $notesEntry.value.style.right = ''
+  if ($noteEntry.value) {
+    $noteEntry.value.style.width = ''
+    $noteEntry.value.style.height = ''
+    $noteEntry.value.style.top = ''
+    $noteEntry.value.style.right = ''
   }
 
-  if ($notesEntryText.value) {
-    $notesEntryText.value.classList.remove('-centered')
-    $notesEntryText.value.style.opacity = ''
+  if ($noteEntryText.value) {
+    $noteEntryText.value.classList.remove('-centered')
+    $noteEntryText.value.style.opacity = ''
   }
 
   if ($localeSwitch.value) {
@@ -187,7 +187,7 @@ const useDark = isDark ? '-dark' : ''
   <div class="nav-overlay">
     <div v-if="actionPrompt !== 'none'" class="nav-overlay-canceller" @click="cancel"></div>
 
-    <div class="note-entry" @click="gotoNotes" ref="$notesEntry">
+    <div class="note-entry" @click="gotoNotes" ref="$noteEntry">
       <div class="anchor">
         <svg class="note-entry-ring" :class="useDark" viewBox="0 0 100 100">
           <!-- Three arcs starting at (50, 0) and sweeping 115 degrees clockwise. -->
@@ -210,7 +210,7 @@ const useDark = isDark ? '-dark' : ''
 
         <div class="note-entry-circle" :class="useDark">
           <div class="base">
-            <div class="note-entry-text" :class="useDark" ref="$notesEntryText">
+            <div class="note-entry-text" :class="useDark" ref="$noteEntryText">
               <span class="to">{{ m.gotoNotes() }}</span>
               <span class="notes">{{ destination[props.where] }}</span>
             </div>
@@ -300,6 +300,7 @@ const useDark = isDark ? '-dark' : ''
   cursor: pointer;
   pointer-events: all;
   user-select: none;
+  will-change: width, height, top, right;
 
   .anchor {
     position: relative;
@@ -399,6 +400,7 @@ const useDark = isDark ? '-dark' : ''
 
   cursor: pointer;
   user-select: none;
+  will-change: top, right;
 
   > .anchor {
     position: relative;
