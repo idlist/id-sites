@@ -1,0 +1,58 @@
+---
+import IconIslandSmall from '@assets/island-small.svg'
+import { useI18n } from '@layouts/i18n'
+import type { SupportedLocales } from 'virtual:i18n'
+
+interface Props {
+  locale?: SupportedLocales
+}
+
+const { locale = 'en' } = Astro.props
+const { m } = useI18n(locale)
+
+const message = m('noteListEpilogue')
+const splitted = message
+  .split('|')
+  .map((segments) => `<span>${segments}</span>`)
+  .join('')
+---
+
+<div class="note-list-epilogue">
+  <div class="icon"><IconIslandSmall /></div>
+  <p set:html={splitted}></p>
+</div>
+
+<style lang="scss">
+.note-list-epilogue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.5rem;
+
+  margin: 2rem 0;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  color: var(--color-main-2);
+
+  > .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  > p {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  @media (max-width: 600px) {
+    > p {
+      grid-template-columns: auto;
+    }
+  }
+
+  > p :global(> span) {
+    display: block;
+  }
+}
+</style>

@@ -6,6 +6,8 @@ Personal homepage + blog in one bundle.
 
 ## Tech Stack
 
+Requires Node.js 26.
+
 - Astro: Base multi-page backbone
 - Vue: Homepage SPA and other dynamic elements
 - Biome: Linter

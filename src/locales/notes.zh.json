@@ -1,13 +1,11 @@
 {
   "noteListTitle": "洋中孤岛",
   "noNotes": "糟糕，现在并没有笔记以这个语言写就。",
-  "noteListEpilog": "世间是一片汪洋，而你我如孤岛，于其间沉浮。",
+  "noteListEpilogue": "世间是一片汪洋，|而你我如孤岛，于其间沉浮。",
   "backToNoteList": "返回笔记列表",
   "dateCreated": "创建于 ",
   "dateUpdated": "更新于 ",
   "licenseReserved": "保留版权",
   "toc": "目录",
-  "discussPrompt": "真的很想找我聊聊？{br}去这个站点的 GitHub 仓库{link}吧。",
-  "discussLink": "开个新讨论",
   "lastUpdate": "最近更新："
 }

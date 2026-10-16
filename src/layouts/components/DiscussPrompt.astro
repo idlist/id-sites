@@ -20,20 +20,16 @@ function linkTemplate(text: string) {
 
 <div class="discuss-prompt">
   {locale === 'en' && (
-    <p>Really wanna discuss something with me?</p>
-    <p>
-      <span>Reach me via the contacts in my homepage, or </span>
-      <Fragment set:html={linkTemplate('start a discussion')} />
-      <span> in the GitHub repository of this site.</span>
-    </p>
+    <span>Really wanna discuss something with me?&nbsp;</span>
+    <span>Reach me via the contacts in my homepage,&nbsp;</span>
+    <span>or <Fragment set:html={linkTemplate('start a discussion')} /></span>
+    <span>&nbsp;in the GitHub repository of this site.</span>
   )}
   {locale === 'zh' && (
-    <p>真的很想找我聊聊？</p>
-    <p>
-      <span>通过首页的联系方式找到我，或者去这个站点的 GitHub 仓库</span>
-      <Fragment set:html={linkTemplate('开个新讨论')} />
-      <span>吧。</span>
-    </p>
+    <span>真的很想找我聊聊？</span>
+    <span>通过首页的联系方式找到我，</span>
+    <span>或者去这个站点的 GitHub 仓库</span>
+    <span><Fragment set:html={linkTemplate('开个新讨论')} />吧。</span>
   )}
 </div>
 
@@ -44,5 +40,9 @@ function linkTemplate(text: string) {
   text-align: center;
 
   margin: 0.75rem 0;
+
+  > span {
+    display: inline-block;
+  }
 }
 </style>

@@ -1,5 +1,4 @@
 ---
-import IconIslandSmall from '@assets/island-small.svg'
 import IconIsland from '@assets/island.svg'
 import type { MDXInstance } from 'astro'
 import { getCollection } from 'astro:content'
@@ -8,6 +7,7 @@ import BubbleRect20 from './components/BubbleRect20.astro'
 import GotoOverlayAstro from './components/GotoOverlayAstro.vue'
 import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
 import NoteFooter from './components/NoteFooter.astro'
+import NoteListEpilogue from './components/NoteListEpilogue.astro'
 import NoteTopicGroup from './components/NoteTopicGroup.astro'
 import ShowdownMask from './components/ShowdownMask.astro'
 import { useI18n } from './i18n'
@@ -102,11 +102,7 @@ const NoteListPreface = (await import(
               </NoteTopicGroup>
             ))}
 
-          <div class="epilog-text">
-            <div class="icon"><IconIslandSmall /></div>
-            <p>{m('noteListEpilog')}</p>
-          </div>
-
+          <NoteListEpilogue locale={locale} />
           <NoteFooter locale={locale} />
         </div>
       </BubbleRect20>
@@ -172,24 +168,6 @@ const NoteListPreface = (await import(
 
   background-color: white;
   padding: 0.25rem 0.75rem;
-}
-
-.epilog-text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  column-gap: 0.5rem;
-
-  margin: 2rem 0;
-  padding: 0 1rem;
-  font-size: 0.875rem;
-  line-height: 1.25;
-  color: var(--color-main-2);
-
-  > .icon {
-    width: 24px;
-    height: 24px;
-  }
 }
 
 .topic-info {
