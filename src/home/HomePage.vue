@@ -60,12 +60,11 @@ const pageList: NavigationGroup[] = [
   },
   {
     gid: 'works',
-    draft: true,
     icon: IconBulb,
     label: m.groupWorks,
     sections: [
       { section: WorksHeader, id: 'works' },
-      { section: WorksDiamond, id: 'diamond', query: 'diamond-palette' },
+      { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
       { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
     ],
   },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PageSticky from '../components/PageSticky.vue'
+import PageSticky from '@home/components/PageSticky.vue'
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PageFull from '../components/PageFull.vue'
+import PageFull from '@home/components/PageFull.vue'
 </script>
 
 <template>
