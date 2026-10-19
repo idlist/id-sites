@@ -42,7 +42,7 @@ useIntervalFn(() => {
   <div class="home-title-badge">
     <BubbleRect16 no-clip>
       <div class="home-title-content">
-        <span>{{ m.canDo() }}</span>
+        <span>{{ m.doSome() }}</span>
         <div class="relative">
           <Transition v-for="{ id, color } of titles" name="home-title">
             <span
