@@ -27,8 +27,8 @@ const destination = {
   notes: 'HOME',
 }
 
-type ActionPrompt = 'none' | 'goto-notes' | 'locale-switch'
-const actionPrompt = ref<ActionPrompt>('none')
+type ActionIntent = 'none' | 'goto-notes' | 'locale-switch'
+const actionIntent = ref<ActionIntent>('none')
 const showBlocker = ref(false)
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 
@@ -36,12 +36,19 @@ const $noteEntry = useTemplateRef('$noteEntry')
 const $noteEntryText = useTemplateRef('$noteEntryText')
 const $localeSwitch = useTemplateRef('$localeSwitch')
 
+const gotoPrompt = ref(false)
+
+watch(actionIntent, (val) => {
+  gotoPrompt.value = val === 'goto-notes'
+})
+
 let currentAnimation: AnimationCanceller | null = null
 
 async function gotoNotes() {
-  if (actionPrompt.value !== 'goto-notes') {
-    actionPrompt.value = 'goto-notes'
+  if (actionIntent.value !== 'goto-notes') {
+    actionIntent.value = 'goto-notes'
   } else {
+    gotoPrompt.value = false
     currentAnimation?.cancel()
     await expandBeforeGotoNotes()
     emit('goto')
@@ -49,21 +56,21 @@ async function gotoNotes() {
 }
 
 function openLocaleDialog() {
-  actionPrompt.value = 'locale-switch'
+  actionIntent.value = 'locale-switch'
 }
 
 function setLocale(newLocale: SupportedLocales) {
   emit('updateLocale', newLocale)
-  actionPrompt.value = 'none'
+  actionIntent.value = 'none'
 }
 
 function cancel() {
-  actionPrompt.value = 'none'
+  actionIntent.value = 'none'
 }
 
 let skipAnimation = false
 
-watch(actionPrompt, (val, old) => {
+watch(actionIntent, (val, old) => {
   if (skipAnimation) {
     skipAnimation = false
     return
@@ -169,7 +176,7 @@ function reset() {
   showBlocker.value = false
 
   skipAnimation = true
-  actionPrompt.value = 'none'
+  actionIntent.value = 'none'
 }
 
 window.addEventListener('pageshow', (e) => {
@@ -180,16 +187,16 @@ window.addEventListener('pageshow', (e) => {
 
 // These values do not need responsiveness.
 const isDark = props.where === 'notes'
-const useDark = isDark ? '-dark' : ''
+const ifDark = isDark ? '-dark' : ''
 </script>
 
 <template>
   <div class="nav-overlay">
-    <div v-if="actionPrompt !== 'none'" class="nav-overlay-canceller" @click="cancel"></div>
+    <div v-if="actionIntent !== 'none'" class="nav-overlay-canceller" @click="cancel"></div>
 
     <div class="note-entry" @click="gotoNotes" ref="$noteEntry">
       <div class="anchor">
-        <svg class="note-entry-ring" :class="useDark" viewBox="0 0 100 100">
+        <svg class="note-entry-ring" :class="ifDark" viewBox="0 0 100 100">
           <!-- Three arcs starting at (50, 0) and sweeping 115 degrees clockwise. -->
           <path
             d="M 50 0 A 50 50 0 0 1 95.3154 71.1309"
@@ -208,11 +215,18 @@ const useDark = isDark ? '-dark' : ''
           />
         </svg>
 
-        <div class="note-entry-circle" :class="useDark">
+        <div class="note-entry-circle" :class="ifDark">
           <div class="base">
-            <div class="note-entry-text" :class="useDark" ref="$noteEntryText">
-              <span class="to">{{ m.gotoNotes() }}</span>
-              <span class="notes">{{ destination[props.where] }}</span>
+            <div class="note-entry-text" :class="ifDark" ref="$noteEntryText">
+              <div v-if="gotoPrompt" class="press-again">
+                <div>{{ m.promptPress() }}</div>
+                <div>{{ m.promptAgain() }}</div>
+              </div>
+
+              <template v-else>
+                <div class="to">{{ m.gotoNotes() }}</div>
+                <div class="notes">{{ destination[props.where] }}</div>
+              </template>
             </div>
           </div>
         </div>
@@ -223,11 +237,11 @@ const useDark = isDark ? '-dark' : ''
       <div class="anchor">
         <Transition name="locale-switch-btn">
           <Bubble40
-            v-if="actionPrompt !== 'locale-switch'"
+            v-if="actionIntent !== 'locale-switch'"
             :dark="isDark"
             @click="openLocaleDialog"
           >
-            <div class="locale-switch-btn" :class="useDark">
+            <div class="locale-switch-btn" :class="ifDark">
               <a class="btn" aria-label="locale button">
                 <IconGlobe />
               </a>
@@ -237,19 +251,19 @@ const useDark = isDark ? '-dark' : ''
 
         <Transition name="locale-switch-dialog">
           <div
-            v-if="actionPrompt === 'locale-switch'"
+            v-if="actionIntent === 'locale-switch'"
             class="locale-switch-dialog"
           >
             <BubbleRect16 :dark="isDark">
-              <div class="locale-option-list" :class="useDark">
+              <div class="locale-option-list" :class="ifDark">
                 <a
                   class="locale-option"
-                  :class="useDark"
+                  :class="ifDark"
                   @click="() => setLocale('zh')"
                 >简体中文</a>
                 <a
                   class="locale-option"
-                  :class="useDark"
+                  :class="ifDark"
                   @click="() => setLocale('en')"
                 >English</a>
               </div>
@@ -381,6 +395,11 @@ const useDark = isDark ? '-dark' : ''
   }
 
   > .notes {
+    font-family: var(--font-unique);
+    letter-spacing: 2px;
+  }
+
+  > .press-again {
     font-family: var(--font-unique);
     letter-spacing: 2px;
   }
