@@ -22,7 +22,7 @@ export function addSlotHandler(handler: StaticI18nSlot) {
 export function useI18n(locale: SupportedLocales) {
   const m = (key: string, values?: Record<string, unknown>): string => {
     const message = messageCollection[locale]?.[key]
-    if (message === undefined) return key
+    if (typeof message === 'undefined') return key
 
     let translated = ''
 
