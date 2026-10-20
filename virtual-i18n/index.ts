@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { type Logger, normalizePath, type Plugin } from 'vite'
-import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots'
+import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots.virtual'
 import { type Token, tokenize } from './tokenizer'
 import { joinLines, joinText } from './utils'
 
@@ -194,6 +194,8 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       '',
       `export const supportedLocales = new Set([${locales.join(', ')}])`,
       '',
+      `export const allLocales = new Set([${locales.join(', ')}])`,
+      '',
       'export function toMessage(stringOrMessage) {',
       `  if (typeof stringOrMessage === 'string') {`,
       '    return stringOrMessage',
@@ -255,6 +257,8 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       `  export const locale: Ref<SupportedLocales>`,
       '',
       '  export const supportedLocales: Set<string>',
+      '',
+      '  export const allLocales: Set<SupportedLocales>',
       '',
       '  export function toMessage(stringOrMessage: string | GeneralVirtualMessage): string',
       '',

@@ -1,5 +1,6 @@
 ---
 import IconIsland from '@assets/island.svg'
+import { useI18n } from '@virtual-i18n/static'
 import type { MDXInstance } from 'astro'
 import { getCollection } from 'astro:content'
 import type { SupportedLocales } from 'virtual:i18n'
@@ -9,7 +10,6 @@ import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
 import NoteFooter from './components/NoteFooter.astro'
 import NoteListEpilogue from './components/NoteListEpilogue.astro'
 import NoteTopicGroup from './components/NoteTopicGroup.astro'
-import { useI18n } from './i18n'
 import NoteBase, { type NoteProps } from './NoteBase.astro'
 
 interface NoteTopic {
