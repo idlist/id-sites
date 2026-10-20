@@ -70,7 +70,6 @@ const pageList: NavigationGroup[] = [
   },
   {
     gid: 'footer',
-    draft: true,
     icon: IconStars,
     label: m.groupFooter,
     sections: [
