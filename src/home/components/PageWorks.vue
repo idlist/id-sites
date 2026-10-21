@@ -1,21 +1,25 @@
 <script setup lang="ts">
+import { useMediaQuery } from '@vueuse/core'
 import BubbleRect20 from './BubbleRect20.vue'
 import BubbleSepH from './BubbleSepH.vue'
 import BubbleSepV from './BubbleSepV.vue'
+
+const isPortrait = useMediaQuery('(max-aspect-ratio: 3/4)')
 </script>
 
 <template>
   <section class="page-works">
     <div class="page-works-sticky">
       <BubbleRect20 class="fullheight">
-        <div class="page-works-layout">
-          <div>
-            <slot name="image"></slot>
-          </div>
+        <div class="page-works-layout-portrait" v-if="isPortrait">
+          <slot name="image"><div></div></slot>
+          <BubbleSepH />
+          <slot></slot>
+        </div>
 
-          <BubbleSepV class="sep-v" />
-          <BubbleSepH class="sep-h" />
-
+        <div class="page-works-layout-landscape" v-else>
+          <slot name="image"><div></div></slot>
+          <BubbleSepV />
           <slot></slot>
         </div>
       </BubbleRect20>
@@ -37,10 +41,10 @@ import BubbleSepV from './BubbleSepV.vue'
   position: sticky;
 
   --least-height: 400px;
-  --adaptive-top: calc((100vh - var(--least-height)) / 2);
+  --least-top: calc((100vh - var(--least-height)) / 2);
 
-  top: min(1rem, var(--adaptive-top));
-  top: min(calc((100vh - 100svh + 2rem) / 2), var(--adaptive-top));
+  top: min(1rem, var(--least-top));
+  top: min(calc((100vh - 100svh + 2rem) / 2), var(--least-top));
   height: calc(100vh - 2rem);
   height: calc(100svh - 2rem);
 
@@ -55,28 +59,19 @@ import BubbleSepV from './BubbleSepV.vue'
   }
 }
 
-.page-works-layout {
+%page-works-layout {
+  display: grid;
   width: 100%;
   height: 100%;
+}
 
-  display: grid;
+.page-works-layout-landscape {
+  @extend %page-works-layout;
   grid-template-columns: 1fr max-content 2fr;
+}
 
-  > .sep-h {
-    display: none;
-  }
-
-  @media (max-aspect-ratio: 1/1) {
-    grid-template-columns: auto;
-    grid-template-rows: 1fr max-content 2fr;
-
-    > .sep-v {
-      display: none;
-    }
-
-    > .sep-h {
-      display: block;
-    }
-  }
+.page-works-layout-portrait {
+  @extend %page-works-layout;
+  grid-template-rows: 1fr max-content 2fr;
 }
 </style>
