@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import PageCard from '@home/components/PageCard.vue'
+import PageWorks from '@home/components/PageWorks.vue'
 </script>
 
 <template>
-  <PageCard>
+  <PageWorks>
     <div class="works-flakepiles">Flakepiles</div>
-  </PageCard>
+  </PageWorks>
 </template>
 
 <style scoped lang="scss">

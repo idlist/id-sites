@@ -32,17 +32,8 @@ import { contactsLocaled } from '@home/data/contacts'
       </div>
 
       <div class="home-divider">
-        <svg class="line">
-          <line
-            x1="0"
-            y1="50%"
-            x2="100%"
-            y2="50%"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-dasharray="12 16"
-            stroke-linecap="round"
-          />
+        <svg width="100%" height="4" class="line">
+          <line x1="0" y1="50%" x2="100%" y2="50%" stroke-dasharray="12 16" />
         </svg>
       </div>
 
@@ -131,9 +122,11 @@ import { contactsLocaled } from '@home/data/contacts'
   margin: 0.5rem 0;
 
   > .line {
-    width: 100%;
-    height: 4px;
     overflow: visible;
+
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2px;
   }
 }
 
