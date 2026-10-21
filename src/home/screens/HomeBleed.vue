@@ -23,11 +23,11 @@ import { m } from 'virtual:i18n'
 
   > .icon {
     width: 7.5rem;
-    animation: nudge 2s linear infinite;
+    animation: nudge 1.5s linear infinite;
   }
 
   > .prompt {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-family: var(--font-unique);
     letter-spacing: 0.5rem;
     transform: translateX(0.25rem);

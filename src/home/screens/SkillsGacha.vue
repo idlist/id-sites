@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import PageSticky from '@home/components/PageSticky.vue'
+import PageFull from '@home/components/PageFull.vue'
 </script>
 
 <template>
-  <PageSticky>Skill Gacha</PageSticky>
+  <PageFull>Skill Gacha</PageFull>
 </template>

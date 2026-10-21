@@ -3,5 +3,5 @@ import PageFull from '@home/components/PageFull.vue'
 </script>
 
 <template>
-  <PageFull>Outro</PageFull>
+  <PageFull expand>Outro</PageFull>
 </template>

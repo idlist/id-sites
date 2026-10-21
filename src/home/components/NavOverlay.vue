@@ -90,14 +90,16 @@ watch(() => props.cursor, (val, old) => {
 .nav-overlay {
   position: fixed;
   top: 0;
-  height: 100svh;
+  top: calc(100lvh - 100svh);
   right: 8px;
-  pointer-events: none;
-  user-select: none;
+  height: 100svh;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  pointer-events: none;
+  user-select: none;
 }
 
 .nav-overlay-list {
