@@ -221,7 +221,7 @@ function jumpFromQuery() {
   window.history.replaceState(window.history.state, '', next)
 
   const border = navQueryBorders.value[query]
-  if (typeof border === 'undefined') return
+  if (border == null) return
   scrollY.value = border
 }
 

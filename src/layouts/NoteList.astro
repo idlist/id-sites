@@ -59,7 +59,7 @@ for (const rawTopic of rawTopics) {
       route: note.data.route,
       date: note.data.created,
     }))
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .toSorted((a, b) => b.date.getTime() - a.date.getTime())
 
   topics.push({
     name: rawTopic.name,

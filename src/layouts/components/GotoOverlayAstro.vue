@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import GotoOverlayCore from '@home/components/GotoOverlayCore.vue'
 import { useLocalStorage } from '@vueuse/core'
-import { locale, type SupportedLocales } from 'virtual:i18n'
+import { locale as currentLocale, type SupportedLocales } from 'virtual:i18n'
 import { onBeforeMount } from 'vue'
 
 const props = withDefaults(
@@ -32,7 +32,7 @@ function updateLocale(newLocale: SupportedLocales) {
 }
 
 onBeforeMount(() => {
-  locale.value = localeStorage.value
+  currentLocale.value = localeStorage.value
 })
 </script>
 
