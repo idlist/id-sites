@@ -9,9 +9,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "astro dev",
-    "generate": "tsx scripts/meta.ts",
-    "build": "npm run generate && astro build",
+    "build": "astro build",
     "preview": "astro preview",
+    "generate": "tsx scripts/meta.ts",
+    "prod": "npm run generate && astro build",
     "lint": "oxlint",
     "fmt": "dprint fmt",
     "i18n:test": "vitest run",
