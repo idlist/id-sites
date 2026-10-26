@@ -15,9 +15,9 @@ const italicTitle = locale !== 'zh'
 
 const filtered = headings.filter((heading) => heading.depth <= 4)
 
-function flattenDepth(headings: MarkdownHeading[]): MarkdownHeading[] {
-  if (headings.length <= 1) {
-    return clone(headings).map((heading) => {
+function flattenDepth(original: MarkdownHeading[]): MarkdownHeading[] {
+  if (original.length <= 1) {
+    return clone(original).map((heading) => {
       heading.depth = 1
       return heading
     })
@@ -26,24 +26,24 @@ function flattenDepth(headings: MarkdownHeading[]): MarkdownHeading[] {
   let newDepth = 1
   const flattened: number[] = [newDepth]
 
-  for (let i = 1; i < headings.length; i++) {
-    if (headings[i].depth > headings[i - 1].depth) {
+  for (let i = 1; i < original.length; i++) {
+    if (original[i].depth > original[i - 1].depth) {
       newDepth++
       flattened.push(newDepth)
-    } else if (headings[i].depth === headings[i - 1].depth) {
+    } else if (original[i].depth === original[i - 1].depth) {
       flattened.push(newDepth)
     } else {
       let jumpedDepths = new Set<number>()
       let jumpedHeadings = 0
       let j = i - 1
 
-      while (j > 0 && headings[j].depth > headings[i].depth) {
-        jumpedDepths.add(headings[j].depth)
+      while (j > 0 && original[j].depth > original[i].depth) {
+        jumpedDepths.add(original[j].depth)
         jumpedHeadings++
         j--
       }
 
-      const largeThan = headings[i].depth > headings[j].depth
+      const largeThan = original[i].depth > original[j].depth
 
       if (largeThan) {
         for (let k = i - 1; k > i - 1 - jumpedHeadings; k--) {
@@ -59,7 +59,7 @@ function flattenDepth(headings: MarkdownHeading[]): MarkdownHeading[] {
     }
   }
 
-  return clone(headings).map((heading, i) => {
+  return clone(original).map((heading, i) => {
     heading.depth = flattened[i]
     return heading
   })
