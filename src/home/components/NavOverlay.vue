@@ -123,14 +123,10 @@ watch(() => props.cursor, (val, old) => {
 }
 
 .nav-overlay-item {
-  width: 32px;
-  padding: 6px;
-
   display: block;
   cursor: pointer;
 
-  .layer-below > & {
-    color: var(--color-main);
-  }
+  width: 32px;
+  padding: 6px;
 }
 </style>

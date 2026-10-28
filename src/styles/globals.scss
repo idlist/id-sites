@@ -57,6 +57,7 @@
 
   --color-sub: #eee;
   --color-sub-2: #ddd;
+  --color-sub-3: #ccc;
   --color-sub-dots: #ccc;
 
   --color-accent: #038f55;
@@ -85,6 +86,10 @@ body {
 
   /* Minimum width to prevent the layout get too cramped. */
   min-width: 360px;
+}
+
+a {
+  cursor: pointer;
 }
 
 .id-typeface {

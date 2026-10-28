@@ -17,7 +17,7 @@
 
   min-height: max(400px, 80vh);
   min-height: max(400px, 80svh);
-  padding: 2rem 1rem;
+  padding: 2rem 0;
 
   > .content {
     max-width: 800px;

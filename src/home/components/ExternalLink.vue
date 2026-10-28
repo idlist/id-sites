@@ -8,16 +8,10 @@ defineProps<{
 
 <template>
   <div class="external-link">
-    <a
-      :href="href"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <a :href="href" target="_blank" rel="noopener noreferrer">
       <slot></slot>
     </a>
-    <div class="icon">
-      <IconExternalLink />
-    </div>
+    <div class="icon"><IconExternalLink /></div>
   </div>
 </template>
 
