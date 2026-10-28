@@ -2,6 +2,9 @@
   <div class="skills-header">
     <div class="content">
       <h2 class="id-section-title">WHO IS THIS GUY?</h2>
+      <div class="id-typeface">
+        <p>As a hybrid of programmer and artist,</p>
+      </div>
     </div>
   </div>
 </template>

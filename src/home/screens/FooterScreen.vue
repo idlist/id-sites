@@ -4,7 +4,7 @@ import PageFull from '@home/components/PageFull.vue'
 
 <template>
   <PageFull expand class="footer-screen">
-    <div class="content">
+    <div class="id-typeface content">
       <p>This personal site is designed and developed by i'DLisT from Spherical Vaccum.</p>
       <p>Spherical Vacuum is a small studio</p>
     </div>
@@ -19,6 +19,10 @@ import PageFull from '@home/components/PageFull.vue'
 
   > .content {
     max-width: 1200px;
+  }
+
+  > .content > p {
+    margin: 0;
   }
 }
 </style>
