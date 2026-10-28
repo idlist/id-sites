@@ -128,5 +128,9 @@ watch(() => props.cursor, (val, old) => {
 
   display: block;
   cursor: pointer;
+
+  .layer-below > & {
+    color: var(--color-main);
+  }
 }
 </style>

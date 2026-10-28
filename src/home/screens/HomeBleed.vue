@@ -29,8 +29,8 @@ import { m } from 'virtual:i18n'
   > .prompt {
     font-size: 1.2rem;
     font-family: var(--font-unique);
-    letter-spacing: 0.5rem;
-    transform: translateX(0.25rem);
+    letter-spacing: 0.3em;
+    transform: translateX(0.15em);
   }
 }
 

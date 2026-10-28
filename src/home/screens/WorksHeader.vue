@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import WorksBulb from '../motions/WorksBulb.vue'
+import WorksBulb from '@home/motions/WorksBulb.vue'
+import { m } from 'virtual:i18n'
 </script>
 
 <template>
   <div class="works-header">
     <div class="content">
       <WorksBulb />
-      <h2 class="id-section-title">WORKS</h2>
+      <h2 class="id-section-title">{{ m.sectionWorks() }}</h2>
     </div>
   </div>
 </template>

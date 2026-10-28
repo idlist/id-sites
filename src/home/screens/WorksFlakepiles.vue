@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import ExternalLink from '@home/components/ExternalLink.vue'
 import PageWorks from '@home/components/PageWorks.vue'
-import WorksBadge from '../components/WorksBadge.vue'
+import WorksBadge from '@home/components/WorksBadge.vue'
 </script>
 
 <template>
@@ -16,12 +17,20 @@ import WorksBadge from '../components/WorksBadge.vue'
 
         <div class="id-typeface">
           <p>
-            An Obsidian plugin to collect small notes, stickies, code snippets or more in a single file, and manage them
-            in a masonry layout with horizontal or vertical flow.
+            An <ExternalLink href="https://obsidian.md/">Obsidian</ExternalLink>
+            plugin to collect small notes, stickies, code snippets or more in a single file, and
+            manage them in a masonry layout with horizontal or vertical flow.
           </p>
         </div>
 
-        <div></div>
+        <div class="links">
+          <ExternalLink href="https://community.obsidian.md/plugins/flakepiles">
+            Obsidian Community Page
+          </ExternalLink>
+          <ExternalLink href="https://github.com/idlist/flakepiles">
+            GitHub Repository
+          </ExternalLink>
+        </div>
       </div>
     </div>
   </PageWorks>
@@ -66,6 +75,14 @@ import WorksBadge from '../components/WorksBadge.vue'
       font-size: 1.5rem;
       letter-spacing: 0.075rem;
     }
+  }
+
+  > .links {
+    display: flex;
+    column-gap: 0.75rem;
+    row-gap: 0.5rem;
+
+    font-size: 0.875rem;
   }
 }
 </style>

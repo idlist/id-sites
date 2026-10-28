@@ -18,7 +18,7 @@
       "@virtual-i18n/*": ["./virtual-i18n/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@home/*": ["./src/home/*"],
-      "@client/*": ["./src/client/*"],
+      "@client/*": ["./src/client/*"]
     }
   }
 }
