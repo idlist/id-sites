@@ -29,8 +29,8 @@ const isPortrait = useMediaQuery('(max-aspect-ratio: 3/4)')
 
 <style scoped lang="scss">
 .page-works {
-  height: 150vh;
-  height: 150lvh;
+  height: 120vh;
+  height: 120lvh;
 
   position: relative;
   display: flex;

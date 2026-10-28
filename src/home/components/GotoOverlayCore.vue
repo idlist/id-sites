@@ -4,7 +4,7 @@ import type { AnimationCanceller } from '@home/utils'
 import { useWindowSize } from '@vueuse/core'
 import { animate, spring } from 'animejs'
 import { m, type SupportedLocales } from 'virtual:i18n'
-import { computed, ref, useTemplateRef, watch } from 'vue'
+import { ref, useTemplateRef, watch } from 'vue'
 import Bubble40 from './Bubble40.vue'
 import BubbleRect16 from './BubbleRect16.vue'
 

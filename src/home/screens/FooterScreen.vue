@@ -3,5 +3,22 @@ import PageFull from '@home/components/PageFull.vue'
 </script>
 
 <template>
-  <PageFull expand>Outro</PageFull>
+  <PageFull expand class="footer-screen">
+    <div class="content">
+      <p>This personal site is designed and developed by i'DLisT from Spherical Vaccum.</p>
+      <p>Spherical Vacuum is a small studio</p>
+    </div>
+  </PageFull>
 </template>
+
+<style scoped lang="scss">
+.footer-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  > .content {
+    max-width: 1200px;
+  }
+}
+</style>

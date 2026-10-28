@@ -19,6 +19,7 @@ import SkillsHeader from './screens/SkillsHeader.vue'
 import WorksDiamond from './screens/WorksDiamond.vue'
 import WorksFlakepiles from './screens/WorksFlakepiles.vue'
 import WorksHeader from './screens/WorksHeader.vue'
+import WorksOther from './screens/WorksOther.vue'
 
 import type { ViteSvgComponent } from './utils.ts'
 
@@ -50,12 +51,11 @@ const pageList: NavigationGroup[] = [
   },
   {
     gid: 'skills',
-    draft: true,
     icon: IconAtom,
     label: m.groupSkills,
     sections: [
       { section: SkillsHeader, id: 'skills' },
-      { section: SkillsGacha, id: 'skill-gacha', query: 'gacha' },
+      { section: SkillsGacha, id: 'skill-gacha', query: 'gacha', draft: true },
     ],
   },
   {
@@ -66,6 +66,7 @@ const pageList: NavigationGroup[] = [
       { section: WorksHeader, id: 'works' },
       { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
       { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
+      { section: WorksOther, id: 'works-other' },
     ],
   },
   {
