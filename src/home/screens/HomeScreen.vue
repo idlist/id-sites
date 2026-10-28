@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import IconIdlist from '@assets/idlist-light.svg?component'
 import HomeContact from '@home/components/HomeContact.vue'
-import HomePulses from '@home/components/HomePulses.vue'
 import HomeTitleCarousel from '@home/components/HomeTitleCarousel.vue'
-import HomeWaves from '@home/components/HomeWaves.vue'
 import PageFull from '@home/components/PageFull.vue'
 import { contactsLocaled } from '@home/data/contacts'
+import HomePulses from '@home/motions/HomePulses.vue'
+import HomeWaves from '@home/motions/HomeWaves.vue'
 </script>
 
 <template>

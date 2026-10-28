@@ -314,7 +314,6 @@ const ifDark = isDark ? '-dark' : ''
   cursor: pointer;
   pointer-events: all;
   user-select: none;
-  will-change: width, height, top, right;
 
   .anchor {
     position: relative;
@@ -419,7 +418,6 @@ const ifDark = isDark ? '-dark' : ''
 
   cursor: pointer;
   user-select: none;
-  will-change: top, right;
 
   > .anchor {
     position: relative;
