@@ -14,6 +14,7 @@ import ShowdownMask from './components/ShowdownMask.vue'
 import FooterScreen from './screens/FooterScreen.vue'
 import HomeBleed from './screens/HomeBleed.vue'
 import HomeScreen from './screens/HomeScreen.vue'
+import HomeWhoami from './screens/HomeWhoami.vue'
 import SkillsGacha from './screens/SkillsGacha.vue'
 import SkillsHeader from './screens/SkillsHeader.vue'
 import WorksDiamond from './screens/WorksDiamond.vue'
@@ -47,15 +48,17 @@ const pageList: NavigationGroup[] = [
     sections: [
       { section: HomeScreen, id: 'home' },
       { section: HomeBleed, id: 'home-bleed' },
+      { section: HomeWhoami, id: 'whoami' },
     ],
   },
   {
     gid: 'skills',
+    draft: true,
     icon: IconAtom,
     label: m.groupSkills,
     sections: [
       { section: SkillsHeader, id: 'skills' },
-      { section: SkillsGacha, id: 'skill-gacha', query: 'gacha', draft: true },
+      { section: SkillsGacha, id: 'skill-gacha', query: 'gacha' },
     ],
   },
   {
