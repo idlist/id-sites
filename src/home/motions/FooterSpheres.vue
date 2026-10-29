@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useResizeObserver } from '@vueuse/core'
+import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { clamp, createTimer, degToRad, radToDeg, random, type Timer } from 'animejs'
-import { Bodies, Body, Composite, Engine } from 'matter-js'
+import { Bodies, Body, Composite, Engine, Vector } from 'matter-js'
 import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
 
 type CanvasCtx = CanvasRenderingContext2D
@@ -24,6 +24,8 @@ let canvasHeight = 0
 let bubbleRadius = BubbleMinRadius
 let bubbleCount = 0
 let dropTimer = 0
+let pointer: Vector | null = null
+let pointerSpeed = 0
 let timer: Timer | null = null
 
 class Bubble {
@@ -130,16 +132,16 @@ function getBubbleRadius() {
   )
 }
 
-const wallExtraHeight = 600
-const wallThickness = 60
+const WallExtraHeight = 600
+const WallThickness = 80
 
 function setupWalls() {
   const width = canvasWidth
   const height = canvasHeight
   const bleed = bubbleRadius
-  const extent = wallThickness + bleed
+  const extent = WallThickness + bleed
 
-  const y = height - (height + wallExtraHeight) / 2
+  const y = height - (height + WallExtraHeight) / 2
 
   const oldWalls = walls.splice(0, walls.length)
   Composite.remove(engine.world, oldWalls)
@@ -147,22 +149,22 @@ function setupWalls() {
   const left = Bodies.rectangle(
     -extent / 2,
     y,
-    wallThickness,
-    (height + wallExtraHeight + bleed) * 2,
+    WallThickness,
+    (height + WallExtraHeight + bleed) * 2,
     { isStatic: true },
   )
   const right = Bodies.rectangle(
     width + extent / 2,
     y,
-    wallThickness,
-    (height + wallExtraHeight + bleed) * 2,
+    WallThickness,
+    (height + WallExtraHeight + bleed) * 2,
     { isStatic: true },
   )
   const bottom = Bodies.rectangle(
     width / 2,
     height + extent / 2,
     width + extent * 2,
-    wallThickness,
+    WallThickness,
     { isStatic: true },
   )
 
@@ -205,6 +207,8 @@ onMounted(() => {
     loop: true,
     onUpdate: ({ deltaTime }) => {
       const delta = Math.max(deltaTime, 0)
+
+      applyPointerForce()
       Engine.update(engine, delta)
       removeOutboundBubbles()
       syncBubbleCount(delta)
@@ -229,10 +233,10 @@ function removeOutboundBubbles() {
     const { x, y } = bubble.position
     const r = bubble.circleRadius ?? bubbleRadius
 
-    const isOutbound = x < -(r + wallThickness)
-      || x > canvasWidth + r + wallThickness
-      || y > canvasHeight + r + wallThickness
-      || y < -wallExtraHeight
+    const isOutbound = x < -(r + WallThickness)
+      || x > canvasWidth + r + WallThickness
+      || y > canvasHeight + r + WallThickness
+      || y < -WallExtraHeight
 
     if (!isOutbound) continue
 
@@ -275,6 +279,7 @@ function syncBubbleCount(delta: number) {
     Composite.remove(engine.world, bubble)
   }
 
+  // If increasing the amount of bubble, add them one by one.
   if (bubbles.length >= bubbleCount) return
   dropTimer += delta
 
@@ -283,6 +288,51 @@ function syncBubbleCount(delta: number) {
     dropBubble()
   }
 }
+
+function applyPointerForce() {
+  if (pointer == null) return
+
+  const radius = 160
+  const gain = clamp(pointerSpeed / 10, 0, 1)
+  pointerSpeed = 0
+
+  for (const bubble of bubbles) {
+    const dx = bubble.position.x - pointer.x
+    const dy = bubble.position.y - pointer.y
+    const distance = Math.hypot(dx, dy)
+
+    if (distance > radius || distance === 0) continue
+
+    const strength = 1 - distance / radius
+    const depth = clamp(bubble.position.y / canvasHeight, 0, 1)
+    const force = 0.06 * strength * Math.pow(depth, 2) * gain * bubble.mass
+
+    const v = Vector.create(dx / distance * force, dy / distance * force)
+    Body.applyForce(bubble, bubble.position, v)
+  }
+}
+
+function onPointerMove(event: PointerEvent) {
+  const canvas = $canvas.value
+  if (canvas == null) return
+
+  const rect = canvas.getBoundingClientRect()
+  const x = event.clientX - rect.left
+  const y = event.clientY - rect.top
+
+  if (pointer != null) {
+    pointerSpeed = Math.hypot(x - pointer.x, y - pointer.y)
+  }
+
+  pointer = Vector.create(x, y)
+}
+
+function onPointerLeave() {
+  pointer = null
+}
+
+useEventListener('pointermove', onPointerMove)
+useEventListener('pointerleave', onPointerLeave)
 </script>
 
 <template>
