@@ -24,8 +24,6 @@ let canvasHeight = 0
 let bubbleRadius = BubbleMinRadius
 let bubbleCount = 0
 let dropTimer = 0
-let pointer: Vector | null = null
-let pointerSpeed = 0
 let timer: Timer | null = null
 
 class Bubble {
@@ -40,20 +38,30 @@ class Bubble {
   }
 
   draw(ctx: CanvasCtx) {
+    ctx.lineJoin = 'round'
+
     // Base.
+    ctx.fillStyle = '#222'
+
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI)
     ctx.fill()
 
     // Outer circle.
+    ctx.lineWidth = 2
+    ctx.strokeStyle = '#ccc'
+
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI * 2)
     ctx.stroke()
 
-    const rhl = this.r - 12
+    const rhl = this.r - 16
     const rcap = 4
 
     // Small highlight.
+    ctx.strokeStyle = '#aaa'
+    ctx.lineWidth = 1.5
+
     ctx.beginPath()
 
     const ashl = -70
@@ -108,12 +116,6 @@ useResizeObserver($canvas, ([entry]) => {
   const { width, height } = entry.contentRect
   $canvas.value.width = width * dpr
   $canvas.value.height = height * dpr
-
-  // Setup styles.
-  ctx.strokeStyle = '#eee'
-  ctx.lineWidth = 2
-  ctx.lineJoin = 'round'
-  ctx.fillStyle = '#222'
   ctx.scale(dpr, dpr)
 
   bubbleRadius = getBubbleRadius()
@@ -201,6 +203,7 @@ onMounted(() => {
   if (canvas == null) return
 
   syncCanvasSize()
+  scrollY = window.scrollY
 
   timer = createTimer({
     frameRate: 60,
@@ -289,26 +292,29 @@ function syncBubbleCount(delta: number) {
   }
 }
 
+let pointer: Vector | null = null
+let pointerSpeed = 0
+
 function applyPointerForce() {
   if (pointer == null) return
 
-  const radius = 160
-  const gain = clamp(pointerSpeed / 10, 0, 1)
+  const rp = 160
+  const gain = clamp(pointerSpeed / 20, 0, 1)
   pointerSpeed = 0
 
   for (const bubble of bubbles) {
     const dx = bubble.position.x - pointer.x
     const dy = bubble.position.y - pointer.y
-    const distance = Math.hypot(dx, dy)
+    const d = Math.hypot(dx, dy)
 
-    if (distance > radius || distance === 0) continue
+    if (d > rp || d === 0) continue
 
-    const strength = 1 - distance / radius
+    const strength = 1 - d / rp
     const depth = clamp(bubble.position.y / canvasHeight, 0, 1)
-    const force = 0.06 * strength * Math.pow(depth, 2) * gain * bubble.mass
+    const f = 0.01 * strength * Math.pow(1 + depth, 2) * gain * bubble.mass
 
-    const v = Vector.create(dx / distance * force, dy / distance * force)
-    Body.applyForce(bubble, bubble.position, v)
+    const vf = Vector.create(dx / d * f, dy / d * f)
+    Body.applyForce(bubble, bubble.position, vf)
   }
 }
 
@@ -346,6 +352,7 @@ useEventListener('pointerleave', onPointerLeave)
   position: absolute;
   inset: 0;
   z-index: -8;
+  overflow: hidden;
 
   > .canvas {
     position: absolute;

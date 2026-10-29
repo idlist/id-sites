@@ -90,7 +90,6 @@ watch(() => props.cursor, (val, old) => {
 .nav-overlay {
   position: fixed;
   top: 0;
-  top: calc(100lvh - 100svh);
   right: 8px;
   height: 100svh;
 
@@ -100,6 +99,11 @@ watch(() => props.cursor, (val, old) => {
 
   pointer-events: none;
   user-select: none;
+
+  @media (max-height: 400px) {
+    top: 120px;
+    height: calc(100svh - 120px);
+  }
 }
 
 .nav-overlay-list {

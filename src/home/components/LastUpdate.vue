@@ -72,6 +72,6 @@ const yearRange = computed(() =>
 
   stroke: currentColor;
   stroke-linecap: round;
-  stroke-width: 2px;
+  stroke-width: 1.5px;
 }
 </style>
