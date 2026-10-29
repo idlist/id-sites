@@ -5,6 +5,7 @@ import IconHome from '@assets/icons/home.svg?component'
 import IconStars from '@assets/icons/stars.svg?component'
 import { useEventListener, useWindowScroll, useWindowSize, watchThrottled } from '@vueuse/core'
 import { animate } from 'animejs'
+import { Common } from 'matter-js'
 import { type GeneralVirtualMessage, m } from 'virtual:i18n'
 import { type Component, type ComponentPublicInstance, onMounted, ref } from 'vue'
 import BackgroundDots from './components/BackgroundDots.vue'
@@ -257,6 +258,11 @@ function cancelScrollOnKeys(e: KeyboardEvent) {
 useEventListener('wheel', cancelScroll, { passive: true })
 useEventListener('touchstart', cancelScroll, { passive: true })
 useEventListener('keydown', cancelScrollOnKeys)
+
+// Disable the warning messages of matter.js in production.
+if (import.meta.env.PROD) {
+  Common.logLevel = 4
+}
 </script>
 
 <template>

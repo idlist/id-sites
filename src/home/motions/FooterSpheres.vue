@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useResizeObserver } from '@vueuse/core'
-import { clamp, createTimer, degToRad, radToDeg, type Timer } from 'animejs'
+import { clamp, createTimer, degToRad, radToDeg, random, type Timer } from 'animejs'
 import { Bodies, Body, Composite, Engine } from 'matter-js'
 import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
 
@@ -9,7 +9,9 @@ type CanvasCtx = CanvasRenderingContext2D
 const $container = useTemplateRef('$container')
 const $canvas = useTemplateRef('$canvas')
 
-const BubbleCount = 20
+const BubbleCoverRatio = 0.5
+const BubbleDropInterval = 50
+const BubbleMaxCount = 100
 const BubbleMinRadius = 50
 const BubbleMaxRadius = 80
 
@@ -17,6 +19,11 @@ const engine: Engine = Engine.create()
 const walls: Body[] = []
 const bubbles: Body[] = []
 
+let canvasWidth = 0
+let canvasHeight = 0
+let bubbleRadius = BubbleMinRadius
+let bubbleCount = 0
+let dropTimer = 0
 let timer: Timer | null = null
 
 class Bubble {
@@ -77,13 +84,16 @@ class Bubble {
   }
 }
 
-useResizeObserver($container, ([entry]) => {
-  if ($canvas.value == null) return
+function syncCanvasSize() {
+  if ($container.value == null || $canvas.value == null) return
 
-  const { width, height } = entry.contentRect
-  $canvas.value.style.width = `${width}px`
-  $canvas.value.style.height = `${height}px`
-})
+  canvasWidth = $container.value.scrollWidth
+  canvasHeight = $container.value.scrollHeight
+  $canvas.value.style.width = `${canvasWidth}px`
+  $canvas.value.style.height = `${canvasHeight}px`
+}
+
+useResizeObserver($container, syncCanvasSize)
 
 useResizeObserver($canvas, ([entry]) => {
   if ($canvas.value == null) return
@@ -98,54 +108,61 @@ useResizeObserver($canvas, ([entry]) => {
   $canvas.value.height = height * dpr
 
   // Setup styles.
-  setupCanvasStyles(ctx)
-
-  const radius = getBubbleRadius(width, height)
-  setupWalls(width, height, radius)
-  resizeBubbles(radius)
-
-  renderBubbles(ctx)
-})
-
-function setupCanvasStyles(ctx: CanvasCtx) {
   ctx.strokeStyle = '#eee'
   ctx.lineWidth = 2
   ctx.lineJoin = 'round'
   ctx.fillStyle = '#222'
-}
+  ctx.scale(dpr, dpr)
 
-function getBubbleRadius(width: number, height: number) {
+  bubbleRadius = getBubbleRadius()
+  setupWalls()
+  resizeBubbles()
+
+  renderBubbles(ctx)
+})
+
+function getBubbleRadius() {
   const ratio = 10
-  return clamp(Math.min(width, height) / ratio, BubbleMinRadius, BubbleMaxRadius)
+  return clamp(
+    Math.min(canvasWidth, canvasHeight) / ratio,
+    BubbleMinRadius,
+    BubbleMaxRadius,
+  )
 }
 
-function setupWalls(width: number, height: number, radius: number) {
-  const thickness = 60
-  const bleed = radius
-  const extent = thickness + bleed
+const wallExtraHeight = 600
+const wallThickness = 60
+
+function setupWalls() {
+  const width = canvasWidth
+  const height = canvasHeight
+  const bleed = bubbleRadius
+  const extent = wallThickness + bleed
+
+  const y = height - (height + wallExtraHeight) / 2
 
   const oldWalls = walls.splice(0, walls.length)
   Composite.remove(engine.world, oldWalls)
 
   const left = Bodies.rectangle(
     -extent / 2,
-    0,
-    thickness,
-    (height + bleed) * 2,
+    y,
+    wallThickness,
+    (height + wallExtraHeight + bleed) * 2,
     { isStatic: true },
   )
   const right = Bodies.rectangle(
     width + extent / 2,
-    0,
-    thickness,
-    (height + bleed) * 2,
+    y,
+    wallThickness,
+    (height + wallExtraHeight + bleed) * 2,
     { isStatic: true },
   )
   const bottom = Bodies.rectangle(
     width / 2,
     height + extent / 2,
     width + extent * 2,
-    thickness,
+    wallThickness,
     { isStatic: true },
   )
 
@@ -153,15 +170,22 @@ function setupWalls(width: number, height: number, radius: number) {
   Composite.add(engine.world, walls)
 }
 
-function resizeBubbles(radius: number) {
+function resizeBubbles() {
   for (const bubble of bubbles) {
-    const currentRadius = bubble.circleRadius ?? radius
-    const scale = radius / currentRadius
+    const oldRadius = bubble.circleRadius ?? bubbleRadius
+    const scale = bubbleRadius / oldRadius
     Body.scale(bubble, scale, scale)
   }
 }
 
 function renderBubbles(ctx: CanvasCtx) {
+  // Y-sort.
+  bubbles.sort((a, b) => {
+    const diff = a.position.y - b.position.y
+    if (Math.abs(diff) < bubbleRadius) return 0
+    return diff
+  })
+
   for (const body of bubbles) {
     const x = body.position.x
     const y = body.position.y
@@ -170,39 +194,25 @@ function renderBubbles(ctx: CanvasCtx) {
   }
 }
 
-function setupBubbles() {
-  if (bubbles.length > 0) return
-
-  const radius = BubbleMinRadius
-
-  for (let i = 0; i < BubbleCount; i++) {
-    const x = radius + (i % 4) * radius * 2
-    const y = radius + Math.floor(i / 4) * radius * 2
-    bubbles.push(Bodies.circle(x, y, radius, { restitution: 0.6 }))
-  }
-
-  Composite.add(engine.world, bubbles)
-}
-
 onMounted(() => {
   const canvas = $canvas.value
   if (canvas == null) return
 
-  setupBubbles()
+  syncCanvasSize()
 
   timer = createTimer({
+    frameRate: 60,
     loop: true,
     onUpdate: ({ deltaTime }) => {
-      Engine.update(engine, deltaTime)
+      const delta = Math.max(deltaTime, 0)
+      Engine.update(engine, delta)
+      removeOutboundBubbles()
+      syncBubbleCount(delta)
 
       const ctx = canvas.getContext('2d')
       if (ctx == null) return
 
-      const dpr = window.devicePixelRatio || 1
-      ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-
       renderBubbles(ctx)
     },
   })
@@ -212,6 +222,67 @@ onBeforeUnmount(() => {
   timer?.cancel()
   timer = null
 })
+
+function removeOutboundBubbles() {
+  for (let i = bubbles.length - 1; i >= 0; i--) {
+    const bubble = bubbles[i]
+    const { x, y } = bubble.position
+    const r = bubble.circleRadius ?? bubbleRadius
+
+    const isOutbound = x < -(r + wallThickness)
+      || x > canvasWidth + r + wallThickness
+      || y > canvasHeight + r + wallThickness
+      || y < -wallExtraHeight
+
+    if (!isOutbound) continue
+
+    bubbles.splice(i, 1)
+    Composite.remove(engine.world, bubble)
+  }
+}
+
+function dropBubble() {
+  if ($canvas.value == null) return
+
+  const r = bubbleRadius
+  const x = random(r, Math.max(r, canvasWidth - r), 2)
+  const y = -random(r, r * 3, 2)
+
+  const bubble = Bodies.circle(x, y, r, { restitution: 0.8 })
+
+  // A small initial force to add randomness and dynamic.
+  Body.applyForce(bubble, bubble.position, {
+    x: random(-0.01, 0.01, 6) * bubble.mass,
+    y: 0,
+  })
+
+  bubbles.push(bubble)
+  Composite.add(engine.world, bubble)
+
+  return bubble
+}
+
+function syncBubbleCount(delta: number) {
+  const bubbleArea = Math.PI * bubbleRadius * bubbleRadius
+  const area = canvasWidth * canvasHeight * BubbleCoverRatio
+
+  bubbleCount = Math.min(Math.ceil(area / bubbleArea), BubbleMaxCount)
+
+  while (bubbles.length > bubbleCount) {
+    const bubble = bubbles.pop()
+    if (bubble == null) break
+
+    Composite.remove(engine.world, bubble)
+  }
+
+  if (bubbles.length >= bubbleCount) return
+  dropTimer += delta
+
+  if (dropTimer >= BubbleDropInterval) {
+    dropTimer -= BubbleDropInterval
+    dropBubble()
+  }
+}
 </script>
 
 <template>
