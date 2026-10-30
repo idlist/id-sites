@@ -30,7 +30,7 @@ import FooterSpheres from '@home/motions/FooterSpheres.vue'
 
   > .content {
     max-width: 1200px;
-    padding: 0 3.5rem 0 1rem;
+    padding: 0 4rem 0 2rem;
   }
 
   > .content > p {

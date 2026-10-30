@@ -9,22 +9,25 @@ type CanvasCtx = CanvasRenderingContext2D
 const $container = useTemplateRef('$container')
 const $canvas = useTemplateRef('$canvas')
 
+const BubbleRadiusRatio = 0.06
 const BubbleCoverRatio = 0.5
 const BubbleDropInterval = 50
 const BubbleMaxCount = 100
 const BubbleMinRadius = 50
 const BubbleMaxRadius = 80
 
-const engine: Engine = Engine.create()
-const walls: Body[] = []
-const bubbles: Body[] = []
-
 let canvasWidth = 0
 let canvasHeight = 0
 let bubbleRadius = BubbleMinRadius
+let centerRadius = 0
 let bubbleCount = 0
 let dropTimer = 0
 let timer: Timer | null = null
+
+const engine: Engine = Engine.create()
+const walls: Body[] = []
+const centerArea: Body | null = null
+const bubbles: Body[] = []
 
 class Bubble {
   x: number
@@ -44,22 +47,22 @@ class Bubble {
     ctx.fillStyle = '#222'
 
     ctx.beginPath()
-    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI)
+    ctx.arc(this.x, this.y, this.r - 4, 0, 2 * Math.PI)
     ctx.fill()
 
     // Outer circle.
     ctx.lineWidth = 2
-    ctx.strokeStyle = '#ccc'
+    ctx.strokeStyle = '#eee'
 
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI * 2)
     ctx.stroke()
 
-    const rhl = this.r - 16
+    const rhl = this.r - 14
     const rcap = 4
 
     // Small highlight.
-    ctx.strokeStyle = '#aaa'
+    ctx.strokeStyle = '#ccc'
     ctx.lineWidth = 1.5
 
     ctx.beginPath()
@@ -94,45 +97,59 @@ class Bubble {
   }
 }
 
-function syncCanvasSize() {
+/* Canvas Control */
+
+function setupCanvasSize() {
   if ($container.value == null || $canvas.value == null) return
 
-  canvasWidth = $container.value.scrollWidth
-  canvasHeight = $container.value.scrollHeight
+  const { scrollWidth: w, scrollHeight: h } = $container.value
+  const CenterMinRadius = 400
+  centerRadius = Math.max(CenterMinRadius, Math.min(w, h) * 0.8)
+
+  bubbleRadius = getBubbleRadius(w, h)
+  const minCanvasWidth = centerRadius + bubbleRadius * 6
+  canvasWidth = Math.max(w, minCanvasWidth)
+  canvasHeight = h
+
   $canvas.value.style.width = `${canvasWidth}px`
   $canvas.value.style.height = `${canvasHeight}px`
 }
 
-useResizeObserver($container, syncCanvasSize)
-
-useResizeObserver($canvas, ([entry]) => {
+function setupCanvasContext() {
   if ($canvas.value == null) return
 
   const ctx = $canvas.value.getContext('2d')
   if (ctx == null) return
 
-  // Setup canvas size.
   const dpr = window.devicePixelRatio || 1
-  const { width, height } = entry.contentRect
-  $canvas.value.width = width * dpr
-  $canvas.value.height = height * dpr
+  $canvas.value.width = canvasWidth * dpr
+  $canvas.value.height = canvasHeight * dpr
   ctx.scale(dpr, dpr)
 
-  bubbleRadius = getBubbleRadius()
   setupWalls()
-  resizeBubbles()
+  setupCenterArea()
 
+  resizeBubbles()
   renderBubbles(ctx)
+  renderCenterArea(ctx)
+}
+
+useResizeObserver($container, () => {
+  setupCanvasSize()
+  setupCanvasContext()
 })
 
-function getBubbleRadius() {
-  const ratio = 10
-  return clamp(
-    Math.min(canvasWidth, canvasHeight) / ratio,
+function getBubbleRadius(cw: number, ch: number) {
+  const radius = clamp(
+    Math.hypot(cw, ch) * BubbleRadiusRatio,
     BubbleMinRadius,
     BubbleMaxRadius,
   )
+
+  return radius
 }
+
+/* Walls */
 
 const WallExtraHeight = 600
 const WallThickness = 80
@@ -174,6 +191,16 @@ function setupWalls() {
   Composite.add(engine.world, walls)
 }
 
+/* Center Area */
+
+function setupCenterArea() {
+}
+
+function renderCenterArea(ctx: CanvasCtx) {
+}
+
+/* Bubbles */
+
 function resizeBubbles() {
   for (const bubble of bubbles) {
     const oldRadius = bubble.circleRadius ?? bubbleRadius
@@ -183,7 +210,7 @@ function resizeBubbles() {
 }
 
 function renderBubbles(ctx: CanvasCtx) {
-  // Y-sort.
+  // A simple y-sort.
   bubbles.sort((a, b) => {
     const diff = a.position.y - b.position.y
     if (Math.abs(diff) < bubbleRadius) return 0
@@ -197,38 +224,6 @@ function renderBubbles(ctx: CanvasCtx) {
     new Bubble(x, y, r).draw(ctx)
   }
 }
-
-onMounted(() => {
-  const canvas = $canvas.value
-  if (canvas == null) return
-
-  syncCanvasSize()
-  scrollY = window.scrollY
-
-  timer = createTimer({
-    frameRate: 60,
-    loop: true,
-    onUpdate: ({ deltaTime }) => {
-      const delta = Math.max(deltaTime, 0)
-
-      applyPointerForce()
-      Engine.update(engine, delta)
-      removeOutboundBubbles()
-      syncBubbleCount(delta)
-
-      const ctx = canvas.getContext('2d')
-      if (ctx == null) return
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      renderBubbles(ctx)
-    },
-  })
-})
-
-onBeforeUnmount(() => {
-  timer?.cancel()
-  timer = null
-})
 
 function removeOutboundBubbles() {
   for (let i = bubbles.length - 1; i >= 0; i--) {
@@ -292,6 +287,8 @@ function syncBubbleCount(delta: number) {
   }
 }
 
+/* Pointer Interaction */
+
 let pointer: Vector | null = null
 let pointerSpeed = 0
 
@@ -311,7 +308,7 @@ function applyPointerForce() {
 
     const strength = 1 - d / rp
     const depth = clamp(bubble.position.y / canvasHeight, 0, 1)
-    const f = 0.01 * strength * Math.pow(1 + depth, 2) * gain * bubble.mass
+    const f = 0.02 * strength * Math.pow(1 + depth, 2) * gain * bubble.mass
 
     const vf = Vector.create(dx / d * f, dy / d * f)
     Body.applyForce(bubble, bubble.position, vf)
@@ -339,6 +336,40 @@ function onPointerLeave() {
 
 useEventListener('pointermove', onPointerMove)
 useEventListener('pointerleave', onPointerLeave)
+
+/* Main Loop */
+
+onMounted(() => {
+  const canvas = $canvas.value
+  if (canvas == null) return
+
+  setupCanvasSize()
+
+  timer = createTimer({
+    frameRate: 60,
+    loop: true,
+    onUpdate: ({ deltaTime }) => {
+      const delta = Math.max(deltaTime, 0)
+
+      applyPointerForce()
+      Engine.update(engine, delta)
+      removeOutboundBubbles()
+      syncBubbleCount(delta)
+
+      const ctx = canvas.getContext('2d')
+      if (ctx == null) return
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      renderBubbles(ctx)
+      renderCenterArea(ctx)
+    },
+  })
+})
+
+onBeforeUnmount(() => {
+  timer?.cancel()
+  timer = null
+})
 </script>
 
 <template>
@@ -359,6 +390,7 @@ useEventListener('pointerleave', onPointerLeave)
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    max-width: fit-content;
   }
 }
 </style>
