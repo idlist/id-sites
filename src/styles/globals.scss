@@ -103,6 +103,14 @@ a {
   p, ul, ol {
     @extend .id-typeface;
   }
+
+  &.-nomargin {
+    margin: 0;
+
+    p, ul, ol {
+      margin: 0;
+    }
+  }
 }
 
 .id-section-title {

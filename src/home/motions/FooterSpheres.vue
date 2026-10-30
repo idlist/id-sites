@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { FooterBleed, getCenterRadius } from '@home/designs/footer'
-import { useEventListener, useResizeObserver } from '@vueuse/core'
+import { useElementVisibility, useEventListener, useResizeObserver } from '@vueuse/core'
 import { clamp, createTimer, degToRad, radToDeg, random, type Timer } from 'animejs'
 import { Bodies, Body, Composite, Engine, Vector } from 'matter-js'
-import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
+import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
+
+const props = defineProps<{
+  activate?: boolean
+}>()
 
 type CanvasCtx = CanvasRenderingContext2D
 
 const $container = useTemplateRef('$container')
 const $canvas = useTemplateRef('$canvas')
+const canvasVisible = useElementVisibility($canvas)
 
 const EngineGravity = 0.8
-const BubbleRadiusRatio = 0.05
+const BubbleRadiusRatio = 0.042
 const BubbleDropInterval = 50
 const BubbleMaxCount = 256
-const BubbleMinRadius = 50
+const BubbleMinRadius = 40
 const BubbleMaxRadius = 80
 
 let canvasWidth = 0
@@ -109,7 +114,7 @@ function setupCanvasSize() {
 
   centerRadius = getCenterRadius(w, h)
   bubbleRadius = getBubbleRadius(w, h)
-  const minCanvasWidth = centerRadius + bubbleRadius * 7
+  const minCanvasWidth = centerRadius + bubbleRadius * 10
   canvasWidth = Math.max(w, minCanvasWidth)
   canvasHeight = h
 
@@ -279,8 +284,9 @@ function dropBubble() {
   const y = -random(r * 2, r * 8, 2)
 
   const bubble = Bodies.circle(x, y, r, {
-    density: 0.000001,
+    density: 0.00001,
     restitution: 0.6,
+    frictionStatic: 0.25,
     frictionAir: 0.012,
   })
 
@@ -345,33 +351,26 @@ function applyMask(ctx: CanvasCtx, mask: CanvasGradient | null) {
   ctx.restore()
 }
 
-/* Mouse Interaction */
+/* Pointer Interaction */
 
-// Only interact with mouse on PC. Do not interact with screen events.
-// That's the reason not to use pointer events.
-
-const MouseForceBase = 0.08
+const MouseForceBase = 0.05
 const MouseSpeedRatio = 0.02
 
-let mouse: Vector | null = null
-let mouseSpeed = 0
-let mouseDown = false
+let pointer: Vector | null = null
+let pointerSpeed = 0
+let pointerDown = false
 
-function applyMouseForce() {
-  if (mouse == null) return
+function applyPointerForce() {
+  if (pointer == null) return
 
-  const rp = bubbleRadius * (mouseDown ? 8 : 2)
-  const gain = mouseDown
+  const rp = bubbleRadius * (pointerDown ? 8 : 2)
+  const gain = pointerDown
     ? 2
-    : clamp(mouseSpeed * MouseSpeedRatio, 0, 1)
-
-  // Consume pointer states.
-  mouseSpeed = 0
-  mouseDown = false
+    : clamp(pointerSpeed * MouseSpeedRatio, 0, 1)
 
   for (const bubble of bubbles) {
-    const dx = bubble.position.x - mouse.x
-    const dy = bubble.position.y - mouse.y
+    const dx = bubble.position.x - pointer.x
+    const dy = bubble.position.y - pointer.y
     const d = Math.hypot(dx, dy)
 
     if (d > rp || d === 0) continue
@@ -384,12 +383,19 @@ function applyMouseForce() {
       * gain
       * bubble.mass
 
-    const vf = Vector.create(dx / d * f, dy / d * f)
-    Body.applyForce(bubble, bubble.position, vf)
+    const fx = dx / d * f
+    // Only retains the force to raise the bubbles.
+    const fy = Math.min(dy / d * f, 0)
+
+    Body.applyForce(bubble, bubble.position, Vector.create(fx, fy))
   }
+
+  // Consume pointer states.
+  pointerSpeed = 0
+  pointerDown = false
 }
 
-function onMouseMove(event: MouseEvent) {
+function getRelativePosition(event: PointerEvent) {
   const canvas = $canvas.value
   if (canvas == null) return
 
@@ -397,24 +403,37 @@ function onMouseMove(event: MouseEvent) {
   const x = event.clientX - rect.left
   const y = event.clientY - rect.top
 
-  if (mouse != null) {
-    mouseSpeed = Math.hypot(x - mouse.x, y - mouse.y)
+  return { x, y }
+}
+
+function onPointerMove(event: PointerEvent) {
+  const position = getRelativePosition(event)
+  if (position == null) return
+  const { x, y } = position
+
+  if (pointer != null) {
+    pointerSpeed = Math.hypot(x - pointer.x, y - pointer.y)
   }
 
-  mouse = Vector.create(x, y)
+  pointer = Vector.create(x, y)
 }
 
-function onMouseLeave() {
-  mouse = null
+function onPointerLeave() {
+  pointer = null
 }
 
-function onMouseDown() {
-  mouseDown = true
+function onPointerDown(event: PointerEvent) {
+  const position = getRelativePosition(event)
+  if (position == null) return
+  const { x, y } = position
+
+  pointer = Vector.create(x, y)
+  pointerDown = true
 }
 
-useEventListener('mousemove', onMouseMove)
-useEventListener('mouseleave', onMouseLeave)
-useEventListener('mousedown', onMouseDown)
+useEventListener('pointermove', onPointerMove)
+useEventListener('pointerleave', onPointerLeave)
+useEventListener('pointerdown', onPointerDown)
 
 /* Main Loop */
 
@@ -430,11 +449,12 @@ onMounted(() => {
 
   timer = createTimer({
     frameRate: 60,
+    autoplay: false,
     loop: true,
     onUpdate: ({ deltaTime }) => {
       const delta = Math.max(deltaTime, 0)
 
-      applyMouseForce()
+      applyPointerForce()
       Engine.update(engine, delta)
       removeOutboundBubbles()
       syncBubbleCount(delta)
@@ -444,6 +464,21 @@ onMounted(() => {
       applyMask(ctx, bleedMask)
     },
   })
+
+  let activationWatcher = watch(() => props.activate, (val) => {
+    if (val) {
+      timer?.play()
+      activationWatcher.stop()
+    }
+  }, { immediate: true })
+
+  watch(canvasVisible, (val) => {
+    if (val) {
+      timer?.resume()
+    } else {
+      timer?.pause()
+    }
+  }, { immediate: true })
 })
 
 onBeforeUnmount(() => {

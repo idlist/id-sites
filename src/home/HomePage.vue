@@ -23,6 +23,7 @@ import WorksFlakepiles from './screens/WorksFlakepiles.vue'
 import WorksHeader from './screens/WorksHeader.vue'
 import WorksOther from './screens/WorksOther.vue'
 
+import { FooterBleed } from './designs/footer.ts'
 import type { ViteSvgComponent } from './utils.ts'
 
 interface NavigationSection {
@@ -37,6 +38,7 @@ interface NavigationGroup {
   draft?: boolean
   icon: ViteSvgComponent
   label: GeneralVirtualMessage
+  offset?: number
   sections: NavigationSection[]
 }
 
@@ -77,6 +79,7 @@ const pageList: NavigationGroup[] = [
     gid: 'footer',
     icon: IconStars,
     label: m.groupFooter,
+    offset: FooterBleed,
     sections: [
       { section: FooterScreen, id: 'footer' },
     ],
@@ -210,7 +213,8 @@ function scrollToGroup(gid: string) {
   const group = navGroupBorders.value.find((g) => g.gid === gid)
   if (!group) return
 
-  scroll(group.border)
+  const offset = pageList.find((g) => g.gid === gid)?.offset ?? 0
+  scroll(group.border + offset)
 }
 
 function jumpFromQuery() {

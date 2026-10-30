@@ -167,6 +167,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   timer?.cancel()
+  timer = null
 })
 </script>
 
