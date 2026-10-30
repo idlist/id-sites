@@ -9,6 +9,8 @@ type CanvasCtx = CanvasRenderingContext2D
 const $container = useTemplateRef('$container')
 const $canvas = useTemplateRef('$canvas')
 
+const CanvasBleed = 80
+const EngineGravity = 0.8
 const BubbleRadiusRatio = 0.05
 const BubbleDropInterval = 100
 const BubbleMaxCount = 256
@@ -23,7 +25,9 @@ let bubbleCount = 0
 let dropTimer = 0
 let timer: Timer | null = null
 
-const engine: Engine = Engine.create()
+const engine: Engine = Engine.create({
+  gravity: { scale: 0.001 * EngineGravity },
+})
 const walls: Body[] = []
 let centerSpace: Body | null = null
 const bubbles: Body[] = []
@@ -107,7 +111,7 @@ function setupCanvasSize() {
   const CenterMinRadius = 200
   centerRadius = Math.max(
     CenterMinRadius,
-    Math.min(w, h) * 0.5 * CenterRadiusRatio,
+    Math.min(w, h - CanvasBleed) * 0.5 * CenterRadiusRatio,
   )
 
   bubbleRadius = getBubbleRadius(w, h)
@@ -152,21 +156,22 @@ function getBubbleRadius(cw: number, ch: number) {
 
 /* Walls */
 
-const WallExtraHeight = 600
+const WallExtraHeightRatio = 10
 const WallThickness = 80
 
 function getExtraRoom() {
-  return bubbleRadius * 3
+  return bubbleRadius * 5
 }
 
 function setupWalls() {
+  const wallExtraHeight = bubbleRadius * WallExtraHeightRatio
   const width = canvasWidth
   const height = canvasHeight
   const extraRoom = getExtraRoom()
 
   const extend = WallThickness + extraRoom
-  const sideY = height - (height + WallExtraHeight) / 2
-  const sideHeight = height + WallExtraHeight + extraRoom * 2
+  const sideY = height - (height + wallExtraHeight) / 2
+  const sideHeight = height + wallExtraHeight + extraRoom * 2
 
   const oldWalls = walls.splice(0, walls.length)
   Composite.remove(engine.world, oldWalls)
@@ -199,6 +204,10 @@ function setupWalls() {
 
 /* Center Area */
 
+function getCenterSpaceY() {
+  return CanvasBleed + (canvasHeight - CanvasBleed) / 2
+}
+
 function setupCenterArea() {
   if (centerSpace != null) {
     Composite.remove(engine.world, centerSpace)
@@ -206,11 +215,24 @@ function setupCenterArea() {
 
   centerSpace = Bodies.circle(
     canvasWidth / 2,
-    canvasHeight / 2,
+    getCenterSpaceY(),
     centerRadius,
     { isStatic: true },
   )
   Composite.add(engine.world, centerSpace)
+}
+
+function _renderCenterArea(ctx: CanvasCtx) {
+  ctx.fillStyle = '#222'
+  ctx.beginPath()
+  ctx.arc(
+    canvasWidth / 2,
+    getCenterSpaceY(),
+    centerRadius,
+    0,
+    Math.PI * 2,
+  )
+  ctx.fill()
 }
 
 /* Bubbles */
@@ -244,11 +266,12 @@ function removeOutboundBubbles() {
     const bubble = bubbles[i]
     const { x, y } = bubble.position
     const r = bubble.circleRadius ?? bubbleRadius
+    const wallExtraHeight = bubbleRadius * WallExtraHeightRatio
 
     const isOutbound = x < -(r + WallThickness)
       || x > canvasWidth + r + WallThickness
       || y > canvasHeight + r + WallThickness
-      || y < -WallExtraHeight
+      || y < -wallExtraHeight
 
     if (!isOutbound) continue
 
@@ -262,11 +285,13 @@ function dropBubble() {
 
   const r = bubbleRadius
   const x = random(r, Math.max(r, canvasWidth - r), 2)
-  const y = -random(r, r * 3, 2)
+  const y = -random(r * 2, r * 8, 2)
 
   const bubble = Bodies.circle(x, y, r, {
-    density: 0.000005,
-    restitution: 0.8,
+    density: 0.000001,
+    restitution: 0.6,
+    frictionStatic: 0.2,
+    frictionAir: 0.012,
   })
 
   // A small initial force to add randomness and dynamic.
@@ -307,49 +332,51 @@ function syncBubbleCount(delta: number) {
   }
 }
 
-/* Pointer Interaction */
+/* Mouse Interaction */
 
-const PointerForceBase = 0.08
-const PointerSpeedRatio = 0.02
+// Only interact with mouse on PC. Do not interact with screen events.
+// That's the reason not to use pointer events.
 
-let pointer: Vector | null = null
-let pointerSpeed = 0
+const MouseForceBase = 0.08
+const MouseSpeedRatio = 0.02
+
+let mouse: Vector | null = null
+let mouseSpeed = 0
 let mouseDown = false
 
-function applyPointerForce() {
-  if (pointer == null) return
+function applyMouseForce() {
+  if (mouse == null) return
 
   const rp = bubbleRadius * (mouseDown ? 8 : 2)
   const gain = mouseDown
     ? 2
-    : clamp(pointerSpeed * PointerSpeedRatio, 0, 1)
+    : clamp(mouseSpeed * MouseSpeedRatio, 0, 1)
 
   // Consume pointer states.
-  pointerSpeed = 0
+  mouseSpeed = 0
   mouseDown = false
 
   for (const bubble of bubbles) {
-    const dx = bubble.position.x - pointer.x
-    const dy = bubble.position.y - pointer.y
+    const dx = bubble.position.x - mouse.x
+    const dy = bubble.position.y - mouse.y
     const d = Math.hypot(dx, dy)
 
     if (d > rp || d === 0) continue
 
     const strength = 1 - d / rp
     const depth = clamp(bubble.position.y / canvasHeight, 0, 1)
-    const f = PointerForceBase
+    const f = MouseForceBase
       * strength
       * (1 + depth)
       * gain
       * bubble.mass
 
-    // Only retain the force to raise the bubbles.
-    const vf = Vector.create(dx / d * f, Math.min(dy / d * f, 0))
+    const vf = Vector.create(dx / d * f, dy / d * f)
     Body.applyForce(bubble, bubble.position, vf)
   }
 }
 
-function onPointerMove(event: PointerEvent) {
+function onMouseMove(event: MouseEvent) {
   const canvas = $canvas.value
   if (canvas == null) return
 
@@ -357,23 +384,23 @@ function onPointerMove(event: PointerEvent) {
   const x = event.clientX - rect.left
   const y = event.clientY - rect.top
 
-  if (pointer != null) {
-    pointerSpeed = Math.hypot(x - pointer.x, y - pointer.y)
+  if (mouse != null) {
+    mouseSpeed = Math.hypot(x - mouse.x, y - mouse.y)
   }
 
-  pointer = Vector.create(x, y)
+  mouse = Vector.create(x, y)
 }
 
-function onPointerLeave() {
-  pointer = null
+function onMouseLeave() {
+  mouse = null
 }
 
 function onMouseDown() {
   mouseDown = true
 }
 
-useEventListener('pointermove', onPointerMove)
-useEventListener('pointerleave', onPointerLeave)
+useEventListener('mousemove', onMouseMove)
+useEventListener('mouseleave', onMouseLeave)
 useEventListener('mousedown', onMouseDown)
 
 /* Main Loop */
@@ -390,7 +417,7 @@ onMounted(() => {
     onUpdate: ({ deltaTime }) => {
       const delta = Math.max(deltaTime, 0)
 
-      applyPointerForce()
+      applyMouseForce()
       Engine.update(engine, delta)
       removeOutboundBubbles()
       syncBubbleCount(delta)
