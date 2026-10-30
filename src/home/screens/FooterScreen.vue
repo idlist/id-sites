@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import IconSphericalVacuum from '@assets/spherical-vacuum.svg?url'
+import IconSphericalVacuum from '@assets/spherical-vacuum.png?url'
 import LastUpdate from '@home/components/LastUpdate.vue'
-import { FooterBleed, getCenterRadius } from '@home/designs/footer'
+import { CenterMinRadius, FooterBleed, getCenterRadius } from '@home/designs/footer'
 import FooterSpheres from '@home/motions/FooterSpheres.vue'
 import { useI18nComponent } from '@src/home/locales/i18n'
 import { useElementBounding, useIntersectionObserver } from '@vueuse/core'
@@ -35,8 +35,9 @@ const contentStyle = computed<StyleValue>(() => {
 
 const FooterPromo = useI18nComponent('FooterPromo')
 
-// Does not need reactivity as FooterBleed is a constant.
+// Does not need reactivity as values involved are constants.
 const pxFooterBleed = `${FooterBleed}px`
+const pxMinHeight = `${FooterBleed + 2 * CenterMinRadius}px`
 </script>
 
 <template>
@@ -64,7 +65,7 @@ const pxFooterBleed = `${FooterBleed}px`
   width: 100%;
   height: calc(100vh + v-bind("pxFooterBleed"));
   height: calc(100lvh + v-bind("pxFooterBleed"));
-  min-height: calc(400px + v-bind("pxFooterBleed"));
+  min-height: v-bind("pxMinHeight");
   padding-top: v-bind("pxFooterBleed");
 
   display: flex;
