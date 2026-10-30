@@ -10,7 +10,7 @@ interface Props {
 const { locale = 'en' } = Astro.props
 const { m } = useI18n(locale)
 
-const message = m('noteListEpilogue')
+const message = m('noteListEpilog')
 const splitted = message
   .split('|')
   .map((segments) => `<span>${segments}</span>`)
@@ -43,6 +43,7 @@ const splitted = message
   > p {
     display: grid;
     grid-template-columns: auto auto;
+    white-space: pre-wrap;
   }
 
   @media (max-width: 600px) {

@@ -3,11 +3,9 @@ import IconSphericalVacuum from '@assets/spherical-vacuum.svg?url'
 import LastUpdate from '@home/components/LastUpdate.vue'
 import { FooterBleed, getCenterRadius } from '@home/designs/footer'
 import FooterSpheres from '@home/motions/FooterSpheres.vue'
+import { useI18nComponent } from '@src/home/locales/i18n'
 import { useElementBounding, useIntersectionObserver } from '@vueuse/core'
-import { locale, type SupportedLocales } from 'virtual:i18n'
-import { type Component, computed, ref, type StyleValue, useTemplateRef } from 'vue'
-import FooterPromoEn from '../locales/en/FooterPromoEn.vue'
-import FooterPromoZh from '../locales/zh/FooterPromoZh.vue'
+import { computed, ref, type StyleValue, useTemplateRef } from 'vue'
 
 const activate = ref(false)
 const ActivationRatio = 0.8
@@ -35,15 +33,10 @@ const contentStyle = computed<StyleValue>(() => {
   }
 })
 
+const FooterPromo = useI18nComponent('FooterPromo')
+
 // Does not need reactivity as FooterBleed is a constant.
 const pxFooterBleed = `${FooterBleed}px`
-
-const FooterPromoMap: Record<SupportedLocales, Component> = {
-  en: FooterPromoEn,
-  zh: FooterPromoZh,
-}
-
-const FooterPromo = computed(() => FooterPromoMap[locale.value])
 </script>
 
 <template>

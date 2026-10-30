@@ -1,15 +1,15 @@
 ---
 import IconIsland from '@assets/island.svg'
 import { useI18n } from '@virtual-i18n/static'
-import type { MDXInstance } from 'astro'
 import { getCollection } from 'astro:content'
 import type { SupportedLocales } from 'virtual:i18n'
 import BubbleRect20 from './components/BubbleRect20.astro'
 import GotoOverlayAstro from './components/GotoOverlayAstro.vue'
 import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
 import NoteFooter from './components/NoteFooter.astro'
-import NoteListEpilogue from './components/NoteListEpilogue.astro'
+import NoteListEpilog from './components/NoteListEpilog.astro'
 import NoteTopicGroup from './components/NoteTopicGroup.astro'
+import { useI18nMdxComponent } from './locales/i18n'
 import NoteBase, { type NoteProps } from './NoteBase.astro'
 
 interface NoteTopic {
@@ -73,9 +73,7 @@ const localePageMap: Record<SupportedLocales, string> = {
   zh: '/notes/zh',
 }
 
-const NoteListPreface = (await import(
-  `./components/NoteListPreface.${locale}.mdx`
-) as MDXInstance<object>).default
+const NoteListPreface = useI18nMdxComponent(locale, 'NoteListPreface')
 ---
 
 <NoteBase locale={locale} title={title}>
@@ -129,7 +127,7 @@ const NoteListPreface = (await import(
               </NoteTopicGroup>
             ))}
 
-          <NoteListEpilogue locale={locale} />
+          <NoteListEpilog locale={locale} />
           <NoteFooter locale={locale} />
         </div>
       </BubbleRect20>
