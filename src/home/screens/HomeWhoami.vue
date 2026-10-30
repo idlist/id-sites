@@ -1,12 +1,12 @@
 <template>
-  <div class="home-whoami">
+  <section class="home-whoami">
     <div class="content">
       <h2 class="id-section-title">WHO IS THIS GUY?</h2>
       <div class="id-typeface">
         <p>A random guy on the Internet who happens to have nearly all sort of skills</p>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped lang="scss">

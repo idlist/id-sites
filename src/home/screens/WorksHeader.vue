@@ -4,12 +4,12 @@ import { m } from 'virtual:i18n'
 </script>
 
 <template>
-  <div class="works-header">
+  <section class="works-header">
     <div class="content">
       <WorksBulb />
       <h2 class="id-section-title">{{ m.sectionWorks() }}</h2>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped lang="scss">

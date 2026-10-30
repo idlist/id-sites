@@ -3,12 +3,12 @@ import { m } from 'virtual:i18n'
 </script>
 
 <template>
-  <div class="works-other">
+  <section class="works-other">
     <div class="content">
       <h2 class="id-section-title">{{ m.sectionWorksOther() }}</h2>
       <div></div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped lang="scss">

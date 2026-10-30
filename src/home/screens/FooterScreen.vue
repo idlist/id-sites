@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import LastUpdate from '@home/components/LastUpdate.vue'
-import PageFull from '@home/components/PageFull.vue'
 import FooterSpheres from '@home/motions/FooterSpheres.vue'
 </script>
 
 <template>
-  <PageFull expand class="footer-screen">
+  <section class="footer-screen">
     <div class="id-typeface content">
       <p>
         This site is designed and developed by <b>i'DLisT</b> from <b>Spherical Vaccum.</b>
@@ -17,20 +16,26 @@ import FooterSpheres from '@home/motions/FooterSpheres.vue'
 
     <LastUpdate />
     <FooterSpheres />
-  </PageFull>
+  </section>
 </template>
 
 <style scoped lang="scss">
 .footer-screen {
+  --footer-bleed: 80px;
+
+  position: relative;
+  width: 100%;
+  height: calc(100vh + var(--footer-bleed));
+  height: calc(100lvh + var(--footer-bleed));
+  min-height: 400px;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  position: relative;
-
   > .content {
     max-width: 1200px;
-    padding: 0 4rem 0 2rem;
+    padding: var(--footer-bleed) 4rem 0 2rem;
   }
 
   > .content > p {

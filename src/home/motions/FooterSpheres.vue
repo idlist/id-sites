@@ -9,10 +9,9 @@ type CanvasCtx = CanvasRenderingContext2D
 const $container = useTemplateRef('$container')
 const $canvas = useTemplateRef('$canvas')
 
-const BubbleRadiusRatio = 0.06
-const BubbleCoverRatio = 0.5
-const BubbleDropInterval = 50
-const BubbleMaxCount = 100
+const BubbleRadiusRatio = 0.05
+const BubbleDropInterval = 100
+const BubbleMaxCount = 256
 const BubbleMinRadius = 50
 const BubbleMaxRadius = 80
 
@@ -26,7 +25,7 @@ let timer: Timer | null = null
 
 const engine: Engine = Engine.create()
 const walls: Body[] = []
-const centerArea: Body | null = null
+let centerSpace: Body | null = null
 const bubbles: Body[] = []
 
 class Bubble {
@@ -58,7 +57,7 @@ class Bubble {
     ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI * 2)
     ctx.stroke()
 
-    const rhl = this.r - 14
+    const rhl = this.r - 16
     const rcap = 4
 
     // Small highlight.
@@ -77,7 +76,7 @@ class Bubble {
     // Large highlight.
     ctx.beginPath()
 
-    const alhl1 = ashl + radToDeg(14 / rhl)
+    const alhl1 = ashl + radToDeg(rcap * 4 / rhl)
     const alhl2 = -15
 
     const xlhl1 = this.x + rhl * Math.cos(degToRad(alhl1))
@@ -103,11 +102,16 @@ function setupCanvasSize() {
   if ($container.value == null || $canvas.value == null) return
 
   const { scrollWidth: w, scrollHeight: h } = $container.value
-  const CenterMinRadius = 400
-  centerRadius = Math.max(CenterMinRadius, Math.min(w, h) * 0.8)
+
+  const CenterRadiusRatio = 0.9
+  const CenterMinRadius = 200
+  centerRadius = Math.max(
+    CenterMinRadius,
+    Math.min(w, h) * 0.5 * CenterRadiusRatio,
+  )
 
   bubbleRadius = getBubbleRadius(w, h)
-  const minCanvasWidth = centerRadius + bubbleRadius * 6
+  const minCanvasWidth = centerRadius + bubbleRadius * 7
   canvasWidth = Math.max(w, minCanvasWidth)
   canvasHeight = h
 
@@ -128,10 +132,7 @@ function setupCanvasContext() {
 
   setupWalls()
   setupCenterArea()
-
   resizeBubbles()
-  renderBubbles(ctx)
-  renderCenterArea(ctx)
 }
 
 useResizeObserver($container, () => {
@@ -154,35 +155,40 @@ function getBubbleRadius(cw: number, ch: number) {
 const WallExtraHeight = 600
 const WallThickness = 80
 
+function getExtraRoom() {
+  return bubbleRadius * 3
+}
+
 function setupWalls() {
   const width = canvasWidth
   const height = canvasHeight
-  const bleed = bubbleRadius
-  const extent = WallThickness + bleed
+  const extraRoom = getExtraRoom()
 
-  const y = height - (height + WallExtraHeight) / 2
+  const extend = WallThickness + extraRoom
+  const sideY = height - (height + WallExtraHeight) / 2
+  const sideHeight = height + WallExtraHeight + extraRoom * 2
 
   const oldWalls = walls.splice(0, walls.length)
   Composite.remove(engine.world, oldWalls)
 
   const left = Bodies.rectangle(
-    -extent / 2,
-    y,
+    -extend / 2,
+    sideY,
     WallThickness,
-    (height + WallExtraHeight + bleed) * 2,
+    sideHeight,
     { isStatic: true },
   )
   const right = Bodies.rectangle(
-    width + extent / 2,
-    y,
+    width + extend / 2,
+    sideY,
     WallThickness,
-    (height + WallExtraHeight + bleed) * 2,
+    sideHeight,
     { isStatic: true },
   )
   const bottom = Bodies.rectangle(
     width / 2,
-    height + extent / 2,
-    width + extent * 2,
+    height + extend / 2,
+    width + extend * 2,
     WallThickness,
     { isStatic: true },
   )
@@ -194,9 +200,17 @@ function setupWalls() {
 /* Center Area */
 
 function setupCenterArea() {
-}
+  if (centerSpace != null) {
+    Composite.remove(engine.world, centerSpace)
+  }
 
-function renderCenterArea(ctx: CanvasCtx) {
+  centerSpace = Bodies.circle(
+    canvasWidth / 2,
+    canvasHeight / 2,
+    centerRadius,
+    { isStatic: true },
+  )
+  Composite.add(engine.world, centerSpace)
 }
 
 /* Bubbles */
@@ -250,7 +264,10 @@ function dropBubble() {
   const x = random(r, Math.max(r, canvasWidth - r), 2)
   const y = -random(r, r * 3, 2)
 
-  const bubble = Bodies.circle(x, y, r, { restitution: 0.8 })
+  const bubble = Bodies.circle(x, y, r, {
+    density: 0.000005,
+    restitution: 0.8,
+  })
 
   // A small initial force to add randomness and dynamic.
   Body.applyForce(bubble, bubble.position, {
@@ -265,10 +282,13 @@ function dropBubble() {
 }
 
 function syncBubbleCount(delta: number) {
-  const bubbleArea = Math.PI * bubbleRadius * bubbleRadius
-  const area = canvasWidth * canvasHeight * BubbleCoverRatio
+  const bubbleArea = bubbleRadius * bubbleRadius * 4
+  const extraRoom = getExtraRoom()
+  const canvasArea = (canvasWidth + extraRoom * 2) * (canvasHeight + extraRoom)
+  const centerArea = centerRadius * centerRadius * 4
 
-  bubbleCount = Math.min(Math.ceil(area / bubbleArea), BubbleMaxCount)
+  const n = (canvasArea - centerArea) / bubbleArea
+  bubbleCount = Math.min(Math.ceil(n), BubbleMaxCount)
 
   while (bubbles.length > bubbleCount) {
     const bubble = bubbles.pop()
@@ -289,15 +309,24 @@ function syncBubbleCount(delta: number) {
 
 /* Pointer Interaction */
 
+const PointerForceBase = 0.08
+const PointerSpeedRatio = 0.02
+
 let pointer: Vector | null = null
 let pointerSpeed = 0
+let mouseDown = false
 
 function applyPointerForce() {
   if (pointer == null) return
 
-  const rp = 160
-  const gain = clamp(pointerSpeed / 20, 0, 1)
+  const rp = bubbleRadius * (mouseDown ? 8 : 2)
+  const gain = mouseDown
+    ? 2
+    : clamp(pointerSpeed * PointerSpeedRatio, 0, 1)
+
+  // Consume pointer states.
   pointerSpeed = 0
+  mouseDown = false
 
   for (const bubble of bubbles) {
     const dx = bubble.position.x - pointer.x
@@ -308,9 +337,14 @@ function applyPointerForce() {
 
     const strength = 1 - d / rp
     const depth = clamp(bubble.position.y / canvasHeight, 0, 1)
-    const f = 0.02 * strength * Math.pow(1 + depth, 2) * gain * bubble.mass
+    const f = PointerForceBase
+      * strength
+      * (1 + depth)
+      * gain
+      * bubble.mass
 
-    const vf = Vector.create(dx / d * f, dy / d * f)
+    // Only retain the force to raise the bubbles.
+    const vf = Vector.create(dx / d * f, Math.min(dy / d * f, 0))
     Body.applyForce(bubble, bubble.position, vf)
   }
 }
@@ -334,8 +368,13 @@ function onPointerLeave() {
   pointer = null
 }
 
+function onMouseDown() {
+  mouseDown = true
+}
+
 useEventListener('pointermove', onPointerMove)
 useEventListener('pointerleave', onPointerLeave)
+useEventListener('mousedown', onMouseDown)
 
 /* Main Loop */
 
@@ -361,7 +400,6 @@ onMounted(() => {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       renderBubbles(ctx)
-      renderCenterArea(ctx)
     },
   })
 })
