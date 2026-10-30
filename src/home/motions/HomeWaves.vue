@@ -21,7 +21,7 @@ const FadeOutTop = 680
 const FadeOutRight = 560
 
 const ColorBegin = 0x40
-const ColorEnd = 0x66
+const ColorEnd = 0x80
 
 interface WaveComponent {
   wl: number

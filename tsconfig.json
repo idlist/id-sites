@@ -12,10 +12,10 @@
   "compilerOptions": {
     "jsx": "preserve",
     "paths": {
+      "@virtual-i18n/*": ["./virtual-i18n/*"],
       "@src/*": ["./src/*"],
       "@assets/*": ["./src/assets/*"],
       "@styles/*": ["./src/styles/*"],
-      "@virtual-i18n/*": ["./virtual-i18n/*"],
       "@layouts/*": ["./src/layouts/*"],
       "@home/*": ["./src/home/*"],
       "@client/*": ["./src/client/*"]

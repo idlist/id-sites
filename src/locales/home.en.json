@@ -7,7 +7,7 @@
   "groupWorks": "Works",
   "groupFooter": "Outro",
   "doSome": "Do Some",
-  "webDevelopment": "Web Frontend",
+  "webFrontend": "Web Frontend",
   "webDesign": "Web Design",
   "programming": "Programming",
   "gameDevelopment": "2D Game Development",
@@ -19,6 +19,9 @@
   "email": "Email",
   "homeMore": "MORE",
   "sectionWorks": "WORKS",
+  "obsPlugin": "Obsidian Plugin",
+  "obsCommunityPage": "Obsidian Community Page",
+  "githubRepo": "GitHub Repository",
   "sectionWorksOther": "OTHER SMALL GADGETS",
   "lastUpdate": "Last Update: "
 }

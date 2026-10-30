@@ -1,8 +1,8 @@
 import { locale } from 'virtual:i18n'
-import { computed } from 'vue'
+import { type Component, computed } from 'vue'
 
 const baseDir = '/src/home/locales'
-const components = import.meta.glob('/src/home/locales/**/*.vue', {
+const components = import.meta.glob('/src/home/locales/**/*', {
   import: 'default',
   eager: true,
 })
@@ -10,6 +10,6 @@ const components = import.meta.glob('/src/home/locales/**/*.vue', {
 export function useI18nComponent(name: string) {
   return computed(() => {
     const lang = locale.value
-    return components[`${baseDir}/${lang}/${name}.${lang}.vue`]
+    return components[`${baseDir}/${lang}/${name}.${lang}.vue`] as Component
   })
 }

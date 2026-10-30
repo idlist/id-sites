@@ -2,6 +2,15 @@
 import ExternalLink from '@home/components/ExternalLink.vue'
 import PageWorks from '@home/components/PageWorks.vue'
 import WorksBadge from '@home/components/WorksBadge.vue'
+import { useI18nComponent } from '@home/locales/i18n'
+import { m } from 'virtual:i18n'
+
+const {
+  obsCommunityPage,
+  githubRepo,
+} = m // Workaround for https://github.com/vuejs/language-tools/issues/6322
+
+const DescFlakepilesShort = useI18nComponent('DescFlakepilesShort')
 </script>
 
 <template>
@@ -11,24 +20,24 @@ import WorksBadge from '@home/components/WorksBadge.vue'
         <h2 class="title">Flakepiles</h2>
 
         <div class="badges">
-          <WorksBadge color="#6bb5ff">Web Frontend</WorksBadge>
-          <WorksBadge color="#b690fd">Obsidian Plugin</WorksBadge>
+          <WorksBadge color="#6bb5ff">
+            {{ m.webFrontend() }}
+          </WorksBadge>
+          <WorksBadge color="#b690fd">
+            {{ m.obsPlugin() }}
+          </WorksBadge>
         </div>
 
         <div class="id-typeface">
-          <p>
-            An <ExternalLink href="https://obsidian.md/">Obsidian</ExternalLink>
-            plugin to collect small notes, stickies, code snippets or more in a single file, and
-            manage them in a masonry layout with horizontal or vertical flow.
-          </p>
+          <DescFlakepilesShort />
         </div>
 
         <div class="links">
           <ExternalLink href="https://community.obsidian.md/plugins/flakepiles">
-            Obsidian Community Page
+            {{ obsCommunityPage() }}
           </ExternalLink>
           <ExternalLink href="https://github.com/idlist/flakepiles">
-            GitHub Repository
+            {{ githubRepo() }}
           </ExternalLink>
         </div>
       </div>
@@ -59,12 +68,6 @@ import WorksBadge from '@home/components/WorksBadge.vue'
 }
 
 .works-content {
-  > .badges {
-    display: flex;
-    column-gap: 0.75rem;
-    row-gap: 0.5rem;
-  }
-
   > .title {
     font-family: var(--font-unique);
     font-weight: normal;
@@ -77,10 +80,18 @@ import WorksBadge from '@home/components/WorksBadge.vue'
     }
   }
 
-  > .links {
+  > .badges {
     display: flex;
     column-gap: 0.75rem;
-    row-gap: 0.5rem;
+    row-gap: 0.25rem;
+
+    margin-bottom: 0.75rem;
+  }
+
+  > .links {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.75rem;
 
     font-size: 0.875rem;
   }

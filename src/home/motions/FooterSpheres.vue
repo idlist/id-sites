@@ -60,7 +60,7 @@ class Bubble {
 
     // Outer circle.
     ctx.lineWidth = 2
-    ctx.strokeStyle = '#eee'
+    ctx.strokeStyle = '#ccc'
 
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI * 2)
@@ -70,7 +70,7 @@ class Bubble {
     const rcap = 4
 
     // Small highlight.
-    ctx.strokeStyle = '#ccc'
+    ctx.strokeStyle = '#aaa'
     ctx.lineWidth = 1.5
 
     ctx.beginPath()

@@ -18,7 +18,7 @@ import { m } from 'virtual:i18n'
   align-items: center;
   justify-content: center;
 
-  padding: 4rem 1rem;
+  padding: 8rem 1rem;
 
   > .content {
     display: grid;

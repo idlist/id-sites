@@ -51,7 +51,7 @@ const pageList: NavigationGroup[] = [
     sections: [
       { section: HomeScreen, id: 'home' },
       { section: HomeBleed, id: 'home-bleed' },
-      { section: HomeWhoami, id: 'whoami' },
+      { section: HomeWhoami, id: 'whoami', draft: true },
     ],
   },
   {
@@ -72,7 +72,7 @@ const pageList: NavigationGroup[] = [
       { section: WorksHeader, id: 'works' },
       { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
       { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
-      { section: WorksOther, id: 'works-other' },
+      { section: WorksOther, id: 'works-other', draft: true },
     ],
   },
   {
