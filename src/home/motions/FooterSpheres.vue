@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FooterBleed, getCenterRadius } from '@home/designs/footer'
 import { useEventListener, useResizeObserver } from '@vueuse/core'
 import { clamp, createTimer, degToRad, radToDeg, random, type Timer } from 'animejs'
 import { Bodies, Body, Composite, Engine, Vector } from 'matter-js'
@@ -9,10 +10,9 @@ type CanvasCtx = CanvasRenderingContext2D
 const $container = useTemplateRef('$container')
 const $canvas = useTemplateRef('$canvas')
 
-const CanvasBleed = 80
 const EngineGravity = 0.8
 const BubbleRadiusRatio = 0.05
-const BubbleDropInterval = 100
+const BubbleDropInterval = 50
 const BubbleMaxCount = 256
 const BubbleMinRadius = 50
 const BubbleMaxRadius = 80
@@ -107,13 +107,7 @@ function setupCanvasSize() {
 
   const { scrollWidth: w, scrollHeight: h } = $container.value
 
-  const CenterRadiusRatio = 0.9
-  const CenterMinRadius = 200
-  centerRadius = Math.max(
-    CenterMinRadius,
-    Math.min(w, h - CanvasBleed) * 0.5 * CenterRadiusRatio,
-  )
-
+  centerRadius = getCenterRadius(w, h)
   bubbleRadius = getBubbleRadius(w, h)
   const minCanvasWidth = centerRadius + bubbleRadius * 7
   canvasWidth = Math.max(w, minCanvasWidth)
@@ -137,6 +131,9 @@ function setupCanvasContext() {
   setupWalls()
   setupCenterArea()
   resizeBubbles()
+
+  renderBubbles(ctx)
+  applyMask(ctx, bleedMask)
 }
 
 useResizeObserver($container, () => {
@@ -205,7 +202,7 @@ function setupWalls() {
 /* Center Area */
 
 function getCenterSpaceY() {
-  return CanvasBleed + (canvasHeight - CanvasBleed) / 2
+  return FooterBleed + (canvasHeight - FooterBleed) / 2
 }
 
 function setupCenterArea() {
@@ -222,16 +219,10 @@ function setupCenterArea() {
   Composite.add(engine.world, centerSpace)
 }
 
-function _renderCenterArea(ctx: CanvasCtx) {
+function _debugRenderCenterArea(ctx: CanvasCtx) {
   ctx.fillStyle = '#222'
   ctx.beginPath()
-  ctx.arc(
-    canvasWidth / 2,
-    getCenterSpaceY(),
-    centerRadius,
-    0,
-    Math.PI * 2,
-  )
+  ctx.arc(canvasWidth / 2, getCenterSpaceY(), centerRadius, 0, Math.PI * 2)
   ctx.fill()
 }
 
@@ -290,7 +281,6 @@ function dropBubble() {
   const bubble = Bodies.circle(x, y, r, {
     density: 0.000001,
     restitution: 0.6,
-    frictionStatic: 0.2,
     frictionAir: 0.012,
   })
 
@@ -330,6 +320,29 @@ function syncBubbleCount(delta: number) {
     dropTimer -= BubbleDropInterval
     dropBubble()
   }
+}
+
+/* Mask */
+
+let bleedMask: CanvasGradient | null = null
+
+function createBleedMask(ctx: CanvasCtx) {
+  const gradient = ctx.createLinearGradient(0, 0, 0, FooterBleed)
+  gradient.addColorStop(0, 'rgba(0, 0, 0, 1)')
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
+  return gradient
+}
+
+function applyMask(ctx: CanvasCtx, mask: CanvasGradient | null) {
+  if (mask == null) return
+
+  ctx.save()
+  ctx.globalCompositeOperation = 'destination-out'
+
+  ctx.fillStyle = mask
+  ctx.fillRect(0, 0, canvasWidth, FooterBleed)
+
+  ctx.restore()
 }
 
 /* Mouse Interaction */
@@ -409,7 +422,11 @@ onMounted(() => {
   const canvas = $canvas.value
   if (canvas == null) return
 
+  const ctx = canvas.getContext('2d')
+  if (ctx == null) return
+
   setupCanvasSize()
+  bleedMask = createBleedMask(ctx)
 
   timer = createTimer({
     frameRate: 60,
@@ -422,11 +439,9 @@ onMounted(() => {
       removeOutboundBubbles()
       syncBubbleCount(delta)
 
-      const ctx = canvas.getContext('2d')
-      if (ctx == null) return
-
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       renderBubbles(ctx)
+      applyMask(ctx, bleedMask)
     },
   })
 })
