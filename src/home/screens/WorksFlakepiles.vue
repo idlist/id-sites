@@ -21,7 +21,7 @@ const DescFlakepilesShort = useI18nComponent('DescFlakepilesShort')
 
         <div class="badges">
           <WorksBadge color="#6bb5ff">
-            {{ m.webFrontend() }}
+            {{ m.webTechStack() }}
           </WorksBadge>
           <WorksBadge color="#b690fd">
             {{ m.obsPlugin() }}

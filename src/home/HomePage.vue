@@ -12,6 +12,7 @@ import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
 import ShowdownMask from './components/ShowdownMask.vue'
+import { FooterBleed } from './designs/footer.ts'
 import FooterScreen from './screens/FooterScreen.vue'
 import HomeBleed from './screens/HomeBleed.vue'
 import HomeScreen from './screens/HomeScreen.vue'
@@ -21,9 +22,7 @@ import SkillsHeader from './screens/SkillsHeader.vue'
 import WorksDiamond from './screens/WorksDiamond.vue'
 import WorksFlakepiles from './screens/WorksFlakepiles.vue'
 import WorksHeader from './screens/WorksHeader.vue'
-import WorksOther from './screens/WorksOther.vue'
-
-import { FooterBleed } from './designs/footer.ts'
+import WorksOthers from './screens/WorksOthers.vue'
 import type { ViteSvgComponent } from './utils.ts'
 
 interface NavigationSection {
@@ -72,7 +71,7 @@ const pageList: NavigationGroup[] = [
       { section: WorksHeader, id: 'works' },
       { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
       { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
-      { section: WorksOther, id: 'works-other', draft: true },
+      { section: WorksOthers, id: 'works-other', draft: true },
     ],
   },
   {
@@ -104,7 +103,7 @@ function collectSection(
 ) {
   const groupInfo = groupToElementSetMap.getOrInsert(group.gid, new Map())
 
-  if (el) {
+  if (el !== null) {
     groupInfo.set(section.id, el)
     if (section.query) queryToElementMap.set(section.query, el)
   } else {

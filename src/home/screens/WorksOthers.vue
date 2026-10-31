@@ -3,7 +3,7 @@ import { m } from 'virtual:i18n'
 </script>
 
 <template>
-  <section class="works-other">
+  <section class="works-others">
     <div class="content">
       <h2 class="id-section-title">{{ m.sectionWorksOther() }}</h2>
       <div></div>
@@ -12,7 +12,7 @@ import { m } from 'virtual:i18n'
 </template>
 
 <style scoped lang="scss">
-.works-other {
+.works-others {
   display: flex;
   align-items: center;
   justify-content: center;

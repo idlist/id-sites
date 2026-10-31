@@ -18,7 +18,8 @@ import { m } from 'virtual:i18n'
   align-items: center;
   justify-content: center;
 
-  padding: 8rem 1rem;
+  height: 40svh;
+  min-height: 240px;
 
   > .content {
     display: grid;
