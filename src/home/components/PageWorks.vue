@@ -68,10 +68,12 @@ const isPortrait = useMediaQuery('(max-aspect-ratio: 3/4)')
 .page-works-layout-landscape {
   @extend %page-works-layout;
   grid-template-columns: 1fr max-content 2fr;
+  column-gap: 1px;
 }
 
 .page-works-layout-portrait {
   @extend %page-works-layout;
   grid-template-rows: 1fr max-content 2fr;
+  row-gap: 1px;
 }
 </style>

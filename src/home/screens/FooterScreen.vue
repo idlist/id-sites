@@ -55,18 +55,24 @@ const pxMinHeight = `${FooterBleed + 2 * CenterMinRadius}px`
     </div>
 
     <LastUpdate />
-    <FooterSpheres :activate="activate" />
+    <FooterSpheres
+      :width="bounding.width.value"
+      :height="bounding.height.value"
+      :activate="activate"
+    />
   </section>
 </template>
 
 <style scoped lang="scss">
 .footer-screen {
-  position: relative;
   width: 100%;
   height: calc(100vh + v-bind("pxFooterBleed"));
   height: calc(100lvh + v-bind("pxFooterBleed"));
   min-height: v-bind("pxMinHeight");
   padding-top: v-bind("pxFooterBleed");
+
+  position: relative;
+  overflow: hidden;
 
   display: flex;
   align-items: center;

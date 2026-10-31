@@ -1,89 +1,13 @@
 <script setup lang="ts">
-import IconAtom from '@assets/icons/atom.svg?component'
-import IconBulb from '@assets/icons/bulb.svg?component'
-import IconHome from '@assets/icons/home.svg?component'
-import IconStars from '@assets/icons/stars.svg?component'
 import { useEventListener, useWindowScroll, useWindowSize, watchThrottled } from '@vueuse/core'
 import { animate } from 'animejs'
 import { Common } from 'matter-js'
-import { type GeneralVirtualMessage, m } from 'virtual:i18n'
-import { type Component, type ComponentPublicInstance, onMounted, ref } from 'vue'
+import { type ComponentPublicInstance, onMounted, ref } from 'vue'
 import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
 import ShowdownMask from './components/ShowdownMask.vue'
-import { FooterBleed } from './designs/footer.ts'
-import FooterScreen from './screens/FooterScreen.vue'
-import HomeBleed from './screens/HomeBleed.vue'
-import HomeScreen from './screens/HomeScreen.vue'
-import HomeWhoami from './screens/HomeWhoami.vue'
-import SkillsGacha from './screens/SkillsGacha.vue'
-import SkillsHeader from './screens/SkillsHeader.vue'
-import WorksDiamond from './screens/WorksDiamond.vue'
-import WorksFlakepiles from './screens/WorksFlakepiles.vue'
-import WorksHeader from './screens/WorksHeader.vue'
-import WorksOthers from './screens/WorksOthers.vue'
-import type { ViteSvgComponent } from './utils.ts'
-
-interface NavigationSection {
-  section: Component
-  id: string
-  draft?: boolean
-  query?: string
-}
-
-interface NavigationGroup {
-  gid: string
-  draft?: boolean
-  icon: ViteSvgComponent
-  label: GeneralVirtualMessage
-  offset?: number
-  sections: NavigationSection[]
-}
-
-/** The structure of the page. */
-const pageList: NavigationGroup[] = [
-  {
-    gid: 'home',
-    icon: IconHome,
-    label: m.groupHome,
-    sections: [
-      { section: HomeScreen, id: 'home' },
-      { section: HomeBleed, id: 'home-bleed' },
-      { section: HomeWhoami, id: 'whoami', draft: true },
-    ],
-  },
-  {
-    gid: 'skills',
-    draft: true,
-    icon: IconAtom,
-    label: m.groupSkills,
-    sections: [
-      { section: SkillsHeader, id: 'skills' },
-      { section: SkillsGacha, id: 'skill-gacha', query: 'gacha' },
-    ],
-  },
-  {
-    gid: 'works',
-    icon: IconBulb,
-    label: m.groupWorks,
-    sections: [
-      { section: WorksHeader, id: 'works' },
-      { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
-      { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
-      { section: WorksOthers, id: 'works-other', draft: true },
-    ],
-  },
-  {
-    gid: 'footer',
-    icon: IconStars,
-    label: m.groupFooter,
-    offset: FooterBleed,
-    sections: [
-      { section: FooterScreen, id: 'footer' },
-    ],
-  },
-]
+import { type NavigationGroup, type NavigationSection, pageList } from './data/page-list.ts'
 
 const navItems = pageList.filter((group) => {
   return !group.draft && group.sections.filter((section) => !section.draft).length > 0

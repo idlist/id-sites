@@ -6,12 +6,13 @@ import { Bodies, Body, Composite, Engine, Vector } from 'matter-js'
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{
+  width: number
+  height: number
   activate?: boolean
 }>()
 
 type CanvasCtx = CanvasRenderingContext2D
 
-const $container = useTemplateRef('$container')
 const $canvas = useTemplateRef('$canvas')
 const canvasVisible = useElementVisibility($canvas)
 
@@ -108,9 +109,10 @@ class Bubble {
 /* Canvas Control */
 
 function setupCanvasSize() {
-  if ($container.value == null || $canvas.value == null) return
+  if ($canvas.value == null) return
 
-  const { scrollWidth: w, scrollHeight: h } = $container.value
+  const w = props.width
+  const h = props.height
 
   centerRadius = getCenterRadius(w, h)
   bubbleRadius = getBubbleRadius(w, h)
@@ -137,13 +139,23 @@ function setupCanvasContext() {
   setupCenterArea()
   resizeBubbles()
 
+  return ctx
+}
+
+function renderContent(ctx: CanvasCtx) {
   renderBubbles(ctx)
   applyMask(ctx, bleedMask)
 }
 
-useResizeObserver($container, () => {
+watch([
+  () => props.width,
+  () => props.height,
+], () => {
   setupCanvasSize()
-  setupCanvasContext()
+  const ctx = setupCanvasContext()
+  if (ctx == null) return
+
+  renderContent(ctx)
 })
 
 function getBubbleRadius(cw: number, ch: number) {
@@ -460,8 +472,7 @@ onMounted(() => {
       syncBubbleCount(delta)
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      renderBubbles(ctx)
-      applyMask(ctx, bleedMask)
+      renderContent(ctx)
     },
   })
 
@@ -488,24 +499,16 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="$container" class="footer-spheres">
-    <canvas ref="$canvas" class="canvas"></canvas>
-  </div>
+  <canvas ref="$canvas" class="footer-spheres"></canvas>
 </template>
 
 <style scoped lang="scss">
 .footer-spheres {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: fit-content;
   z-index: -8;
-  overflow: hidden;
-
-  > .canvas {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    max-width: fit-content;
-  }
 }
 </style>
