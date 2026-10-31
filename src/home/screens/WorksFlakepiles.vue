@@ -1,21 +1,39 @@
 <script setup lang="ts">
-import ExternalLink from '@home/components/ExternalLink.vue'
+import LinkExternal from '@home/components/LinkExternal.vue'
 import PageWorks from '@home/components/PageWorks.vue'
 import WorksBadge from '@home/components/WorksBadge.vue'
 import { useI18nComponent } from '@home/locales/i18n'
+import { useResizeObserver } from '@vueuse/core'
 import { m } from 'virtual:i18n'
+import { computed, ref, useTemplateRef } from 'vue'
 
 const {
   obsCommunityPage,
   githubRepo,
 } = m // Workaround for https://github.com/vuejs/language-tools/issues/6322
 
-const DescFlakepilesShort = useI18nComponent('DescFlakepilesShort')
+const showFullDesc = ref(false)
+const $content = useTemplateRef('$content')
+const FullDescThreshold = 300000
+
+useResizeObserver($content, () => {
+  if ($content.value == null) return
+
+  const { scrollWidth: w, scrollHeight: h } = $content.value
+  if (w * h > FullDescThreshold) showFullDesc.value = true
+  else showFullDesc.value = false
+})
+
+const DescFlakepilesBrief = useI18nComponent('DescFlakepilesBrief')
+const DescFlakepilesFull = useI18nComponent('DescFlakepilesFull')
+const DescFlakepiles = computed(() => {
+  return showFullDesc.value ? DescFlakepilesFull.value : DescFlakepilesBrief.value
+})
 </script>
 
 <template>
   <PageWorks>
-    <div class="works-flakepiles">
+    <div class="works-flakepiles" ref="$content">
       <div class="works-content">
         <h2 class="title">Flakepiles</h2>
 
@@ -29,16 +47,16 @@ const DescFlakepilesShort = useI18nComponent('DescFlakepilesShort')
         </div>
 
         <div class="id-typeface">
-          <DescFlakepilesShort />
+          <DescFlakepiles />
         </div>
 
         <div class="links">
-          <ExternalLink href="https://community.obsidian.md/plugins/flakepiles">
+          <LinkExternal href="https://community.obsidian.md/plugins/flakepiles">
             {{ obsCommunityPage() }}
-          </ExternalLink>
-          <ExternalLink href="https://github.com/idlist/flakepiles">
+          </LinkExternal>
+          <LinkExternal href="https://github.com/idlist/flakepiles">
             {{ githubRepo() }}
-          </ExternalLink>
+          </LinkExternal>
         </div>
       </div>
     </div>
@@ -62,7 +80,7 @@ const DescFlakepilesShort = useI18nComponent('DescFlakepilesShort')
     border-radius: 0.5rem 0.5rem 0 0;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 600px) {
     padding: 0.5rem;
   }
 }

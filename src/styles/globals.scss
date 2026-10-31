@@ -111,6 +111,14 @@ a {
       margin: 0;
     }
   }
+
+  ol, ul {
+    padding-left: 1rem;
+  }
+
+  code, pre code {
+    font-size: 1em;
+  }
 }
 
 .id-section-title {

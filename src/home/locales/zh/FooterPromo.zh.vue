@@ -4,7 +4,7 @@ import NoWrap from '@home/components/NoWrap.vue'
 
 <template>
   <p>
-    这个网页由 <NoWrap bold>真空球形工作室</NoWrap> 的
+    这个网站由 <NoWrap bold>真空球形工作室</NoWrap> 的
     <NoWrap bold>i'DLisT</NoWrap> 设计并制作。
   </p>
   <p>
