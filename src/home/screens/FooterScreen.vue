@@ -8,7 +8,7 @@ import { useElementBounding, useWindowSize } from '@vueuse/core'
 import { computed, ref, type StyleValue, useTemplateRef, watch } from 'vue'
 
 const activate = ref(false)
-const ActivationRatio = 0.75
+const ActivationRatio = 0.6
 
 const $footer = useTemplateRef('$footer')
 const bounding = useElementBounding($footer)

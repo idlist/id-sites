@@ -9,8 +9,8 @@ import HomeScreen from '@home/screens/HomeScreen.vue'
 import HomeWhoami from '@home/screens/HomeWhoami.vue'
 import SkillsGacha from '@home/screens/SkillsGacha.vue'
 import SkillsHeader from '@home/screens/SkillsHeader.vue'
+import WorksBottomLine from '@home/screens/WorksBottomLine.vue'
 import WorksDiamond from '@home/screens/WorksDiamond.vue'
-import WorksEpilog from '@home/screens/WorksEpilog.vue'
 import WorksFlakepiles from '@home/screens/WorksFlakepiles.vue'
 import WorksHeader from '@home/screens/WorksHeader.vue'
 import WorksOthers from '@home/screens/WorksOthers.vue'
@@ -65,7 +65,7 @@ export const PageList: NavigationGroup[] = [
       { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
       { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
       { section: WorksOthers, id: 'works-others', draft: true },
-      { section: WorksEpilog, id: 'works-epilog' },
+      { section: WorksBottomLine, id: 'works-bottom-line' },
     ],
   },
   {

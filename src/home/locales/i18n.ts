@@ -2,6 +2,7 @@ import { locale } from 'virtual:i18n'
 import { type Component, computed } from 'vue'
 
 const baseDir = '/src/home/locales'
+
 const vueComponent = import.meta.glob('/src/home/locales/**/*.vue', {
   import: 'default',
   eager: true,
