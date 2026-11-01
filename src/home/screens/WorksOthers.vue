@@ -17,8 +17,9 @@ import { m } from 'virtual:i18n'
   align-items: center;
   justify-content: center;
 
-  min-height: max(80vh, 400px);
-  min-height: max(80svh, 400px);
+  height: 80vh;
+  height: 80svh;
+  min-height: 400px;
   padding: 2rem 0;
 
   > .content {

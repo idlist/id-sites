@@ -2,20 +2,20 @@ import IconAtom from '@assets/icons/atom.svg?component'
 import IconBulb from '@assets/icons/bulb.svg?component'
 import IconHome from '@assets/icons/home.svg?component'
 import IconStars from '@assets/icons/stars.svg?component'
+import { FooterBleed } from '@home/designs/footer'
+import FooterScreen from '@home/screens/FooterScreen.vue'
+import HomeBleed from '@home/screens/HomeBleed.vue'
+import HomeScreen from '@home/screens/HomeScreen.vue'
+import HomeWhoami from '@home/screens/HomeWhoami.vue'
+import SkillsGacha from '@home/screens/SkillsGacha.vue'
+import SkillsHeader from '@home/screens/SkillsHeader.vue'
+import WorksDiamond from '@home/screens/WorksDiamond.vue'
+import WorksFlakepiles from '@home/screens/WorksFlakepiles.vue'
+import WorksHeader from '@home/screens/WorksHeader.vue'
+import WorksOthers from '@home/screens/WorksOthers.vue'
+import type { ViteSvgComponent } from '@home/utils'
 import { type GeneralVirtualMessage, m } from 'virtual:i18n'
 import type { Component } from 'vue'
-import { FooterBleed } from '../designs/footer'
-import FooterScreen from '../screens/FooterScreen.vue'
-import HomeBleed from '../screens/HomeBleed.vue'
-import HomeScreen from '../screens/HomeScreen.vue'
-import HomeWhoami from '../screens/HomeWhoami.vue'
-import SkillsGacha from '../screens/SkillsGacha.vue'
-import SkillsHeader from '../screens/SkillsHeader.vue'
-import WorksDiamond from '../screens/WorksDiamond.vue'
-import WorksFlakepiles from '../screens/WorksFlakepiles.vue'
-import WorksHeader from '../screens/WorksHeader.vue'
-import WorksOthers from '../screens/WorksOthers.vue'
-import type { ViteSvgComponent } from '../utils'
 
 export interface NavigationSection {
   section: Component
@@ -63,7 +63,7 @@ export const pageList: NavigationGroup[] = [
       { section: WorksHeader, id: 'works' },
       { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
       { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
-      { section: WorksOthers, id: 'works-others' },
+      { section: WorksOthers, id: 'works-others', draft: true },
     ],
   },
   {

@@ -8,6 +8,11 @@ import { externalLinks } from './satteri-plugins/external-links'
 import { headingLinks } from './satteri-plugins/heading-links'
 import vueVirtualI18n from './virtual-i18n'
 
+const licenseNotice = `/*
+Check the licenses of bundled dependencies at:
+https://idl.ist/third-party-licenses.md
+*/`
+
 function toAbsolute(relative: string) {
   return path.resolve(import.meta.dirname, relative)
 }
@@ -37,6 +42,16 @@ export default defineConfig({
     resolve: {
       alias: {
         '@assets': toAbsolute('src/assets'),
+      },
+    },
+    build: {
+      license: {
+        fileName: 'third-party-licenses.md',
+      },
+      rolldownOptions: {
+        output: {
+          postBanner: licenseNotice,
+        },
       },
     },
     plugins: [
