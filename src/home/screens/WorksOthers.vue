@@ -6,7 +6,12 @@ import { m } from 'virtual:i18n'
   <section class="works-others">
     <div class="content">
       <h2 class="id-section-title">{{ m.sectionWorksOther() }}</h2>
-      <div></div>
+
+      <div>
+        <div>
+          <code>npm-san-check</code>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -17,10 +22,9 @@ import { m } from 'virtual:i18n'
   align-items: center;
   justify-content: center;
 
-  height: 80vh;
-  height: 80svh;
-  min-height: 400px;
-  padding: 2rem 0;
+  min-height: max(60vh, 400px);
+  min-height: max(60svh, 400px);
+  padding: 6rem 0;
 
   > .content {
     max-width: 800px;

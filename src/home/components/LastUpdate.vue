@@ -54,14 +54,14 @@ const yearRange = computed(() =>
   color: var(--color-sub-2);
   background-color: var(--color-main-deep);
 
-  @media (max-width: 800px) {
+  @media (max-width: 640px) {
     flex-direction: column;
   }
 
   > .sep {
     padding: 0 0.5rem;
 
-    @media (max-width: 800px) {
+    @media (max-width: 640px) {
       display: none;
     }
   }

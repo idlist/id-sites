@@ -88,6 +88,10 @@ body {
   min-width: 360px;
 }
 
+code, pre code {
+  font-size: 0.875rem;
+}
+
 a {
   cursor: pointer;
 }
@@ -115,10 +119,6 @@ a {
   ol, ul {
     padding-left: 1rem;
   }
-
-  code, pre code {
-    font-size: 1em;
-  }
 }
 
 .id-section-title {
@@ -127,5 +127,6 @@ a {
   text-align: center;
 
   font-weight: normal;
-  letter-spacing: 0.25rem;
+  letter-spacing: 0.25em;
+  transform: translateX(0.125em);
 }

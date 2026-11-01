@@ -16,14 +16,14 @@ const {
 
 const showFullDesc = ref(false)
 const $content = useTemplateRef('$content')
-const FullDescThreshold = 240000
+const FullDescThreshold = 900 // In square ems.
 
 useResizeObserver($content, () => {
   if ($content.value == null) return
 
   const { scrollWidth: w, scrollHeight: h } = $content.value
-  if (w * h > FullDescThreshold) showFullDesc.value = true
-  else showFullDesc.value = false
+  const em = parseFloat(getComputedStyle($content.value).fontSize)
+  showFullDesc.value = (w * h) / (em * em) > FullDescThreshold
 })
 
 const DescFlakepilesBrief = useI18nComponent('DescFlakepilesBrief')
@@ -100,7 +100,7 @@ const DescFlakepiles = computed(() => {
     border-radius: 0.5rem 0.5rem 0 0;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     padding: 0.5rem;
   }
 }
