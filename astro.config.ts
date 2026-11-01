@@ -3,10 +3,11 @@ import mdx from '@astrojs/mdx'
 import vue from '@astrojs/vue'
 import { defineConfig } from 'astro/config'
 import path from 'node:path'
+import markdown from 'unplugin-vue-markdown/vite'
 import svgLoader from 'vite-svg-loader'
 import { externalLinks } from './satteri-plugins/external-links'
 import { headingLinks } from './satteri-plugins/heading-links'
-import vueVirtualI18n from './virtual-i18n'
+import virtualI18n from './virtual-i18n'
 
 const licenseNotice = `/*
 Check the licenses of bundled dependencies at:
@@ -56,7 +57,7 @@ export default defineConfig({
     },
     plugins: [
       svgLoader({ svgo: false }),
-      vueVirtualI18n({
+      virtualI18n({
         localeRoot: 'src/locales',
         localeFiles: {
           en: ['home.en.json'],
@@ -64,10 +65,15 @@ export default defineConfig({
         },
         defaultLocale: 'en',
       }),
+      markdown({
+        include: [/\.vmd$/],
+      }),
     ],
   },
   integrations: [
-    vue(),
+    vue({
+      include: [/\.vue$/, /\.vmd$/],
+    }),
     mdx(),
   ],
 })

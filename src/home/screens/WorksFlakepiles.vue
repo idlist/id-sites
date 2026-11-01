@@ -26,8 +26,8 @@ useResizeObserver($content, () => {
   showFullDesc.value = (w * h) / (em * em) > FullDescThreshold
 })
 
-const DescFlakepilesBrief = useI18nComponent('DescFlakepilesBrief')
-const DescFlakepilesFull = useI18nComponent('DescFlakepilesFull')
+const DescFlakepilesBrief = useI18nComponent('DescFlakepilesBrief', 'vmd')
+const DescFlakepilesFull = useI18nComponent('DescFlakepilesFull', 'vmd')
 const DescFlakepiles = computed(() => {
   return showFullDesc.value ? DescFlakepilesFull.value : DescFlakepilesBrief.value
 })

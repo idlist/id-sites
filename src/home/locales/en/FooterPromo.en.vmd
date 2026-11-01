@@ -1,0 +1,7 @@
+<script setup>
+import NoWrap from '@home/components/NoWrap.vue'
+</script>
+
+This site is designed and developed by <NoWrap bold>i'DLisT</NoWrap> from <NoWrap bold>Spherical Vaccum.</NoWrap>
+
+<NoWrap bold>Spherical Vacuum</NoWrap> is a small studio aiming for personalized interactive experiences.

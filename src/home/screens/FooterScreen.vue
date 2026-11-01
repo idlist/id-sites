@@ -39,7 +39,7 @@ const contentStyle = computed<StyleValue>(() => {
   }
 })
 
-const FooterPromo = useI18nComponent('FooterPromo')
+const FooterPromo = useI18nComponent('FooterPromo', 'vmd')
 
 // Does not need reactivity as values involved are constants.
 const pxFooterBleed = `${FooterBleed}px`
