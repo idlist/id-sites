@@ -5,7 +5,7 @@ interface TranslateOptions<V, T extends readonly string[]> {
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: Subsequent usage does not care the type of V.
-export interface SimpleI18nSlot<V = any, T extends readonly string[] = string[]> {
+export interface StaticI18nSlot<V = any, T extends readonly string[] = string[]> {
   id: string
   branches?: T
   translate: (options: TranslateOptions<V, T>) => string
@@ -13,8 +13,8 @@ export interface SimpleI18nSlot<V = any, T extends readonly string[] = string[]>
 
 // biome-ignore lint/suspicious/noExplicitAny: Subsequent usage does not care the type of V.
 export function defineSlot<V = any, const T extends string[] = string[]>(
-  slot: SimpleI18nSlot<V, T>,
-): SimpleI18nSlot {
+  slot: StaticI18nSlot<V, T>,
+): StaticI18nSlot {
   return slot
 }
 

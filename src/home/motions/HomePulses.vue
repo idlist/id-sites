@@ -6,7 +6,7 @@ import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
 type CanvasCtx = CanvasRenderingContext2D
 
-const $canvas = useTemplateRef<HTMLCanvasElement>('$canvas')
+const $canvas = useTemplateRef('$canvas')
 const canvasVisible = useElementVisibility($canvas)
 
 const DesignWidth = 400
@@ -167,6 +167,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   timer?.cancel()
+  timer = null
 })
 </script>
 

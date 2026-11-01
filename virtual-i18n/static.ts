@@ -1,41 +1,28 @@
-import { tokenize } from '@virtual-i18n/tokenizer'
 import type { SupportedLocales } from 'virtual:i18n'
-import { numSlot, oneOtherSlot, type SimpleI18nSlot, strSlot } from './slots'
+import { numSlot, oneOtherSlot, type StaticI18nSlot, strSlot } from './slots.static'
+import { tokenize } from './tokenizer'
 
-const localeFiles: string[] = [
-  'notes',
-]
+export type MessageCollection = Partial<Record<SupportedLocales, Record<string, string>>>
 
-const messageCollection: Record<SupportedLocales, Record<string, string>> = {
-  en: {},
-  zh: {},
+const messageCollection: MessageCollection = {}
+
+export function setupMessages(setup: () => MessageCollection) {
+  Object.assign(messageCollection, setup())
 }
 
-const localeModules = import.meta.glob('/src/locales/*.json', {
-  eager: true,
-  import: 'default',
-}) as Record<string, Record<string, string>>
-
-for (const localeFile of localeFiles) {
-  for (const suffix of Object.keys(messageCollection)) {
-    const json = localeModules[`/src/locales/${localeFile}.${suffix}.json`]
-    if (!json) continue
-
-    Object.assign(messageCollection[suffix as SupportedLocales], json)
-  }
-}
-
-const slotHandlers: Record<string, SimpleI18nSlot> = {}
+const slotHandlers: Record<string, StaticI18nSlot> = {}
 slotHandlers[strSlot.id] = strSlot
 slotHandlers[numSlot.id] = numSlot
 slotHandlers[oneOtherSlot.id] = oneOtherSlot
 
-export function useI18n(locale: SupportedLocales) {
-  const messages = messageCollection[locale]
+export function addSlotHandler(handler: StaticI18nSlot) {
+  slotHandlers[handler.id] = handler
+}
 
+export function useI18n(locale: SupportedLocales) {
   const m = (key: string, values?: Record<string, unknown>): string => {
-    const message = messages[key]
-    if (message === undefined) return key
+    const message = messageCollection[locale]?.[key]
+    if (typeof message === 'undefined') return key
 
     let translated = ''
 

@@ -1,12 +1,14 @@
 {
-  "lineWidth": 120,
+  "lineWidth": 100,
   "typescript": {
     "semiColons": "asi",
     "quoteStyle": "alwaysSingle"
   },
   "json": {
+    "trailingCommas": "jsonc"
   },
   "malva": {
+    "printWidth": 80
   },
   "markup": {
   },

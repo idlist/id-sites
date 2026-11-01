@@ -4,15 +4,15 @@ import IconBack from '@assets/icons/back.svg'
 import IconLicense from '@assets/icons/license.svg'
 import IconTimeUpdate from '@assets/icons/time-update.svg'
 import IconTime from '@assets/icons/time.svg'
+import { useI18n } from '@virtual-i18n/static'
 import type { CollectionEntry } from 'astro:content'
 import { render } from 'astro:content'
 import { capitalize } from 'remeda'
 import BubbleRect16 from './components/BubbleRect16.astro'
 import BubbleRect20 from './components/BubbleRect20.astro'
-import DiscussPrompt from './components/DiscussPrompt.astro'
 import NoteFooter from './components/NoteFooter.astro'
 import TableOfContents from './components/TableOfContents.astro'
-import { useI18n } from './i18n'
+import { useI18nAstroComponent } from './locales/i18n'
 import NoteBase from './NoteBase.astro'
 
 interface Props {
@@ -43,6 +43,8 @@ const licenseRefLinkMap: Record<string, string> = {
 }
 const licenseRefLink: string | null = licenseRefLinkMap[license] ?? null
 const hasRefLink = licenseRefLink != null
+
+const DiscussPrompt = useI18nAstroComponent(locale, 'DiscussPrompt')
 ---
 
 <NoteBase locale={locale} title={title}>
@@ -113,7 +115,10 @@ const hasRefLink = licenseRefLink != null
             </svg>
           </div>
 
-          <DiscussPrompt locale={locale} />
+          <div class="discuss-prompt">
+            <DiscussPrompt />
+          </div>
+
           <NoteFooter />
         </div>
       </BubbleRect20>
@@ -231,6 +236,19 @@ const hasRefLink = licenseRefLink != null
     width: 100%;
     height: 4px;
     overflow: visible;
+  }
+}
+
+.discuss-prompt {
+  color: var(--color-main-3);
+  font-size: 0.875rem;
+  text-align: center;
+
+  margin: 0.75rem 0;
+
+  > :global(span) {
+    display: inline-block;
+    white-space: pre-wrap;
   }
 }
 </style>

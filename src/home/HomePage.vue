@@ -1,86 +1,15 @@
 <script setup lang="ts">
-import IconAtom from '@assets/icons/atom.svg?component'
-import IconBulb from '@assets/icons/bulb.svg?component'
-import IconHome from '@assets/icons/home.svg?component'
-import IconStars from '@assets/icons/stars.svg?component'
 import { useEventListener, useWindowScroll, useWindowSize, watchThrottled } from '@vueuse/core'
 import { animate } from 'animejs'
-import { type GeneralVirtualMessage, m } from 'virtual:i18n'
-import { type Component, type ComponentPublicInstance, onMounted, ref } from 'vue'
+import { Common } from 'matter-js'
+import { type ComponentPublicInstance, onMounted, ref } from 'vue'
 import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
 import ShowdownMask from './components/ShowdownMask.vue'
-import FooterScreen from './screens/FooterScreen.vue'
-import HomeBleed from './screens/HomeBleed.vue'
-import HomeScreen from './screens/HomeScreen.vue'
-import SkillsGacha from './screens/SkillsGacha.vue'
-import SkillsHeader from './screens/SkillsHeader.vue'
-import WorksDiamond from './screens/WorksDiamond.vue'
-import WorksFlakepiles from './screens/WorksFlakepiles.vue'
-import WorksHeader from './screens/WorksHeader.vue'
+import { type NavigationGroup, type NavigationSection, PageList } from './data/page-list.ts'
 
-import type { ViteSvgComponent } from './utils.ts'
-
-interface NavigationSection {
-  section: Component
-  id: string
-  draft?: boolean
-  query?: string
-}
-
-interface NavigationGroup {
-  gid: string
-  draft?: boolean
-  icon: ViteSvgComponent
-  label: GeneralVirtualMessage
-  sections: NavigationSection[]
-}
-
-/** The structure of the page. */
-const pageList: NavigationGroup[] = [
-  {
-    gid: 'home',
-    icon: IconHome,
-    label: m.groupHome,
-    sections: [
-      { section: HomeScreen, id: 'home' },
-      { section: HomeBleed, id: 'home-bleed' },
-    ],
-  },
-  {
-    gid: 'skills',
-    draft: true,
-    icon: IconAtom,
-    label: m.groupSkills,
-    sections: [
-      { section: SkillsHeader, id: 'skills' },
-      { section: SkillsGacha, id: 'skill-gacha', query: 'gacha' },
-    ],
-  },
-  {
-    gid: 'works',
-    draft: true,
-    icon: IconBulb,
-    label: m.groupWorks,
-    sections: [
-      { section: WorksHeader, id: 'works' },
-      { section: WorksDiamond, id: 'diamond', query: 'diamond-palette' },
-      { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
-    ],
-  },
-  {
-    gid: 'footer',
-    draft: true,
-    icon: IconStars,
-    label: m.groupFooter,
-    sections: [
-      { section: FooterScreen, id: 'footer' },
-    ],
-  },
-]
-
-const navItems = pageList.filter((group) => {
+const navItems = PageList.filter((group) => {
   return !group.draft && group.sections.filter((section) => !section.draft).length > 0
 }).map((group) => ({
   id: group.gid,
@@ -98,7 +27,7 @@ function collectSection(
 ) {
   const groupInfo = groupToElementSetMap.getOrInsert(group.gid, new Map())
 
-  if (el) {
+  if (el !== null) {
     groupInfo.set(section.id, el)
     if (section.query) queryToElementMap.set(section.query, el)
   } else {
@@ -112,7 +41,7 @@ interface GroupBorder {
   border: number
 }
 
-const navCursor = ref(pageList[0].gid)
+const navCursor = ref(PageList[0].gid)
 const navGroupBorders = ref<GroupBorder[]>([])
 const navQueryBorders = ref<Record<string, number>>({})
 const navContentHeight = ref(0)
@@ -207,7 +136,8 @@ function scrollToGroup(gid: string) {
   const group = navGroupBorders.value.find((g) => g.gid === gid)
   if (!group) return
 
-  scroll(group.border)
+  const offset = PageList.find((g) => g.gid === gid)?.offset ?? 0
+  scroll(group.border + offset)
 }
 
 function jumpFromQuery() {
@@ -255,12 +185,17 @@ function cancelScrollOnKeys(e: KeyboardEvent) {
 useEventListener('wheel', cancelScroll, { passive: true })
 useEventListener('touchstart', cancelScroll, { passive: true })
 useEventListener('keydown', cancelScrollOnKeys)
+
+// Disable the warning messages of matter.js in production.
+if (import.meta.env.PROD) {
+  Common.logLevel = 4
+}
 </script>
 
 <template>
   <BackgroundDots />
 
-  <template v-for="group of pageList" :key="group.gid">
+  <template v-for="group of PageList" :key="group.gid">
     <template v-for="section of group.sections">
       <component
         v-if="!group.draft && !section.draft"

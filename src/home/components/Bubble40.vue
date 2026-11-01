@@ -15,13 +15,13 @@ const useDark = props.dark ? '-dark' : ''
 <template>
   <div class="bubble-40">
     <svg class="frame" :class="useDark" viewBox="0 0 40 40">
-      <!-- A 10 degree arc drawn from the top center. -->
+      <!-- 10 degree arc from the top center. -->
       <path
         d="M 20 0 A 20 20 0 0 1 23.4730 0.3038"
         transform="rotate(55 20 20)"
         vector-effect="non-scaling-stroke"
       />
-      <!-- A 320 degree arc drawn from the top center. -->
+      <!-- 320 degree arc from the top center. -->
       <path
         d="M 20 0 A 20 20 0 1 1 7.1442 4.6791"
         transform="rotate(80 20 20)"

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import IconIdlist from '@assets/idlist-light.svg?component'
 import HomeContact from '@home/components/HomeContact.vue'
-import HomePulses from '@home/components/HomePulses.vue'
 import HomeTitleCarousel from '@home/components/HomeTitleCarousel.vue'
-import HomeWaves from '@home/components/HomeWaves.vue'
 import PageFull from '@home/components/PageFull.vue'
 import { contactsLocaled } from '@home/data/contacts'
+import HomePulses from '@home/motions/HomePulses.vue'
+import HomeWaves from '@home/motions/HomeWaves.vue'
 </script>
 
 <template>
@@ -32,17 +32,8 @@ import { contactsLocaled } from '@home/data/contacts'
       </div>
 
       <div class="home-divider">
-        <svg class="line">
-          <line
-            x1="0"
-            y1="50%"
-            x2="100%"
-            y2="50%"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-dasharray="12 16"
-            stroke-linecap="round"
-          />
+        <svg width="100%" height="4" class="line">
+          <line x1="0" y1="50%" x2="100%" y2="50%" stroke-dasharray="12 16" />
         </svg>
       </div>
 
@@ -131,9 +122,11 @@ import { contactsLocaled } from '@home/data/contacts'
   margin: 0.5rem 0;
 
   > .line {
-    width: 100%;
-    height: 4px;
     overflow: visible;
+
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2px;
   }
 }
 

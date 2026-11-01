@@ -6,7 +6,7 @@ import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
 type CanvasCtx = CanvasRenderingContext2D
 
-const $canvas = useTemplateRef<HTMLCanvasElement>('$canvas')
+const $canvas = useTemplateRef('$canvas')
 const canvasVisible = useElementVisibility($canvas)
 
 const DesignWidth = 640
@@ -21,7 +21,7 @@ const FadeOutTop = 680
 const FadeOutRight = 560
 
 const ColorBegin = 0x40
-const ColorEnd = 0x66
+const ColorEnd = 0x80
 
 interface WaveComponent {
   wl: number
@@ -215,6 +215,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   timer?.cancel()
+  timer = null
 })
 </script>
 

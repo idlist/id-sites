@@ -90,14 +90,20 @@ watch(() => props.cursor, (val, old) => {
 .nav-overlay {
   position: fixed;
   top: 0;
-  height: 100svh;
   right: 8px;
-  pointer-events: none;
-  user-select: none;
+  height: 100svh;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  pointer-events: none;
+  user-select: none;
+
+  @media (max-height: 400px) {
+    top: 120px;
+    height: calc(100svh - 120px);
+  }
 }
 
 .nav-overlay-list {
@@ -121,10 +127,10 @@ watch(() => props.cursor, (val, old) => {
 }
 
 .nav-overlay-item {
-  width: 32px;
-  padding: 6px;
-
   display: block;
   cursor: pointer;
+
+  width: 32px;
+  padding: 6px;
 }
 </style>

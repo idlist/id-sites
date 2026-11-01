@@ -1,6 +1,5 @@
-// biome-ignore-all lint/suspicious/noTemplateCurlyInString: The assertions target code templates.
 import { describe, expect, it } from 'vitest'
-import { defineSlot, numSlot, oneOtherSlot, strSlot } from './slots'
+import { defineSlot, numSlot, oneOtherSlot, strSlot } from './slots.virtual'
 
 describe('defineSlot', () => {
   it('returns the slot as is', () => {

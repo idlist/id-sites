@@ -10,7 +10,7 @@ export interface TitleItem {
 
 export const titles: TitleItem[] = [
   {
-    id: 'webDevelopment',
+    id: 'webFrontend',
     type: 'major',
     color: '#6bb5ff',
   },

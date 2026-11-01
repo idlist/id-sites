@@ -7,7 +7,7 @@
   "groupWorks": "Works",
   "groupFooter": "Outro",
   "doSome": "Do Some",
-  "webDevelopment": "Web Development",
+  "webFrontend": "Web Frontend",
   "webDesign": "Web Design",
   "programming": "Programming",
   "gameDevelopment": "2D Game Development",
@@ -16,5 +16,13 @@
   "desktopMusic": "Desktop Music",
   "idealism": "Idealism",
   "furry": "Furry Contents",
-  "email": "Email"
+  "email": "Email",
+  "homeMore": "MORE",
+  "sectionWorks": "WORKS",
+  "webTechStack": "Web Tech Stack",
+  "obsPlugin": "Obsidian Plugin",
+  "obsCommunityPage": "Obsidian Community Page",
+  "githubRepo": "GitHub Repository",
+  "sectionWorksOther": "OTHER SMALL GADGETS",
+  "lastUpdate": "Last Update: "
 }

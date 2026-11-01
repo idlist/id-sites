@@ -22,8 +22,14 @@ body {
       scrollbar-width: none;
     }
   }
+}
 
-  /* Temporary hack until there's more content */
-  overflow-y: hidden;
+a[href] {
+  color: var(--color-sub);
+  transition: color 0.125s ease;
+}
+
+a[href]:hover {
+  color: var(--color-sub-3);
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import PageSticky from '../components/PageSticky.vue'
+import PageFull from '@home/components/PageFull.vue'
 </script>
 
 <template>
-  <PageSticky>Diamond Palette</PageSticky>
+  <PageFull>Diamond Palette</PageFull>
 </template>

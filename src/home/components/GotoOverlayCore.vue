@@ -4,7 +4,7 @@ import type { AnimationCanceller } from '@home/utils'
 import { useWindowSize } from '@vueuse/core'
 import { animate, spring } from 'animejs'
 import { m, type SupportedLocales } from 'virtual:i18n'
-import { computed, ref, useTemplateRef, watch } from 'vue'
+import { ref, useTemplateRef, watch } from 'vue'
 import Bubble40 from './Bubble40.vue'
 import BubbleRect16 from './BubbleRect16.vue'
 
@@ -314,7 +314,6 @@ const ifDark = isDark ? '-dark' : ''
   cursor: pointer;
   pointer-events: all;
   user-select: none;
-  will-change: width, height, top, right;
 
   .anchor {
     position: relative;
@@ -419,7 +418,6 @@ const ifDark = isDark ? '-dark' : ''
 
   cursor: pointer;
   user-select: none;
-  will-change: top, right;
 
   > .anchor {
     position: relative;
