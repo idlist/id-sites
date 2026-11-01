@@ -34,7 +34,7 @@ export interface NavigationGroup {
 }
 
 /** The structure of the page. */
-export const pageList: NavigationGroup[] = [
+export const PageList: NavigationGroup[] = [
   {
     gid: 'home',
     icon: IconHome,

@@ -4,21 +4,27 @@ import LastUpdate from '@home/components/LastUpdate.vue'
 import { CenterMinRadius, FooterBleed, getCenterRadius } from '@home/designs/footer'
 import FooterSpheres from '@home/motions/FooterSpheres.vue'
 import { useI18nComponent } from '@src/home/locales/i18n'
-import { useElementBounding, useIntersectionObserver } from '@vueuse/core'
-import { computed, ref, type StyleValue, useTemplateRef } from 'vue'
+import { useElementBounding, useWindowSize } from '@vueuse/core'
+import { computed, ref, type StyleValue, useTemplateRef, watch } from 'vue'
 
 const activate = ref(false)
-const ActivationRatio = 0.8
+const ActivationRatio = 0.75
 
 const $footer = useTemplateRef('$footer')
 const bounding = useElementBounding($footer)
+const { height: windowHeight } = useWindowSize()
 
-const { stop } = useIntersectionObserver($footer, ([entry]) => {
-  if ((entry?.intersectionRatio ?? 0) >= ActivationRatio) {
+watch([
+  () => bounding.top.value,
+  windowHeight,
+], ([top, height]) => {
+  if (!top || !height) return
+
+  const threshold = (1 - ActivationRatio) * height - FooterBleed
+  if (top <= threshold) {
     activate.value = true
-    stop()
   }
-})
+}, { immediate: true })
 
 const contentStyle = computed<StyleValue>(() => {
   const w = bounding.width.value

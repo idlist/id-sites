@@ -7,9 +7,9 @@ import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
 import ShowdownMask from './components/ShowdownMask.vue'
-import { type NavigationGroup, type NavigationSection, pageList } from './data/page-list.ts'
+import { type NavigationGroup, type NavigationSection, PageList } from './data/page-list.ts'
 
-const navItems = pageList.filter((group) => {
+const navItems = PageList.filter((group) => {
   return !group.draft && group.sections.filter((section) => !section.draft).length > 0
 }).map((group) => ({
   id: group.gid,
@@ -41,7 +41,7 @@ interface GroupBorder {
   border: number
 }
 
-const navCursor = ref(pageList[0].gid)
+const navCursor = ref(PageList[0].gid)
 const navGroupBorders = ref<GroupBorder[]>([])
 const navQueryBorders = ref<Record<string, number>>({})
 const navContentHeight = ref(0)
@@ -136,7 +136,7 @@ function scrollToGroup(gid: string) {
   const group = navGroupBorders.value.find((g) => g.gid === gid)
   if (!group) return
 
-  const offset = pageList.find((g) => g.gid === gid)?.offset ?? 0
+  const offset = PageList.find((g) => g.gid === gid)?.offset ?? 0
   scroll(group.border + offset)
 }
 
@@ -195,7 +195,7 @@ if (import.meta.env.PROD) {
 <template>
   <BackgroundDots />
 
-  <template v-for="group of pageList" :key="group.gid">
+  <template v-for="group of PageList" :key="group.gid">
     <template v-for="section of group.sections">
       <component
         v-if="!group.draft && !section.draft"

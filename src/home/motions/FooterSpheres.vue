@@ -476,15 +476,11 @@ onMounted(() => {
     },
   })
 
-  let activationWatcher = watch(() => props.activate, (val) => {
-    if (val) {
-      timer?.play()
-      activationWatcher.stop()
-    }
-  }, { immediate: true })
-
-  watch(canvasVisible, (val) => {
-    if (val) {
+  watch([
+    () => props.activate,
+    canvasVisible,
+  ], ([activate, visible]) => {
+    if (activate && visible) {
       timer?.resume()
     } else {
       timer?.pause()
