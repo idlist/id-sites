@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ImageFlakepilesLandscape from '@assets/images/flakepiles-landscape.webp?url'
+import ImageFlakepilesPortrait from '@assets/images/flakepiles-portrait.webp?url'
 import LinkExternal from '@home/components/LinkExternal.vue'
 import PageWorks from '@home/components/PageWorks.vue'
 import WorksBadge from '@home/components/WorksBadge.vue'
@@ -14,7 +16,7 @@ const {
 
 const showFullDesc = ref(false)
 const $content = useTemplateRef('$content')
-const FullDescThreshold = 300000
+const FullDescThreshold = 240000
 
 useResizeObserver($content, () => {
   if ($content.value == null) return
@@ -60,6 +62,24 @@ const DescFlakepiles = computed(() => {
         </div>
       </div>
     </div>
+
+    <template #image-landscape>
+      <div class="image-landscape">
+        <img
+          :src="ImageFlakepilesLandscape"
+          alt="Flakepiles preview image in landscape layout"
+        />
+      </div>
+    </template>
+
+    <template #image-portrait>
+      <div class="image-portrait">
+        <img
+          :src="ImageFlakepilesPortrait"
+          alt="Flakepiles preview image in portrait layout"
+        />
+      </div>
+    </template>
   </PageWorks>
 </template>
 
@@ -112,6 +132,30 @@ const DescFlakepiles = computed(() => {
     column-gap: 0.75rem;
 
     font-size: 0.875rem;
+  }
+}
+
+.image-landscape {
+  overflow: hidden;
+  border-radius: 0 0.5rem 0.5rem 0;
+
+  > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 5% center;
+  }
+}
+
+.image-portrait {
+  overflow: hidden;
+  border-radius: 0 0 0.5rem 0.5rem;
+
+  > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left top;
   }
 }
 </style>

@@ -15,13 +15,13 @@ import LinkExternal from '@home/components/LinkExternal.vue'
       View and manage those notes in horizontal or vertical masonry flow, and edit them in place.
     </li>
     <li>
+      Easy to copy and paste the content of the notes from everywhere to everywhere.
+    </li>
+    <li>
       A simple yet pragmatic label and coloring system to categorize and archive your small notes.
     </li>
     <li>
       Handy tools including sorting, searching, pinning and toggleable text wrapping.
-    </li>
-    <li>
-      Easy to copy and paste the content of the notes from everywhere to everywhere.
     </li>
   </ul>
 </template>
