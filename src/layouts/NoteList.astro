@@ -9,7 +9,7 @@ import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
 import NoteFooter from './components/NoteFooter.astro'
 import NoteListEpilog from './components/NoteListEpilog.astro'
 import NoteTopicGroup from './components/NoteTopicGroup.astro'
-import { useI18nMdxComponent } from './locales/i18n'
+import { useI18nComponent } from './locales/i18n'
 import NoteBase, { type NoteProps } from './NoteBase.astro'
 
 interface NoteTopic {
@@ -73,7 +73,7 @@ const localePageMap: Record<SupportedLocales, string> = {
   zh: '/notes/zh',
 }
 
-const NoteListPreface = useI18nMdxComponent(locale, 'NoteListPreface')
+const NoteListPreface = useI18nComponent(locale, 'NoteListPreface', 'mdx')
 ---
 
 <NoteBase locale={locale} title={title}>

@@ -12,7 +12,7 @@ import BubbleRect16 from './components/BubbleRect16.astro'
 import BubbleRect20 from './components/BubbleRect20.astro'
 import NoteFooter from './components/NoteFooter.astro'
 import TableOfContents from './components/TableOfContents.astro'
-import { useI18nAstroComponent } from './locales/i18n'
+import { useI18nComponent } from './locales/i18n'
 import NoteBase from './NoteBase.astro'
 
 interface Props {
@@ -44,7 +44,7 @@ const licenseRefLinkMap: Record<string, string> = {
 const licenseRefLink: string | null = licenseRefLinkMap[license] ?? null
 const hasRefLink = licenseRefLink != null
 
-const DiscussPrompt = useI18nAstroComponent(locale, 'DiscussPrompt')
+const DiscussPrompt = useI18nComponent(locale, 'DiscussPrompt', 'mdx')
 ---
 
 <NoteBase locale={locale} title={title}>
@@ -245,10 +245,5 @@ const DiscussPrompt = useI18nAstroComponent(locale, 'DiscussPrompt')
   text-align: center;
 
   margin: 0.75rem 0;
-
-  > :global(span) {
-    display: inline-block;
-    white-space: pre-wrap;
-  }
 }
 </style>

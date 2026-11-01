@@ -10,8 +10,8 @@ Requires Node.js 26.
 
 - Astro: Base multi-page backbone
 - Vue: Homepage SPA and other dynamic elements
-- Biome: Linter
-- dprint: Formatter (Biome's formatting strategies on objects and arrays are horrible)
+- oxlint: Linter
+- dprint: Formatter
 
 ## Structure
 
