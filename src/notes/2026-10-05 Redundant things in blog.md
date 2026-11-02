@@ -11,7 +11,7 @@ As humans, we all have some sort of urge to express ourselves, more or less. Som
 
 In the old times when Astro wasn't a thing, building a blog didn't have many options. Wordpress, Hexo, Hugo, Eleventy... Those are either heavy CMSes or heavily relying on existing templates, and I still can't understand how to "build from scratch" even though I have read all the documents (I guess I still don't know now).
 
-Then I thought: how about just building a blog generator on my own based on Node.js? It takes me nearly 1 month to make it ~~and I guess no one really believes I actually made it~~, and while it has all the features I envisioned (i18n, tags, archives, etc.),  it has bugs here and there, and can barely run.
+Then I thought: how about just building a blog generator on my own based on Node.js? It takes me nearly 1 month to make it ~~and I guess no one really believes I actually made it~~, and while it has all the features I envisioned (i18n, tags, archives, etc.), it has bugs here and there, and can barely run.
 
 ## You are not gonna write a bunch of articles
 

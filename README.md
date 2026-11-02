@@ -28,7 +28,9 @@ A custom i18n solution for Vue parts of this site. This is a Vite plugin that us
 - The pros: Fully customizable logic in my flavor. No more boilerplates.
 - The cons: Bind to Vue + Vite. Not really tested.
 
-Astro pages use another i18n solution (under `src/layout/i18n`) that is more familiar to common ones while reusing the tokenizer of the Vite plugin. The site is designed to be as static as possible on Astro side, and static rendering doesn't really need to be that optimized.
+Astro pages use the "static" counterpart of the solution that is more familiar to common ones (`m('messageKey')`) while reusing the tokenizer.
+
+This i18n solution is mainly for short sentences. For paragraphs, markdown in Vue (via `unplugin-vue-markdown`) and MDX in Astro (via MDX integration) is used respectively. A different file extension (`.vmd`) is used to avoid MDX importer resolving markdown files that are supposed to be consumed by Vue, while they are still markdown file.
 
 ## License
 
