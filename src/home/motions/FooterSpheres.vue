@@ -130,7 +130,7 @@ function setupCanvasContext() {
   const ctx = $canvas.value.getContext('2d')
   if (ctx == null) return
 
-  const dpr = window.devicePixelRatio || 1
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
   $canvas.value.width = canvasWidth * dpr
   $canvas.value.height = canvasHeight * dpr
   ctx.scale(dpr, dpr)
@@ -495,16 +495,5 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <canvas ref="$canvas" class="footer-spheres"></canvas>
+  <canvas class="id-canvas-background" ref="$canvas"></canvas>
 </template>
-
-<style scoped lang="scss">
-.footer-spheres {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  max-width: fit-content;
-  z-index: -8;
-}
-</style>

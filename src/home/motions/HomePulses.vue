@@ -122,13 +122,14 @@ function setupCanvas(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d')
   if (!ctx) return null
 
-  const dpr = window.devicePixelRatio || 1
-  canvas.width = DesignWidth * dpr
-  canvas.height = DesignHeight * dpr
   canvas.style.width = `${DesignWidth}px`
   canvas.style.height = `${DesignHeight}px`
 
+  const dpr = Math.min(window.devicePixelRatio || 1, 2)
+  canvas.width = DesignWidth * dpr
+  canvas.height = DesignHeight * dpr
   ctx.scale(dpr, dpr)
+
   return ctx
 }
 

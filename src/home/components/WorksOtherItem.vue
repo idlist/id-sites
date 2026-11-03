@@ -38,6 +38,8 @@ import BubbleRect16 from './BubbleRect16.vue'
 
 .item-desc {
   text-align: center;
+  text-wrap: pretty;
+
   background-color: var(--color-main);
   padding: 0.25rem 0.5rem;
   border-radius: 0.5rem;

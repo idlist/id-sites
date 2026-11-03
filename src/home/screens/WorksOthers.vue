@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import LinkExternal from '@home/components/LinkExternal.vue'
 import WorksOtherItem from '@home/components/WorksOtherItem.vue'
+import WorksStars from '@home/motions/WorksStars.vue'
+import { useElementBounding } from '@vueuse/core'
 import { m } from 'virtual:i18n'
+import { useTemplateRef } from 'vue'
+
+const $worksOthers = useTemplateRef('$worksOthers')
+const bounding = useElementBounding($worksOthers)
 </script>
 
 <template>
-  <section class="works-others">
+  <section class="works-others" ref="$worksOthers">
     <div class="content">
       <h2 class="id-section-title">{{ m.sectionWorksOther() }}</h2>
 
-      <div>
+      <div class="works-item-list">
         <WorksOtherItem>
           <template #name>npm-san-check</template>
 
@@ -26,6 +32,11 @@ import { m } from 'virtual:i18n'
         </WorksOtherItem>
       </div>
     </div>
+
+    <WorksStars
+      :width="bounding.width.value"
+      :height="bounding.height.value"
+    />
   </section>
 </template>
 
@@ -50,5 +61,12 @@ import { m } from 'virtual:i18n'
     max-width: 800px;
     padding: 0 1rem;
   }
+}
+
+.works-item-list {
+  display: grid;
+  grid-template-columns: auto;
+  justify-items: center;
+  row-gap: 1rem;
 }
 </style>

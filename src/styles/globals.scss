@@ -132,3 +132,12 @@ a {
   letter-spacing: 0.25em;
   transform: translateX(0.125em);
 }
+
+.id-canvas-background {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: fit-content;
+  z-index: -8;
+}
