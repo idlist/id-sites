@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-  <span class="no-wrap" :class="[{ bold }]">
+  <span :class="['no-wrap', { bold }]">
     <slot></slot>
   </span>
 </template>

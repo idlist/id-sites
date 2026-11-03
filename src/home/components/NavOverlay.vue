@@ -112,7 +112,7 @@ watch(() => props.cursor, (val, old) => {
   position: relative;
 
   > .layer-below {
-    pointer-events: all;
+    pointer-events: visible;
   }
 
   > .layer-above {

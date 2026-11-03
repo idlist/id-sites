@@ -12,16 +12,16 @@ const props = withDefaults(
   },
 )
 
-const useNoClip = computed(() => props.noClip ? '-no-clip' : '')
+const ifNoClip = computed(() => ({ '-no-clip': props.noClip }))
 
 // This value does not need responsiveness.
-const useDark = props.dark ? '-dark' : ''
+const ifDark = { '-dark': props.dark }
 </script>
 
 <template>
-  <div class="bubble-rect-16" :class="useDark">
+  <div :class="['bubble-rect-16', ifDark]">
     <div class="inner">
-      <div class="prevent-overflow" :class="useNoClip">
+      <div :class="['prevent-overflow', ifNoClip]">
         <slot></slot>
       </div>
     </div>

@@ -411,39 +411,41 @@ function applyPointerForce() {
   pointerDown = false
 }
 
-function getRelativePosition(event: PointerEvent) {
+function getRelativePosition(e: PointerEvent) {
   const canvas = $canvas.value
   if (canvas == null) return
 
   const rect = canvas.getBoundingClientRect()
-  const x = event.clientX - rect.left
-  const y = event.clientY - rect.top
 
-  return { x, y }
+  const x = e.clientX - rect.left
+  if (x < 0 || x > canvasWidth) return
+
+  const y = e.clientY - rect.top
+  if (y < 0 || y > canvasHeight) return
+
+  return Vector.create(x, y)
 }
 
-function onPointerMove(event: PointerEvent) {
-  const position = getRelativePosition(event)
+function onPointerMove(e: PointerEvent) {
+  const position = getRelativePosition(e)
   if (position == null) return
-  const { x, y } = position
 
   if (pointer != null) {
-    pointerSpeed = Math.hypot(x - pointer.x, y - pointer.y)
+    pointerSpeed = Vector.magnitude(Vector.sub(position, pointer))
   }
 
-  pointer = Vector.create(x, y)
+  pointer = position
 }
 
 function onPointerLeave() {
   pointer = null
 }
 
-function onPointerDown(event: PointerEvent) {
-  const position = getRelativePosition(event)
+function onPointerDown(e: PointerEvent) {
+  const position = getRelativePosition(e)
   if (position == null) return
-  const { x, y } = position
 
-  pointer = Vector.create(x, y)
+  pointer = position
   pointerDown = true
 }
 
@@ -459,10 +461,10 @@ onMounted(() => {
   const canvas = $canvas.value
   if (canvas == null) return
 
-  const ctx = canvas.getContext('2d')
+  setupCanvasSize()
+  const ctx = setupCanvasContext()
   if (ctx == null) return
 
-  setupCanvasSize()
   bleedMask = createBleedMask(ctx)
 
   timer = createTimer({

@@ -187,16 +187,23 @@ window.addEventListener('pageshow', (e) => {
 
 // These values do not need responsiveness.
 const isDark = props.where === 'notes'
-const ifDark = isDark ? '-dark' : ''
+const ifDark = { '-dark': isDark }
 </script>
 
 <template>
   <div class="nav-overlay">
-    <div v-if="actionIntent !== 'none'" class="nav-overlay-canceller" @click="cancel"></div>
+    <div
+      v-if="actionIntent !== 'none'"
+      class="nav-overlay-canceller"
+      @click="cancel"
+      @pointermove.stop
+      @pointerdown.stop
+    >
+    </div>
 
-    <div class="note-entry" @click="gotoNotes" ref="$noteEntry">
+    <div class="note-entry" ref="$noteEntry" @click="gotoNotes" @pointerdown.stop>
       <div class="anchor">
-        <svg class="note-entry-ring" :class="ifDark" viewBox="0 0 100 100">
+        <svg :class="['note-entry-ring', ifDark]" viewBox="0 0 100 100">
           <!-- Three arcs starting at (50, 0) and sweeping 115 degrees clockwise. -->
           <path
             d="M 50 0 A 50 50 0 0 1 95.3154 71.1309"
@@ -215,9 +222,9 @@ const ifDark = isDark ? '-dark' : ''
           />
         </svg>
 
-        <div class="note-entry-circle" :class="ifDark">
+        <div :class="['note-entry-circle', ifDark]">
           <div class="base">
-            <div class="note-entry-text" :class="ifDark" ref="$noteEntryText">
+            <div :class="['note-entry-text', ifDark]" ref="$noteEntryText">
               <div v-if="gotoPrompt" class="press-again">
                 <div>{{ m.promptPress() }}</div>
                 <div>{{ m.promptAgain() }}</div>
@@ -240,8 +247,9 @@ const ifDark = isDark ? '-dark' : ''
             v-if="actionIntent !== 'locale-switch'"
             :dark="isDark"
             @click="openLocaleDialog"
+            @pointerdown.stop
           >
-            <div class="locale-switch-btn" :class="ifDark">
+            <div :class="['locale-switch-btn', ifDark]">
               <a class="btn" aria-label="locale button">
                 <IconGlobe />
               </a>
@@ -253,17 +261,16 @@ const ifDark = isDark ? '-dark' : ''
           <div
             v-if="actionIntent === 'locale-switch'"
             class="locale-switch-dialog"
+            @pointerdown.stop
           >
             <BubbleRect16 :dark="isDark">
-              <div class="locale-option-list" :class="ifDark">
+              <div :class="['locale-option-list', ifDark]">
                 <a
-                  class="locale-option"
-                  :class="ifDark"
+                  :class="['locale-option', ifDark]"
                   @click="() => setLocale('zh')"
                 >简体中文</a>
                 <a
-                  class="locale-option"
-                  :class="ifDark"
+                  :class="['locale-option', ifDark]"
                   @click="() => setLocale('en')"
                 >English</a>
               </div>
@@ -312,7 +319,7 @@ const ifDark = isDark ? '-dark' : ''
   z-index: 2;
 
   cursor: pointer;
-  pointer-events: all;
+  pointer-events: visible;
   user-select: none;
 
   .anchor {
@@ -410,7 +417,7 @@ const ifDark = isDark ? '-dark' : ''
 }
 
 .locale-switch {
-  pointer-events: all;
+  pointer-events: visible;
 
   position: fixed;
   top: 108px;

@@ -9,12 +9,12 @@ const props = withDefaults(
 )
 
 // This value does not need responsiveness.
-const useDark = props.dark ? '-dark' : ''
+const ifDark = { '-dark': props.dark }
 </script>
 
 <template>
   <div class="bubble-40">
-    <svg class="frame" :class="useDark" viewBox="0 0 40 40">
+    <svg :class="['frame', ifDark]" viewBox="0 0 40 40">
       <!-- 10 degree arc from the top center. -->
       <path
         d="M 20 0 A 20 20 0 0 1 23.4730 0.3038"
