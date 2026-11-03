@@ -9,11 +9,6 @@ import { useResizeObserver } from '@vueuse/core'
 import { m } from 'virtual:i18n'
 import { computed, ref, useTemplateRef } from 'vue'
 
-const {
-  obsCommunityPage,
-  githubRepo,
-} = m // Workaround for https://github.com/vuejs/language-tools/issues/6322
-
 const showFullDesc = ref(false)
 const $content = useTemplateRef('$content')
 const FullDescThreshold = 900 // In square ems.
@@ -54,10 +49,10 @@ const DescFlakepiles = computed(() => {
 
         <div class="links">
           <LinkExternal href="https://community.obsidian.md/plugins/flakepiles">
-            {{ obsCommunityPage() }}
+            {{ m.obsCommunityPage() }}
           </LinkExternal>
           <LinkExternal href="https://github.com/idlist/flakepiles">
-            {{ githubRepo() }}
+            {{ m.githubRepo() }}
           </LinkExternal>
         </div>
       </div>

@@ -24,5 +24,7 @@
   "obsCommunityPage": "Obsidian 社区插件页",
   "githubRepo": "GitHub 仓库",
   "sectionWorksOther": "其他的小玩意",
+  "nscDesc": "又一个 npm 依赖包更新检查工具。0 安装依赖，以合理的脚本大小涵盖了常用的检查与更新功能。",
+  "npmPackagePage": "npm 页面",
   "lastUpdate": "最近更新："
 }

@@ -24,5 +24,7 @@
   "obsCommunityPage": "Obsidian Community Page",
   "githubRepo": "GitHub Repository",
   "sectionWorksOther": "OTHER SMALL GADGETS",
+  "nscDesc": "Yet another npm dependency update checker with 0 installation dependencies, a curated feature set and a reasonably small script size.",
+  "npmPackagePage": "npm Package Page",
   "lastUpdate": "Last Update: "
 }

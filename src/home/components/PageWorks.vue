@@ -14,13 +14,13 @@ const isPortrait = useMediaQuery('(max-aspect-ratio: 3/4)')
         <div class="page-works-layout-portrait" v-if="isPortrait">
           <slot name="image-portrait"><div></div></slot>
           <BubbleSepH />
-          <slot></slot>
+          <slot><div></div></slot>
         </div>
 
         <div class="page-works-layout-landscape" v-else>
           <slot name="image-landscape"><div></div></slot>
           <BubbleSepV />
-          <slot></slot>
+          <slot><div></div></slot>
         </div>
       </BubbleRect20>
     </div>

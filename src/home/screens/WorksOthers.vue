@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import LinkExternal from '@home/components/LinkExternal.vue'
+import WorksOtherItem from '@home/components/WorksOtherItem.vue'
 import { m } from 'virtual:i18n'
 </script>
 
@@ -8,9 +10,20 @@ import { m } from 'virtual:i18n'
       <h2 class="id-section-title">{{ m.sectionWorksOther() }}</h2>
 
       <div>
-        <div>
-          <code>npm-san-check</code>
-        </div>
+        <WorksOtherItem>
+          <template #name>npm-san-check</template>
+
+          <p v-html="m.nscDesc()"></p>
+
+          <template #links>
+            <LinkExternal href="https://www.npmjs.com/package/npm-san-check">
+              {{ m.npmPackagePage() }}
+            </LinkExternal>
+            <LinkExternal href="https://github.com/idlist/npm-san-check">
+              {{ m.githubRepo() }}
+            </LinkExternal>
+          </template>
+        </WorksOtherItem>
       </div>
     </div>
   </section>
@@ -22,12 +35,19 @@ import { m } from 'virtual:i18n'
   align-items: center;
   justify-content: center;
 
-  min-height: max(60vh, 400px);
-  min-height: max(60svh, 400px);
+  min-height: max(75vh, 400px);
+  min-height: max(75svh, 400px);
   padding: 6rem 0;
 
+  position: relative;
+
   > .content {
-    max-width: 800px;
+    display: grid;
+    grid-template-columns: auto;
+    justify-items: center;
+    row-gap: 1rem;
+
+    max-width: 640px;
   }
 }
 </style>

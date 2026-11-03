@@ -83,13 +83,15 @@
 
 body {
   font-family: var(--font-main);
+  font-size: 1rem;
 
   /* Minimum width to prevent the layout get too cramped. */
   min-width: 360px;
 }
 
 code, pre code {
-  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.875em;
 }
 
 a {

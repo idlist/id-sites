@@ -64,7 +64,7 @@ export const PageList: NavigationGroup[] = [
       { section: WorksHeader, id: 'works' },
       { section: WorksDiamond, id: 'diamond', query: 'diamond-palette', draft: true },
       { section: WorksFlakepiles, id: 'flakepiles', query: 'flakepiles' },
-      { section: WorksOthers, id: 'works-others', draft: true },
+      { section: WorksOthers, id: 'works-others' },
       { section: WorksBottomLine, id: 'works-bottom-line' },
     ],
   },
