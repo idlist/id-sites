@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useElementVisibility } from '@vueuse/core'
 import { createTimer, eases, lerp, type Timer } from 'animejs'
-import { range } from 'remeda'
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
 type CanvasContext = CanvasRenderingContext2D
@@ -91,7 +90,7 @@ function randomSpread(base: number, spread: number) {
 function generateWaves(): Wave[] {
   const waves: Wave[] = []
 
-  for (const i of range(0, WaveCount)) {
+  for (let i = 0; i < WaveCount; i++) {
     const step = WaveCount > 1 ? i / (WaveCount - 1) : 0
     const channel = Math.round(lerp(ColorBegin, ColorEnd, step))
 
@@ -102,7 +101,7 @@ function generateWaves(): Wave[] {
     const ampsRatio: number[] = [1]
     const subWaveCount = 4
 
-    for (const j of range(0, subWaveCount)) {
+    for (let j = 0; j < subWaveCount; j++) {
       const dt = (j + 1) / subWaveCount
       ampsRatio.push(randomSpread(0.8 - 0.6 * dt, 0.05))
     }
@@ -110,7 +109,7 @@ function generateWaves(): Wave[] {
     const peak = ampsRatio.reduce((sum, amp) => sum + amp, 0)
     const components: WaveComponent[] = []
 
-    for (const j of range(0, 1 + subWaveCount)) {
+    for (let j = 0; j < 1 + subWaveCount; j++) {
       const t = j / subWaveCount
 
       components.push({

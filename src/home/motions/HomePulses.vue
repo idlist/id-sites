@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useElementVisibility } from '@vueuse/core'
 import { createTimer, lerp, type Timer } from 'animejs'
-import { range } from 'remeda'
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
 type CanvasContext = CanvasRenderingContext2D
@@ -89,8 +88,8 @@ function generatePulses(): Pulse[] {
   const pulses: Pulse[] = []
   const lineCount = 12
 
-  for (const i of range(0, lineCount)) {
-    const step = (i + 1) / lineCount // Intentional
+  for (let i = 0; i < lineCount; i++) {
+    const step = (i + 1) / lineCount // Intentional.
     const channel = Math.round(lerp(ColorBegin, ColorEnd, step))
 
     const maxLineWidth = 18

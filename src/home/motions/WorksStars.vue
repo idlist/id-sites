@@ -2,7 +2,6 @@
 import { useElementVisibility } from '@vueuse/core'
 import { createTimer, degToRad, eases, random, type Timer } from 'animejs'
 import { Vector } from 'matter-js'
-import { clone, range } from 'remeda'
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{
@@ -135,7 +134,7 @@ class StarRay extends BaseStar {
   }
 
   private spread(ctx: CanvasContext, p: number) {
-    for (const i of range(0, this.rays)) {
+    for (let i = 0; i < this.rays; i++) {
       const a = this.angleOffset + 2 * Math.PI * i / this.rays
 
       const d1 = this.inner
@@ -146,7 +145,7 @@ class StarRay extends BaseStar {
   }
 
   private dissipate(ctx: CanvasContext, p: number) {
-    for (const i of range(0, this.rays)) {
+    for (let i = 0; i < this.rays; i++) {
       const a = this.angleOffset + 2 * Math.PI * i / this.rays
 
       const d1 = this.radius - (this.radius - this.inner) * (1 - p)
@@ -157,26 +156,26 @@ class StarRay extends BaseStar {
   }
 }
 
-class StarFourPoints extends BaseStar {
-  private design: Vector[]
+class StarFourTips extends BaseStar {
+  private v: Vector[]
   private static easeOut = eases.out(2.5)
 
   constructor(options: StarOptions) {
     super(options)
-    this.design = this.designPoint()
+    this.v = this.design()
   }
 
-  private designPoint(): Vector[] {
+  private design(): Vector[] {
     const spreadAngle = degToRad(15)
     const innerAngle = degToRad(45)
     const outerAngle = Math.PI - spreadAngle - innerAngle
 
-    // Sine theorem.
+    // Law of sines.
     const ratio = this.radius / Math.sin(outerAngle)
-    const d = ratio * Math.sin(spreadAngle)
+    const distance = ratio * Math.sin(spreadAngle)
 
-    const x = d * Math.cos(innerAngle)
-    const ya = d * Math.sin(innerAngle)
+    const x = distance * Math.cos(innerAngle)
+    const ya = distance * Math.sin(innerAngle)
     const yb = -ya
 
     return [
@@ -193,22 +192,31 @@ class StarFourPoints extends BaseStar {
 
     if (t < cp) {
       const p = t / cp
-      this.spread(ctx, StarFourPoints.easeOut(p))
+      this.spread(ctx, StarFourTips.easeOut(p))
     } else {
       const p = (t - cp) / (1 - cp)
-      this.dissipate(ctx, StarFourPoints.easeOut(p))
+      this.dissipate(ctx, StarFourTips.easeOut(p))
     }
   }
 
-  private drawPoint(ctx: CanvasContext, points: Vector[]) {
-    ctx.beginPath()
-    ctx.moveTo(this.x + points[0].x, this.y + points[0].y)
-    ctx.lineTo(this.x + points[1].x, this.y + points[1].y)
-    ctx.stroke()
+  private drawTip(
+    ctx: CanvasContext,
+    a: number,
+    p0: Vector,
+    p1: Vector,
+    p2: Vector,
+    p3: Vector,
+  ) {
+    const r0 = Vector.rotate(p0, a)
+    const r1 = Vector.rotate(p1, a)
+    const r2 = Vector.rotate(p2, a)
+    const r3 = Vector.rotate(p3, a)
 
     ctx.beginPath()
-    ctx.moveTo(this.x + points[2].x, this.y + points[2].y)
-    ctx.lineTo(this.x + points[3].x, this.y + points[3].y)
+    ctx.moveTo(this.x + r0.x, this.y + r0.y)
+    ctx.lineTo(this.x + r1.x, this.y + r1.y)
+    ctx.moveTo(this.x + r2.x, this.y + r2.y)
+    ctx.lineTo(this.x + r3.x, this.y + r3.y)
     ctx.stroke()
   }
 
@@ -217,32 +225,26 @@ class StarFourPoints extends BaseStar {
   }
 
   private spread(ctx: CanvasContext, p: number) {
-    const points = [
-      this.design[0],
-      this.lerp(this.design[0], this.design[1], p),
-      this.design[2],
-      this.lerp(this.design[2], this.design[3], p),
-    ]
+    const p0 = this.v[0]
+    const p1 = this.lerp(this.v[0], this.v[1], p)
+    const p2 = this.v[2]
+    const p3 = this.lerp(this.v[2], this.v[3], p)
 
-    for (const i of range(0, 4)) {
+    for (let i = 0; i < 4; i++) {
       const a = 2 * Math.PI * i / 4
-      const rotated = points.map((point) => Vector.rotate(point, a))
-      this.drawPoint(ctx, rotated)
+      this.drawTip(ctx, a, p0, p1, p2, p3)
     }
   }
 
   private dissipate(ctx: CanvasContext, p: number) {
-    const points = [
-      this.lerp(this.design[0], this.design[1], p),
-      this.design[1],
-      this.lerp(this.design[2], this.design[3], p),
-      this.design[3],
-    ]
+    const p0 = this.lerp(this.v[0], this.v[1], p)
+    const p1 = this.v[1]
+    const p2 = this.lerp(this.v[2], this.v[3], p)
+    const p3 = this.v[3]
 
-    for (const i of range(0, 4)) {
+    for (let i = 0; i < 4; i++) {
       const a = 2 * Math.PI * i / 4
-      const rotated = points.map((point) => Vector.rotate(point, a))
-      this.drawPoint(ctx, rotated)
+      this.drawTip(ctx, a, p0, p1, p2, p3)
     }
   }
 }
@@ -264,15 +266,14 @@ function createStar(delta: number) {
   if (createTimeElapsed < createInterval) return
 
   createTimeElapsed -= createInterval
-  const areaCoef = Math.hypot(props.width, props.height) * 0.001
-  createInterval = random(
-    IntervalCoefMean - IntervalCoefSpread,
-    IntervalCoefMean + IntervalCoefSpread,
-    2,
-  ) / areaCoef
 
-  const outer = random(MinRadius, MaxRadius, 2)
+  const areaCoef = Math.hypot(props.width, props.height) * 0.001
+  const minInterval = IntervalCoefMean - IntervalCoefSpread
+  const maxInterval = IntervalCoefMean + IntervalCoefSpread
+  createInterval = random(minInterval, maxInterval, 2) / areaCoef
+
   const duration = random(MinDuration, MaxDuration)
+  const outer = random(MinRadius, MaxRadius, 2)
   const boundary = Padding + outer
 
   const hw = props.width / 2
@@ -282,7 +283,7 @@ function createStar(delta: number) {
   const y = random(boundary, props.height - boundary)
 
   if (Math.random() < 0.25) {
-    const star = new StarFourPoints({ x, y, outer, duration })
+    const star = new StarFourTips({ x, y, outer, duration })
     stars.set(starId, star)
   } else {
     let rays = 4

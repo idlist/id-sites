@@ -74,6 +74,9 @@ function setupCanvasContext() {
   $canvas.value.height = canvasHeight * dpr
   ctx.scale(dpr, dpr)
 
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+
   return ctx
 }
 
@@ -187,8 +190,6 @@ class Bubble {
   }
 
   draw(ctx: CanvasContext) {
-    ctx.lineJoin = 'round'
-
     // Base.
     ctx.fillStyle = '#222'
 
@@ -201,7 +202,7 @@ class Bubble {
     ctx.strokeStyle = '#ccc'
 
     ctx.beginPath()
-    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI * 2)
+    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI)
     ctx.stroke()
 
     const rhl = this.r - 16
@@ -211,18 +212,15 @@ class Bubble {
     ctx.strokeStyle = '#aaa'
     ctx.lineWidth = 1.5
 
-    ctx.beginPath()
-
     const ashl = -70
     const xshl = this.x + rhl * Math.cos(degToRad(ashl))
     const yshl = this.y + rhl * Math.sin(degToRad(ashl))
 
+    ctx.beginPath()
     ctx.arc(xshl, yshl, rcap, 0, 2 * Math.PI)
     ctx.stroke()
 
     // Large highlight.
-    ctx.beginPath()
-
     const alhl1 = ashl + radToDeg(rcap * 4 / rhl)
     const alhl2 = -15
 
@@ -234,11 +232,11 @@ class Bubble {
     const router = rhl + rcap
     const rinner = rhl - rcap
 
+    ctx.beginPath()
     ctx.arc(xlhl1, ylhl1, rcap, degToRad(alhl1 - 180), degToRad(alhl1))
     ctx.arc(this.x, this.y, router, degToRad(alhl1), degToRad(alhl2))
     ctx.arc(xlhl2, ylhl2, rcap, degToRad(alhl2), degToRad(alhl2 + 180))
     ctx.arc(this.x, this.y, rinner, degToRad(alhl2), degToRad(alhl1), true)
-
     ctx.stroke()
   }
 }
