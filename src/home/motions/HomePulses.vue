@@ -4,7 +4,7 @@ import { createTimer, lerp, type Timer } from 'animejs'
 import { range } from 'remeda'
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
-type CanvasCtx = CanvasRenderingContext2D
+type CanvasContext = CanvasRenderingContext2D
 
 const $canvas = useTemplateRef('$canvas')
 const canvasVisible = useElementVisibility($canvas)
@@ -58,7 +58,7 @@ class Pulse {
     return { x, y, cx0, cy0, cx1, cy1 }
   }
 
-  draw(ctx: CanvasCtx) {
+  draw(ctx: CanvasContext) {
     ctx.save()
     ctx.translate(this.xOffset, this.yOffset)
     ctx.strokeStyle = this.color

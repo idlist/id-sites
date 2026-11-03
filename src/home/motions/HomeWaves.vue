@@ -4,7 +4,7 @@ import { createTimer, eases, lerp, type Timer } from 'animejs'
 import { range } from 'remeda'
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 
-type CanvasCtx = CanvasRenderingContext2D
+type CanvasContext = CanvasRenderingContext2D
 
 const $canvas = useTemplateRef('$canvas')
 const canvasVisible = useElementVisibility($canvas)
@@ -57,7 +57,7 @@ class Wave {
     return WaveBaseline + yOffset * shape
   }
 
-  draw(ctx: CanvasCtx) {
+  draw(ctx: CanvasContext) {
     ctx.beginPath()
     ctx.strokeStyle = this.color
 
@@ -134,21 +134,21 @@ function generateWaves(): Wave[] {
 
 let timer: Timer | null = null
 
-function createMaskV(ctx: CanvasCtx) {
+function createMaskV(ctx: CanvasContext) {
   const gradient = ctx.createLinearGradient(0, FadeOutTop, 0, DesignHeight)
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
   gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
   return gradient
 }
 
-function createMaskH(ctx: CanvasCtx) {
+function createMaskH(ctx: CanvasContext) {
   const gradient = ctx.createLinearGradient(FadeOutRight, 0, DesignWidth, 0)
   gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
   gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
   return gradient
 }
 
-function applyMasks(ctx: CanvasCtx, maskV: CanvasGradient, maskH: CanvasGradient) {
+function applyMasks(ctx: CanvasContext, maskV: CanvasGradient, maskH: CanvasGradient) {
   ctx.save()
   ctx.globalCompositeOperation = 'destination-out'
 

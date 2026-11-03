@@ -11,7 +11,7 @@ const props = defineProps<{
   activate?: boolean
 }>()
 
-type CanvasCtx = CanvasRenderingContext2D
+type CanvasContext = CanvasRenderingContext2D
 
 const $canvas = useTemplateRef('$canvas')
 const canvasVisible = useElementVisibility($canvas)
@@ -19,17 +19,14 @@ const canvasVisible = useElementVisibility($canvas)
 const EngineGravity = 0.8
 const BubbleRadiusRatio = 0.042
 const BubbleDropInterval = 50
-const BubbleMaxCount = 256
 const BubbleMinRadius = 40
 const BubbleMaxRadius = 80
+const BubbleMaxCount = 256
 
 let canvasWidth = 0
 let canvasHeight = 0
 let bubbleRadius = BubbleMinRadius
 let centerRadius = 0
-let bubbleCount = 0
-let dropTimer = 0
-let timer: Timer | null = null
 
 const engine: Engine = Engine.create({
   gravity: { scale: 0.001 * EngineGravity },
@@ -38,75 +35,17 @@ const walls: Body[] = []
 let centerSpace: Body | null = null
 const bubbles: Body[] = []
 
-class Bubble {
-  x: number
-  y: number
-  r: number
-
-  constructor(x: number, y: number, r: number) {
-    this.x = x
-    this.y = y
-    this.r = r
-  }
-
-  draw(ctx: CanvasCtx) {
-    ctx.lineJoin = 'round'
-
-    // Base.
-    ctx.fillStyle = '#222'
-
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, this.r - 4, 0, 2 * Math.PI)
-    ctx.fill()
-
-    // Outer circle.
-    ctx.lineWidth = 2
-    ctx.strokeStyle = '#ccc'
-
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI * 2)
-    ctx.stroke()
-
-    const rhl = this.r - 16
-    const rcap = 4
-
-    // Small highlight.
-    ctx.strokeStyle = '#aaa'
-    ctx.lineWidth = 1.5
-
-    ctx.beginPath()
-
-    const ashl = -70
-    const xshl = this.x + rhl * Math.cos(degToRad(ashl))
-    const yshl = this.y + rhl * Math.sin(degToRad(ashl))
-
-    ctx.arc(xshl, yshl, rcap, 0, 2 * Math.PI)
-    ctx.stroke()
-
-    // Large highlight.
-    ctx.beginPath()
-
-    const alhl1 = ashl + radToDeg(rcap * 4 / rhl)
-    const alhl2 = -15
-
-    const xlhl1 = this.x + rhl * Math.cos(degToRad(alhl1))
-    const ylhl1 = this.y + rhl * Math.sin(degToRad(alhl1))
-    const xlhl2 = this.x + rhl * Math.cos(degToRad(alhl2))
-    const ylhl2 = this.y + rhl * Math.sin(degToRad(alhl2))
-
-    const router = rhl + rcap
-    const rinner = rhl - rcap
-
-    ctx.arc(xlhl1, ylhl1, rcap, degToRad(alhl1 - 180), degToRad(alhl1))
-    ctx.arc(this.x, this.y, router, degToRad(alhl1), degToRad(alhl2))
-    ctx.arc(xlhl2, ylhl2, rcap, degToRad(alhl2), degToRad(alhl2 + 180))
-    ctx.arc(this.x, this.y, rinner, degToRad(alhl2), degToRad(alhl1), true)
-
-    ctx.stroke()
-  }
-}
-
 /* Canvas Control */
+
+function getBubbleRadius(cw: number, ch: number) {
+  const radius = clamp(
+    Math.hypot(cw, ch) * BubbleRadiusRatio,
+    BubbleMinRadius,
+    BubbleMaxRadius,
+  )
+
+  return radius
+}
 
 function setupCanvasSize() {
   if ($canvas.value == null) return
@@ -135,14 +74,10 @@ function setupCanvasContext() {
   $canvas.value.height = canvasHeight * dpr
   ctx.scale(dpr, dpr)
 
-  setupWalls()
-  setupCenterArea()
-  resizeBubbles()
-
   return ctx
 }
 
-function renderContent(ctx: CanvasCtx) {
+function renderContent(ctx: CanvasContext) {
   renderBubbles(ctx)
   applyMask(ctx, bleedMask)
 }
@@ -155,18 +90,13 @@ watch([
   const ctx = setupCanvasContext()
   if (ctx == null) return
 
+  setupWalls()
+  setupCenterArea()
+  resizeBubbles()
+  updateBubbleCount()
+
   renderContent(ctx)
 })
-
-function getBubbleRadius(cw: number, ch: number) {
-  const radius = clamp(
-    Math.hypot(cw, ch) * BubbleRadiusRatio,
-    BubbleMinRadius,
-    BubbleMaxRadius,
-  )
-
-  return radius
-}
 
 /* Walls */
 
@@ -236,7 +166,7 @@ function setupCenterArea() {
   Composite.add(engine.world, centerSpace)
 }
 
-function _debugRenderCenterArea(ctx: CanvasCtx) {
+function _debugRenderCenterArea(ctx: CanvasContext) {
   ctx.fillStyle = '#222'
   ctx.beginPath()
   ctx.arc(canvasWidth / 2, getCenterSpaceY(), centerRadius, 0, Math.PI * 2)
@@ -244,6 +174,74 @@ function _debugRenderCenterArea(ctx: CanvasCtx) {
 }
 
 /* Bubbles */
+
+class Bubble {
+  x: number
+  y: number
+  r: number
+
+  constructor(x: number, y: number, r: number) {
+    this.x = x
+    this.y = y
+    this.r = r
+  }
+
+  draw(ctx: CanvasContext) {
+    ctx.lineJoin = 'round'
+
+    // Base.
+    ctx.fillStyle = '#222'
+
+    ctx.beginPath()
+    ctx.arc(this.x, this.y, this.r - 4, 0, 2 * Math.PI)
+    ctx.fill()
+
+    // Outer circle.
+    ctx.lineWidth = 2
+    ctx.strokeStyle = '#ccc'
+
+    ctx.beginPath()
+    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI * 2)
+    ctx.stroke()
+
+    const rhl = this.r - 16
+    const rcap = 4
+
+    // Small highlight.
+    ctx.strokeStyle = '#aaa'
+    ctx.lineWidth = 1.5
+
+    ctx.beginPath()
+
+    const ashl = -70
+    const xshl = this.x + rhl * Math.cos(degToRad(ashl))
+    const yshl = this.y + rhl * Math.sin(degToRad(ashl))
+
+    ctx.arc(xshl, yshl, rcap, 0, 2 * Math.PI)
+    ctx.stroke()
+
+    // Large highlight.
+    ctx.beginPath()
+
+    const alhl1 = ashl + radToDeg(rcap * 4 / rhl)
+    const alhl2 = -15
+
+    const xlhl1 = this.x + rhl * Math.cos(degToRad(alhl1))
+    const ylhl1 = this.y + rhl * Math.sin(degToRad(alhl1))
+    const xlhl2 = this.x + rhl * Math.cos(degToRad(alhl2))
+    const ylhl2 = this.y + rhl * Math.sin(degToRad(alhl2))
+
+    const router = rhl + rcap
+    const rinner = rhl - rcap
+
+    ctx.arc(xlhl1, ylhl1, rcap, degToRad(alhl1 - 180), degToRad(alhl1))
+    ctx.arc(this.x, this.y, router, degToRad(alhl1), degToRad(alhl2))
+    ctx.arc(xlhl2, ylhl2, rcap, degToRad(alhl2), degToRad(alhl2 + 180))
+    ctx.arc(this.x, this.y, rinner, degToRad(alhl2), degToRad(alhl1), true)
+
+    ctx.stroke()
+  }
+}
 
 function resizeBubbles() {
   for (const bubble of bubbles) {
@@ -253,7 +251,7 @@ function resizeBubbles() {
   }
 }
 
-function renderBubbles(ctx: CanvasCtx) {
+function renderBubbles(ctx: CanvasContext) {
   // A simple y-sort.
   bubbles.sort((a, b) => {
     const diff = a.position.y - b.position.y
@@ -314,7 +312,9 @@ function dropBubble() {
   return bubble
 }
 
-function syncBubbleCount(delta: number) {
+let bubbleCount = 0
+
+function updateBubbleCount() {
   const bubbleArea = bubbleRadius * bubbleRadius * 4
   const extraRoom = getExtraRoom()
   const canvasArea = (canvasWidth + extraRoom * 2) * (canvasHeight + extraRoom)
@@ -322,7 +322,11 @@ function syncBubbleCount(delta: number) {
 
   const n = (canvasArea - centerArea) / bubbleArea
   bubbleCount = Math.min(Math.ceil(n), BubbleMaxCount)
+}
 
+let dropTimeElapsed = 0
+
+function syncBubbleCount(delta: number) {
   while (bubbles.length > bubbleCount) {
     const bubble = bubbles.pop()
     if (bubble == null) break
@@ -332,10 +336,10 @@ function syncBubbleCount(delta: number) {
 
   // If increasing the amount of bubble, add them one by one.
   if (bubbles.length >= bubbleCount) return
-  dropTimer += delta
+  dropTimeElapsed += delta
 
-  if (dropTimer >= BubbleDropInterval) {
-    dropTimer -= BubbleDropInterval
+  if (dropTimeElapsed >= BubbleDropInterval) {
+    dropTimeElapsed -= BubbleDropInterval
     dropBubble()
   }
 }
@@ -344,14 +348,14 @@ function syncBubbleCount(delta: number) {
 
 let bleedMask: CanvasGradient | null = null
 
-function createBleedMask(ctx: CanvasCtx) {
+function createBleedMask(ctx: CanvasContext) {
   const gradient = ctx.createLinearGradient(0, 0, 0, FooterBleed)
   gradient.addColorStop(0, 'rgba(0, 0, 0, 1)')
   gradient.addColorStop(1, 'rgba(0, 0, 0, 0)')
   return gradient
 }
 
-function applyMask(ctx: CanvasCtx, mask: CanvasGradient | null) {
+function applyMask(ctx: CanvasContext, mask: CanvasGradient | null) {
   if (mask == null) return
 
   ctx.save()
@@ -448,6 +452,8 @@ useEventListener('pointerleave', onPointerLeave)
 useEventListener('pointerdown', onPointerDown)
 
 /* Main Loop */
+
+let timer: Timer | null = null
 
 onMounted(() => {
   const canvas = $canvas.value
