@@ -30,6 +30,22 @@ const DescFlakepiles = computed(() => {
 
 <template>
   <PageWorks>
+    <template #left>
+      <img
+        class="image-left"
+        :src="ImageFlakepilesLandscape"
+        alt="Flakepiles preview image in landscape layout"
+      />
+    </template>
+
+    <template #top>
+      <img
+        class="image-top"
+        :src="ImageFlakepilesPortrait"
+        alt="Flakepiles preview image in portrait layout"
+      />
+    </template>
+
     <div class="works-flakepiles" ref="$content">
       <div class="works-content">
         <h2 class="title">Flakepiles</h2>
@@ -57,28 +73,24 @@ const DescFlakepiles = computed(() => {
         </div>
       </div>
     </div>
-
-    <template #image-landscape>
-      <div class="image-landscape">
-        <img
-          :src="ImageFlakepilesLandscape"
-          alt="Flakepiles preview image in landscape layout"
-        />
-      </div>
-    </template>
-
-    <template #image-portrait>
-      <div class="image-portrait">
-        <img
-          :src="ImageFlakepilesPortrait"
-          alt="Flakepiles preview image in portrait layout"
-        />
-      </div>
-    </template>
   </PageWorks>
 </template>
 
 <style scoped lang="scss">
+.image-left {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 5% center;
+}
+
+.image-top {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left top;
+}
+
 .works-flakepiles {
   width: 100%;
   height: 100%;
@@ -90,10 +102,6 @@ const DescFlakepiles = computed(() => {
 
   padding: 1rem;
   border-radius: 0.5rem 0 0 0.5rem;
-
-  @media (max-aspect-ratio: 3/4) {
-    border-radius: 0.5rem 0.5rem 0 0;
-  }
 
   @media (max-width: 640px) {
     padding: 0.5rem;
@@ -127,30 +135,6 @@ const DescFlakepiles = computed(() => {
     column-gap: 0.75rem;
 
     font-size: 0.875rem;
-  }
-}
-
-.image-landscape {
-  overflow: hidden;
-  border-radius: 0 0.5rem 0.5rem 0;
-
-  > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 5% center;
-  }
-}
-
-.image-portrait {
-  overflow: hidden;
-  border-radius: 0 0 0.5rem 0.5rem;
-
-  > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: left top;
   }
 }
 </style>

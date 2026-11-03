@@ -47,7 +47,8 @@ import { m } from 'virtual:i18n'
     justify-items: center;
     row-gap: 1rem;
 
-    max-width: 640px;
+    max-width: 800px;
+    padding: 0 1rem;
   }
 }
 </style>
