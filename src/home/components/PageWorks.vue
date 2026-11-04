@@ -56,8 +56,9 @@ const isPortrait = useMediaQuery('(max-aspect-ratio: 3/4)')
   --h-min: 400px;
   --h-max: 960px;
 
-  --h-elastic: min(100vh - 2rem, var(--h-max));
-  --h-elastic: min(100svh - 2rem, var(--h-max));
+  --h: calc(100vh - 32px);
+  --h: calc(100svh - 32px);
+  --h-elastic: min(var(--h), var(--h-max));
 
   --top-elastic: calc((100vh - var(--h-elastic)) / 2);
   --top-min: calc((100vh - var(--h-min)) / 2);
@@ -67,8 +68,7 @@ const isPortrait = useMediaQuery('(max-aspect-ratio: 3/4)')
   width: 100%;
   max-width: var(--w-max);
 
-  height: calc(100vh - 2rem);
-  height: calc(100svh - 2rem);
+  height: var(--h);
   min-height: var(--h-min);
   max-height: var(--h-max);
 
