@@ -101,7 +101,7 @@ const pxMinHeight = `${FooterBleed + 2 * CenterMinRadius}px`
   }
 
   > .icon > img {
-    width: 60%;
+    width: 75%;
     max-width: 16rem;
   }
 

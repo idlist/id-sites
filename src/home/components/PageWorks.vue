@@ -52,17 +52,25 @@ const isPortrait = useMediaQuery('(max-aspect-ratio: 3/4)')
 .page-works-sticky {
   position: sticky;
 
-  --least-height: 400px;
-  --least-top: calc((100vh - var(--least-height)) / 2);
+  --w-max: 1200px;
+  --h-min: 400px;
+  --h-max: 960px;
 
-  top: min(1rem, var(--least-top));
-  top: min(calc((100vh - 100svh + 2rem) / 2), var(--least-top));
-  height: calc(100vh - 2rem);
-  height: calc(100svh - 2rem);
+  --h-elastic: min(100vh - 2rem, var(--h-max));
+  --h-elastic: min(100svh - 2rem, var(--h-max));
+
+  --top-elastic: calc((100vh - var(--h-elastic)) / 2);
+  --top-min: calc((100vh - var(--h-min)) / 2);
+
+  top: min(var(--top-elastic), var(--top-min));
 
   width: 100%;
-  max-width: 1200px;
-  min-height: var(--least-height);
+  max-width: var(--w-max);
+
+  height: calc(100vh - 2rem);
+  height: calc(100svh - 2rem);
+  min-height: var(--h-min);
+  max-height: var(--h-max);
 
   padding: 1rem;
 
