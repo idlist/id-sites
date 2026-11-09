@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { useEventListener, useWindowScroll, useWindowSize, watchThrottled } from '@vueuse/core'
 import { animate } from 'animejs'
 import { Common } from 'matter-js'
-import { type ComponentPublicInstance, onMounted, ref } from 'vue'
+import { type ComponentPublicInstance, onMounted, reactive, ref } from 'vue'
 import BackgroundDots from './components/BackgroundDots.vue'
 import GotoOverlay from './components/GotoOverlay.vue'
 import NavOverlay from './components/NavOverlay.vue'
 import ShowdownMask from './components/ShowdownMask.vue'
 import { type NavigationGroup, type NavigationSection, PageList } from './data/page-list.ts'
+
+import {
+  useEventListener,
+  useWindowScroll,
+  useWindowSize,
+  watchDebounced,
+  watchThrottled,
+} from '@vueuse/core'
 
 const navItems = PageList.filter((group) => {
   return !group.draft && group.sections.filter((section) => !section.draft).length > 0
@@ -41,7 +48,6 @@ interface ScrollBorder {
   border: number
 }
 
-const navCursor = ref(PageList[0].gid)
 let groupBorders: ScrollBorder[] = []
 let sectionBorders: ScrollBorder[] = []
 let queryBorders: Record<string, number> = {}
@@ -49,8 +55,13 @@ let rootHeight = 0
 
 const { y: scrollY } = useWindowScroll()
 const { width: windowWidth, height: windowHeight } = useWindowSize()
+const groupCursor = ref(PageList[0].gid)
+const sectionCursor = reactive({
+  id: PageList[0].sections[0].id,
+  progress: 0,
+})
 
-function setupNavigation() {
+function setupBorders() {
   groupBorders = []
   sectionBorders = []
   queryBorders = {}
@@ -65,11 +76,8 @@ function setupNavigation() {
     for (const [sid, section] of sections.entries()) {
       const el = section.$el as HTMLElement
       const top = el.getBoundingClientRect().y - rootTop
-      if (top < border) {
-        border = top
-      }
-
-      sectionBorders.push({ id: sid, border })
+      border = Math.min(top, border)
+      sectionBorders.push({ id: sid, border: top })
     }
 
     groupBorders.push({ id: gid, border })
@@ -86,16 +94,15 @@ function setupNavigation() {
   rootHeight = root.scrollHeight
 }
 
-function updateNavCursor() {
-  if (!groupBorders.length) return
+function updateGroupCursor() {
+  if (groupBorders.length === 0) return
 
   const y = scrollY.value
   const h = windowHeight.value
-  const list = groupBorders
   const max = rootHeight
   let group: ScrollBorder | undefined
 
-  const last = list[list.length - 1]
+  const last = groupBorders[groupBorders.length - 1]
   const bleed = 64
 
   if (max - last.border < h / 2 && y + h > max - bleed) {
@@ -106,24 +113,56 @@ function updateNavCursor() {
   } else {
     // Otherwise, move the cursor to the group
     // when it covers more than half of the page.
-    group = list.findLast((s) => {
-      return s.border - h / 2 <= y
-    })
+    group = groupBorders.findLast((g) => g.border - h / 2 <= y)
   }
 
   if (!group) return
-  navCursor.value = group.id
+  groupCursor.value = group.id
+}
+
+function getSectionHeight(i: number) {
+  const section = sectionBorders[i]
+  const nextBorder = i < sectionBorders.length - 1
+    ? sectionBorders[i + 1].border
+    : rootHeight
+  const height = nextBorder - section.border
+  return height
+}
+
+function updateSectionCursor() {
+  if (sectionBorders.length === 0) return
+
+  const i = sectionBorders.findLastIndex((s) => s.border <= scrollY.value)
+  const section = sectionBorders[i]
+  const height = getSectionHeight(i)
+  const passed = scrollY.value - section.border
+
+  sectionCursor.id = section.id
+  sectionCursor.progress = passed / height
+}
+
+function realignSectionProgress() {
+  if (sectionBorders.length === 0) return
+
+  const i = sectionBorders.findIndex((s) => s.id === sectionCursor.id)
+  const section = sectionBorders[i]
+  const height = getSectionHeight(i)
+  const passed = height * sectionCursor.progress
+
+  scrollY.value = section.border + passed
 }
 
 onMounted(() => {
-  watchThrottled([windowWidth, windowHeight], () => {
-    setupNavigation()
-    updateNavCursor()
-  }, { throttle: 100, immediate: true })
-
   watchThrottled(scrollY, () => {
-    updateNavCursor()
-  }, { throttle: 100 })
+    updateGroupCursor()
+    updateSectionCursor()
+  }, { throttle: 100, trailing: true })
+
+  watchDebounced([windowWidth, windowHeight], () => {
+    setupBorders()
+    realignSectionProgress()
+    updateGroupCursor()
+  }, { debounce: 100, immediate: true })
 })
 
 let currentScroll: ReturnType<typeof animate> | null = null
@@ -213,7 +252,7 @@ if (import.meta.env.PROD) {
 
   <NavOverlay
     :nav-items="navItems"
-    :cursor="navCursor"
+    :cursor="groupCursor"
     @request-scroll="scrollToGroup"
   />
   <GotoOverlay />
