@@ -36,21 +36,24 @@ function collectSection(
   }
 }
 
-interface GroupBorder {
-  gid: string
+interface ScrollBorder {
+  id: string
   border: number
 }
 
 const navCursor = ref(PageList[0].gid)
-const navGroupBorders = ref<GroupBorder[]>([])
-const navQueryBorders = ref<Record<string, number>>({})
-const navContentHeight = ref(0)
+let groupBorders: ScrollBorder[] = []
+let sectionBorders: ScrollBorder[] = []
+let queryBorders: Record<string, number> = {}
+let rootHeight = 0
+
 const { y: scrollY } = useWindowScroll()
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 
 function setupNavigation() {
-  navGroupBorders.value = []
-  navQueryBorders.value = {}
+  groupBorders = []
+  sectionBorders = []
+  queryBorders = {}
 
   const root = document.scrollingElement ?? document.body
   const rootTop = root.getBoundingClientRect().y
@@ -59,36 +62,38 @@ function setupNavigation() {
     if (sections.size === 0) continue
     let border = Infinity
 
-    for (const section of sections.values()) {
+    for (const [sid, section] of sections.entries()) {
       const el = section.$el as HTMLElement
       const top = el.getBoundingClientRect().y - rootTop
       if (top < border) {
         border = top
       }
+
+      sectionBorders.push({ id: sid, border })
     }
 
-    navGroupBorders.value.push({ border, gid })
+    groupBorders.push({ id: gid, border })
   }
 
-  navGroupBorders.value.sort((a, b) => a.border - b.border)
+  groupBorders.sort((a, b) => a.border - b.border)
 
   for (const [query, section] of queryToElementMap.entries()) {
     const el = section.$el as HTMLElement
     const border = el.getBoundingClientRect().y - rootTop
-    navQueryBorders.value[query] = border
+    queryBorders[query] = border
   }
 
-  navContentHeight.value = root.scrollHeight
+  rootHeight = root.scrollHeight
 }
 
 function updateNavCursor() {
-  if (!navGroupBorders.value.length) return
+  if (!groupBorders.length) return
 
   const y = scrollY.value
   const h = windowHeight.value
-  const list = navGroupBorders.value
-  const max = navContentHeight.value
-  let group: GroupBorder | undefined
+  const list = groupBorders
+  const max = rootHeight
+  let group: ScrollBorder | undefined
 
   const last = list[list.length - 1]
   const bleed = 64
@@ -107,7 +112,7 @@ function updateNavCursor() {
   }
 
   if (!group) return
-  navCursor.value = group.gid
+  navCursor.value = group.id
 }
 
 onMounted(() => {
@@ -133,7 +138,7 @@ function scroll(y: number) {
 }
 
 function scrollToGroup(gid: string) {
-  const group = navGroupBorders.value.find((g) => g.gid === gid)
+  const group = groupBorders.find((g) => g.id === gid)
   if (!group) return
 
   const offset = PageList.find((g) => g.gid === gid)?.offset ?? 0
@@ -150,7 +155,7 @@ function jumpFromQuery() {
   const next = `${url.pathname}${url.search}${url.hash}`
   window.history.replaceState(window.history.state, '', next)
 
-  const border = navQueryBorders.value[query]
+  const border = queryBorders[query]
   if (border == null) return
   scrollY.value = border
 }
