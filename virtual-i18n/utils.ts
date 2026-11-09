@@ -2,10 +2,11 @@ export function joinText(...text: (string | string[])[]): string {
   return text.flat().join('')
 }
 
-function rewriteIndent(lines: string[], indent: number): string[] {
+export function rewriteIndent(lines: string[], indent: number): string[] {
   let oldIndent: number = Infinity
 
-  for (const line of lines) {
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i]
     if (line.trim() === '') continue
 
     const lineIndent = /^ */.exec(line)![0].length
@@ -19,7 +20,8 @@ function rewriteIndent(lines: string[], indent: number): string[] {
   const indentSpaces = ' '.repeat(indent)
 
   return lines.map((line, index) => {
-    if (index === 0 || line === '') return line
+    if (line.trim() === '') return ''
+    if (index === 0) return line
     return indentSpaces + line.slice(oldIndent)
   })
 }

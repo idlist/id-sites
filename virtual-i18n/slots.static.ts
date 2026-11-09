@@ -4,14 +4,12 @@ interface TranslateOptions<V, T extends readonly string[]> {
   branches: Partial<Record<T[number], string>>
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Subsequent usage does not care the type of V.
 export interface StaticI18nSlot<V = any, T extends readonly string[] = string[]> {
   id: string
   branches?: T
   translate: (options: TranslateOptions<V, T>) => string
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: Subsequent usage does not care the type of V.
 export function defineSlot<V = any, const T extends string[] = string[]>(
   slot: StaticI18nSlot<V, T>,
 ): StaticI18nSlot {

@@ -20,7 +20,7 @@ Under `src/pages`:
 - `index.astro`: Entry point for the homepage, a Vue SPA is inside it.
 - `notes.astro` & `notes/`: MPA setup for the blog.
 
-## `virtual-i18n`
+## `vue-virtual-i18n`
 
 A custom i18n solution for Vue parts of this site. This is a Vite plugin that uses the same ideology of [Paraglide JS](https://paraglidejs.com/) but inside the virtual module.
 
