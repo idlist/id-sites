@@ -1,3 +1,4 @@
+// This plugin is copied from:
 // https://satteri.bruits.org/docs/plugins/#hast-plugins
 
 import { defineHastPlugin } from 'satteri'

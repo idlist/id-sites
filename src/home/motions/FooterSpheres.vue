@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FooterBleed, getCenterRadius } from '@home/designs/footer'
-import { useElementVisibility, useEventListener, useResizeObserver } from '@vueuse/core'
+import { useElementVisibility, useEventListener } from '@vueuse/core'
 import { clamp, createTimer, degToRad, radToDeg, random, type Timer } from 'animejs'
 import { Bodies, Body, Composite, Engine, Vector } from 'matter-js'
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'

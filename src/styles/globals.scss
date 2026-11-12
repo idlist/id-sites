@@ -110,16 +110,16 @@ a {
     @extend .id-typeface;
   }
 
+  ol, ul {
+    padding-left: 1rem;
+  }
+
   &.-nomargin {
     margin: 0;
 
     p, ul, ol {
       margin: 0;
     }
-  }
-
-  ol, ul {
-    padding-left: 1rem;
   }
 }
 

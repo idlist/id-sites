@@ -54,12 +54,13 @@
 
   @extend .id-typeface;
 
-  ol ol, ol ul, ul ol, ul ul {
-    margin-top: 0;
+  ol, ul {
+    padding-inline-start: 1.5rem;
   }
 
-  ol, ul {
-    padding-left: 1rem;
+  :is(ol, ul) :is(ol, ul) {
+    margin-top: 0;
+    padding-inline-start: 1rem;
   }
 
   li::marker {
@@ -70,27 +71,19 @@
   blockquote {
     margin: 0;
     padding-left: 0.75rem;
-    color: var(--color-main-2);
+    color: var(--color-main-3);
     border: none;
     border-left: 0.25rem solid var(--color-sub-2);
   }
 
-  table,
-  img {
-    margin: 0;
-    margin-top: 0.5rem;
-  }
-
   table {
+    margin: 0;
     border-collapse: collapse;
     font-size: 0.875rem;
   }
 
-  th,
-  td {
+  th, td {
     padding: 0.25rem 0.5rem;
-
-    text-align: left;
     vertical-align: top;
   }
 
@@ -102,7 +95,17 @@
     background-color: var(--color-sub-alt);
   }
 
+  .id-table {
+    margin: 0.75rem 0;
+  }
+
+  .id-table.oneline {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
   img {
+    margin: 0.75rem 0;
     border-radius: 0.25rem;
   }
 
@@ -173,7 +176,7 @@
   }
 }
 
-.heading-link {
+.id-heading-anchor {
   display: inline-block;
   width: 1rem;
   height: 1rem;
@@ -182,4 +185,49 @@
   > img {
     margin: 0;
   }
+}
+
+.id-callout {
+  --display-icon: none;
+  --color-callout: var(--color-main-3);
+
+  display: flow-root;
+  padding: 0 0.75em;
+
+  border-radius: 0.5rem;
+  border: 2px solid var(--color-callout);
+  background-color: color-mix(in oklch, var(--color-callout) 10%, transparent);
+
+  > .header {
+    display: flex;
+    column-gap: 0.25em;
+    align-items: center;
+
+    margin: 0.5em 0;
+  }
+
+  > .header > .icon {
+    width: 1.5em;
+    height: 1.5em;
+    display: var(--display-icon, none);
+  }
+
+  > .header > .icon > img {
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+  }
+
+  > .header > .title {
+    font-family: var(--font-unique);
+    font-weight: bold;
+
+    color: color-mix(in oklch, var(--color-callout), black 10%);
+  }
+}
+
+.id-callout.warning {
+  --display-icon: block;
+  --color-callout: #fdb416;
 }

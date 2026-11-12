@@ -5,8 +5,7 @@ import { defineConfig } from 'astro/config'
 import path from 'node:path'
 import markdown from 'unplugin-vue-markdown/vite'
 import svgLoader from 'vite-svg-loader'
-import { externalLinks } from './satteri-plugins/external-links'
-import { headingLinks } from './satteri-plugins/heading-links'
+import { callouts, externalLinks, headingAnchors, wrapTable } from './satteri-plugins'
 import virtualI18n from './virtual-i18n'
 
 const licenseNotice = `
@@ -31,10 +30,15 @@ export default defineConfig({
       theme: 'one-light',
     },
     processor: satteri({
+      features: {
+        attributes: true,
+      },
       hastPlugins: [
         externalLinks,
         headingIds(),
-        headingLinks,
+        headingAnchors,
+        wrapTable,
+        callouts,
       ],
     }),
   },
