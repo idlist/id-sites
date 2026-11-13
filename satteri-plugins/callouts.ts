@@ -16,9 +16,7 @@ const markerPattern = /^\[!([\w-]+)\](?:\s+(.*))?$/
  * <template>
  *   <div :class="['id-callout', type]">
  *     <div class="header">
- *       <div class="icon" aria-hidden="true">
- *         <img :src="`/assets/${type}`" alt="" />
- *       </div>
+ *       <img class="icon" :src="`/assets/${type}`" />
  *
  *       <div class="title">
  *         {{ title }}
@@ -26,7 +24,7 @@ const markerPattern = /^\[!([\w-]+)\](?:\s+(.*))?$/
  *     </div>
  *
  *     <div class="content">
- *       <slot />
+ *       <slot></slot>
  *     </div>
  *   </div>
  * </template>
@@ -75,9 +73,12 @@ function createCallout(type: string, title: Child, content: Child) {
   return (
     h('div', { class: ['id-callout', type] }, [
       h('div', { class: ['header'] }, [
-        h('div', { class: ['icon'], 'aria-hidden': true }, [
-          h('img', { src: `/assets/${type}.svg`, alt: '' }),
-        ]),
+        h('img', {
+          class: ['icon'],
+          src: `/assets/${type}.svg`,
+          alt: '',
+          'aria-hidden': true,
+        }),
         h('div', { class: ['title'] }, title),
       ]),
       h('div', { class: ['content'] }, content),
