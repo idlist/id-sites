@@ -10,6 +10,7 @@ import { type NavigationGroup, type NavigationSection, PageList } from './data/p
 
 import {
   useEventListener,
+  useMediaQuery,
   useWindowScroll,
   useWindowSize,
   watchDebounced,
@@ -141,15 +142,18 @@ function updateSectionCursor() {
   sectionCursor.progress = passed / height
 }
 
+const isTouchPrimary = useMediaQuery('(hover: none) and (pointer: coarse)')
+
 function realignSectionProgress() {
   if (sectionBorders.length === 0) return
+  if (isTouchPrimary.value) return
 
   const i = sectionBorders.findIndex((s) => s.id === sectionCursor.id)
   const section = sectionBorders[i]
   const height = getSectionHeight(i)
   const passed = height * sectionCursor.progress
 
-  scrollY.value = section.border + passed
+  scroll(section.border + passed)
 }
 
 onMounted(() => {
@@ -167,12 +171,12 @@ onMounted(() => {
 
 let currentScroll: ReturnType<typeof animate> | null = null
 
-function scroll(y: number) {
+function scroll(y: number, duration = 500) {
   currentScroll?.cancel()
   currentScroll = animate(scrollY, {
     value: y,
     ease: 'out(3)',
-    duration: 500,
+    duration,
   })
 }
 
