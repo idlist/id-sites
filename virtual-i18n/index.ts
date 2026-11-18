@@ -5,10 +5,23 @@ import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots.vi
 import { type Token, tokenize } from './tokenizer'
 import { code, codelines, joinText } from './utils'
 
-export interface PluginOptions {
+export interface PluginOptionsOld {
   localeRoot?: string
   localeFiles: Record<string, string[]>
   defaultLocale?: string
+  dtsEmitPath?: string
+  customSlotHandlers?: VirtualI18nSlot[]
+}
+
+interface InstanceOptions {
+  type?: 'vue' | 'static'
+  root: string
+  defaultLocale: string
+  namespace?: string
+}
+
+export interface PluginOptions extends Partial<InstanceOptions> {
+  instances: InstanceOptions[]
   dtsEmitPath?: string
   customSlotHandlers?: VirtualI18nSlot[]
 }
@@ -41,7 +54,7 @@ function compileBranches(
   return escapedBranches
 }
 
-function viteVirtualI18n(options: PluginOptions): Plugin {
+function viteVirtualI18n(options: PluginOptionsOld): Plugin {
   const virtualModuleId = 'virtual:i18n'
   const resolvedModuleId = `\0${virtualModuleId}`
 
@@ -304,7 +317,7 @@ declare module '${virtualModuleId}' {
   }
 
   return {
-    name: 'vue-virtual-i18n',
+    name: 'vite-virtual-i18n',
     enforce: 'pre',
 
     configResolved(config) {
