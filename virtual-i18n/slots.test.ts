@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defineSlot, numSlot, oneOtherSlot, strSlot } from './slots.virtual'
+import { defineSlot, numSlot, oneOtherSlot, strSlot } from './slots'
 
 describe('defineSlot', () => {
   it('returns the slot as is', () => {

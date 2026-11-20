@@ -1,7 +1,7 @@
 import fs, { type Dirent } from 'node:fs'
 import path from 'node:path'
 import { type Logger, type ModuleNode, normalizePath, type Plugin } from 'vite'
-import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots.virtual'
+import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots'
 import { type Token, tokenize } from './tokenizer'
 import { code, codelines, joinText } from './utils'
 
