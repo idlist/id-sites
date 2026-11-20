@@ -1,11 +1,11 @@
 ---
 import IconIdlist from '@assets/idlist-dark.svg'
 import { lastUpdate, yearCopyright } from '@src/meta.g'
-import { useI18n } from '@virtual-i18n/static'
-import type { SupportedLocales } from 'virtual:i18n'
+import type { SupportedLocale } from 'virtual:i18n'
+import { useI18n } from 'virtual:i18n/notes'
 
 interface Props {
-  locale?: SupportedLocales
+  locale?: SupportedLocale
 }
 
 const { locale = 'en' } = Astro.props
@@ -24,7 +24,7 @@ const yearRange = yearCopyright === yearBegin
 <div class="note-footer">
   <span>i'DLisT © {yearRange}</span>
   <span class="divider">|</span>
-  <span>{m('lastUpdate')}{lastUpdate}</span>
+  <span>{m.lastUpdate()}{lastUpdate}</span>
 </div>
 
 <style lang="scss">

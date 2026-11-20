@@ -6,12 +6,12 @@ import IconGitHub from '@assets/icons/github.svg?component'
 import IconSoundCloud from '@assets/icons/soundcloud.svg?component'
 import IconX from '@assets/icons/x.svg?component'
 import type { ViteSvgComponent } from '@home/utils'
-import { type GeneralVirtualMessage, locale, m, type SupportedLocales } from 'virtual:i18n'
+import { locale, m, type SupportedLocale, type VirtualMessage } from 'virtual:i18n'
 import { computed } from 'vue'
 
 export interface ContactItem {
   type: string
-  platform: string | GeneralVirtualMessage
+  platform: string | VirtualMessage
   id: string
   link: string
   icon: ViteSvgComponent
@@ -69,7 +69,7 @@ export const contacts: ContactItem[] = [
   },
 ]
 
-const excludedContacts: Record<SupportedLocales, Set<string>> = {
+const excludedContacts: Record<SupportedLocale, Set<string>> = {
   en: new Set(['bilibili']),
   zh: new Set(['discord', 'soundcloud']),
 }

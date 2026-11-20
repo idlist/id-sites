@@ -1,16 +1,16 @@
 ---
 import IconIslandSmall from '@assets/island-small.svg'
-import { useI18n } from '@virtual-i18n/static'
-import type { SupportedLocales } from 'virtual:i18n'
+import type { SupportedLocale } from 'virtual:i18n'
+import { useI18n } from 'virtual:i18n/notes'
 
 interface Props {
-  locale?: SupportedLocales
+  locale?: SupportedLocale
 }
 
 const { locale = 'en' } = Astro.props
 const { m } = useI18n(locale)
 
-const message = m('noteListEpilog')
+const message = m.noteListEpilog()
 const splitted = message
   .split('|')
   .map((segments) => `<span>${segments}</span>`)

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { ViteSvgComponent } from '@home/utils.ts'
 import { animate } from 'animejs'
-import type { GeneralVirtualMessage } from 'virtual:i18n'
+import type { VirtualMessage } from 'virtual:i18n'
 import { computed, reactive, watch } from 'vue'
 import BubbleRect20 from './BubbleRect20.vue'
 
 interface NavItem {
   id: string
   icon: ViteSvgComponent
-  label: GeneralVirtualMessage
+  label: VirtualMessage
 }
 
 const props = withDefaults(

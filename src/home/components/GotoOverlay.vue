@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { guessLocale } from '@src/client/guess-locale.ts'
 import { useLocalStorage } from '@vueuse/core'
-import { locale, type SupportedLocales, supportedLocales } from 'virtual:i18n'
+import { locale, type SupportedLocale, supportedLocales } from 'virtual:i18n'
 import { onBeforeMount } from 'vue'
 import GotoOverlayCore from './GotoOverlayCore.vue'
 
-const localeStorage = useLocalStorage<SupportedLocales>('locale', tryGuessLocale())
+const localeStorage = useLocalStorage<SupportedLocale>('locale', tryGuessLocale())
 
 function goto() {
   switch (locale.value) {
@@ -17,7 +17,7 @@ function goto() {
   }
 }
 
-function updateLocale(newLocale: SupportedLocales) {
+function updateLocale(newLocale: SupportedLocale) {
   locale.value = newLocale
   localeStorage.value = newLocale
 }

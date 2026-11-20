@@ -3,7 +3,7 @@ import IconGlobe from '@assets/icons/globe.svg?component'
 import type { AnimationCanceller } from '@home/utils'
 import { useWindowSize } from '@vueuse/core'
 import { animate, spring } from 'animejs'
-import { m, type SupportedLocales } from 'virtual:i18n'
+import { m, type SupportedLocale } from 'virtual:i18n'
 import { ref, useTemplateRef, watch } from 'vue'
 import Bubble40 from './Bubble40.vue'
 import BubbleRect16 from './BubbleRect16.vue'
@@ -19,7 +19,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   goto: []
-  updateLocale: [SupportedLocales]
+  updateLocale: [SupportedLocale]
 }>()
 
 const destination = {
@@ -59,7 +59,7 @@ function openLocaleDialog() {
   actionIntent.value = 'locale-switch'
 }
 
-function setLocale(newLocale: SupportedLocales) {
+function setLocale(newLocale: SupportedLocale) {
   emit('updateLocale', newLocale)
   actionIntent.value = 'none'
 }

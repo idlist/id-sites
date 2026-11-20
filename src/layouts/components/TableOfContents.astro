@@ -1,11 +1,11 @@
 ---
-import { useI18n } from '@virtual-i18n/static'
 import type { MarkdownHeading } from 'astro'
 import { clone } from 'remeda'
-import type { SupportedLocales } from 'virtual:i18n'
+import type { SupportedLocale } from 'virtual:i18n'
+import { useI18n } from 'virtual:i18n/notes'
 
 interface Props {
-  locale: SupportedLocales
+  locale: SupportedLocale
   headings: MarkdownHeading[]
 }
 
@@ -70,7 +70,7 @@ const items = flattenDepth(filtered)
 
 <nav class="note-toc">
   <div class:list={['title', { '-italic': italicTitle }]}>
-    {m('toc')}
+    {m.toc()}
   </div>
 
   <ul class="list">

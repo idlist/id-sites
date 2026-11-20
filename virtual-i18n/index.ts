@@ -464,6 +464,8 @@ declare module '${virtualModuleId}' {
 
   ${dtsCommon}
 
+  export const locale: Ref<SupportedLocale>
+
   export const m: {
     ${dtsMessages}
   }
@@ -591,9 +593,9 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
           context.supportedLocalesPerInstance[''],
         )
       } else {
-        if (!id.startsWith(`${virtualModuleId}/`)) return
+        if (!id.startsWith(`${resolvedModuleId}/`)) return
 
-        const maybeName = id.slice(virtualModuleId.length + 1)
+        const maybeName = id.slice(resolvedModuleId.length + 1)
         if (maybeName === '') return
 
         const instance = instanceMap.get(maybeName)

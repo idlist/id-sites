@@ -4,10 +4,10 @@ import IconBack from '@assets/icons/back.svg'
 import IconLicense from '@assets/icons/license.svg'
 import IconTimeUpdate from '@assets/icons/time-update.svg'
 import IconTime from '@assets/icons/time.svg'
-import { useI18n } from '@virtual-i18n/static'
 import type { CollectionEntry } from 'astro:content'
 import { render } from 'astro:content'
 import { capitalize } from 'remeda'
+import { useI18n } from 'virtual:i18n/notes'
 import BubbleRect16 from './components/BubbleRect16.astro'
 import BubbleRect20 from './components/BubbleRect20.astro'
 import NoteFooter from './components/NoteFooter.astro'
@@ -36,7 +36,9 @@ function formatDate(date: Date) {
 const licenseName: Record<string, string> = {
   cc4: 'CC BY-NC-SA 4.0',
 }
-const i18nLicenseName = licenseName[license] ?? m(`license${capitalize(license)}`)
+
+const i18nLicenseKey = `license${capitalize(license)}` as keyof typeof m
+const i18nLicenseName = licenseName[license] ?? m[i18nLicenseKey]()
 
 const licenseRefLinkMap: Record<string, string> = {
   cc4: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
@@ -54,7 +56,7 @@ const DiscussPrompt = useI18nComponent(locale, 'DiscussPrompt', 'mdx')
         <BubbleRect16>
           <div class="note-back-btn">
             <div class="icon"><IconBack /></div>
-            <span>{m('backToNoteList')}</span>
+            <span>{m.backToNoteList()}</span>
           </div>
         </BubbleRect16>
       </a>
@@ -66,13 +68,13 @@ const DiscussPrompt = useI18nComponent(locale, 'DiscussPrompt', 'mdx')
           <div class="note-meta-list">
             <div class="note-meta">
               <div class="icon"><IconTime /></div>
-              <span>{m('dateCreated')}{formatDate(created)}</span>
+              <span>{m.dateCreated()}{formatDate(created)}</span>
             </div>
 
             {updated && (
               <div class="note-meta">
                 <div class="icon"><IconTimeUpdate /></div>
-                <span>{m('dateUpdated')}{formatDate(updated)}</span>
+                <span>{m.dateUpdated()}{formatDate(updated)}</span>
               </div>
             )}
 

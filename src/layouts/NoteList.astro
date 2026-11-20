@@ -1,8 +1,8 @@
 ---
 import IconIsland from '@assets/island.svg'
-import { useI18n } from '@virtual-i18n/static'
 import { getCollection } from 'astro:content'
-import type { SupportedLocales } from 'virtual:i18n'
+import type { SupportedLocale } from 'virtual:i18n'
+import { useI18n } from 'virtual:i18n/notes'
 import BubbleRect20 from './components/BubbleRect20.astro'
 import GotoOverlayAstro from './components/GotoOverlayAstro.vue'
 import NoteEntry, { type NoteEntryProps } from './components/NoteEntry.astro'
@@ -68,7 +68,7 @@ for (const rawTopic of rawTopics) {
   })
 }
 
-const localePageMap: Record<SupportedLocales, string> = {
+const localePageMap: Record<SupportedLocale, string> = {
   en: '/notes/en',
   zh: '/notes/zh',
 }
@@ -109,7 +109,7 @@ const NoteListPreface = useI18nComponent(locale, 'NoteListPreface', 'mdx')
     <main class="main">
       <div class="note-header">
         <div class="title-icon"><IconIsland /></div>
-        <h1 class="title-name">{m('noteListTitle')}</h1>
+        <h1 class="title-name">{m.noteListTitle()}</h1>
       </div>
 
       <BubbleRect20>
@@ -119,7 +119,7 @@ const NoteListPreface = useI18nComponent(locale, 'NoteListPreface', 'mdx')
           </div>
 
           {topics.length == 0
-            ? <div class="no-notes">{m('noNotes')}</div>
+            ? <div class="no-notes">{m.noNotes()}</div>
             : topics.map((topic) => (
               <NoteTopicGroup name={topic.name}>
                 {topic.info && <div class="id-typeface topic-info">{topic.info}</div>}

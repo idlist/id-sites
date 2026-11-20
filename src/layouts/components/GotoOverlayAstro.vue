@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import GotoOverlayCore from '@home/components/GotoOverlayCore.vue'
 import { useLocalStorage } from '@vueuse/core'
-import { locale as currentLocale, type SupportedLocales } from 'virtual:i18n'
+import { locale as currentLocale, type SupportedLocale } from 'virtual:i18n'
 import { onBeforeMount } from 'vue'
 
 const props = withDefaults(
   defineProps<{
-    locale: SupportedLocales
-    localePageMap?: Partial<Record<SupportedLocales, string>>
+    locale: SupportedLocale
+    localePageMap?: Partial<Record<SupportedLocale, string>>
   }>(),
   {
     localePageMap: () => ({}),
   },
 )
 
-const localeStorage = useLocalStorage<SupportedLocales>('locale', props.locale)
+const localeStorage = useLocalStorage<SupportedLocale>('locale', props.locale)
 
 function goto() {
   window.location.href = `/`
 }
 
-function updateLocale(newLocale: SupportedLocales) {
+function updateLocale(newLocale: SupportedLocale) {
   if (!props.localePageMap) return
   if (newLocale === localeStorage.value) return
 

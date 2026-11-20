@@ -15,7 +15,7 @@ import WorksFlakepiles from '@home/screens/WorksFlakepiles.vue'
 import WorksHeader from '@home/screens/WorksHeader.vue'
 import WorksOthers from '@home/screens/WorksOthers.vue'
 import type { ViteSvgComponent } from '@home/utils'
-import { type GeneralVirtualMessage, m } from 'virtual:i18n'
+import { m, type VirtualMessage } from 'virtual:i18n'
 import type { Component } from 'vue'
 
 export interface NavigationSection {
@@ -29,7 +29,7 @@ export interface NavigationGroup {
   gid: string
   draft?: boolean
   icon: ViteSvgComponent
-  label: GeneralVirtualMessage
+  label: VirtualMessage
   offset?: number
   sections: NavigationSection[]
 }
