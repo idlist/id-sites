@@ -22,13 +22,11 @@ Under `src/pages`:
 
 ## `vue-virtual-i18n`
 
-A custom i18n solution for Vue parts of this site. This is a Vite plugin that uses the same ideology of [Paraglide JS](https://paraglidejs.com/) but inside the virtual module.
+A custom i18n solution for this site. This is a Vite plugin that uses the same ideology of [Paraglide JS](https://paraglidejs.com/) but inside the virtual module.
 
 - The same: Still codegen.
 - The pros: Fully customizable logic in my flavor. No more boilerplates.
-- The cons: Bind to Vue + Vite. Not really tested.
-
-Astro pages use the "static" counterpart of the solution that is more familiar to common ones (`m('messageKey')`) while reusing the tokenizer.
+- The cons: Bind to Vite (and Vue). Not really tested.
 
 This i18n solution is mainly for short sentences. For paragraphs, markdown in Vue (via `unplugin-vue-markdown`) and MDX in Astro (via MDX integration) is used respectively. A different file extension (`.vmd`) is used to avoid MDX importer resolving markdown files that are supposed to be consumed by Vue, while they are still markdown file.
 

@@ -501,7 +501,7 @@ declare module '${virtualModuleId}' {
 function resolveInstances(logger: Logger, options: PluginOptions) {
   const instanceMap: InstanceMap = new Map()
 
-  // Setup main namespace if both root folder and root default locale are not null.
+  // Setup main namespace if root folder is not null.
   if (options.folder != null) {
     const type = options.type ?? 'vue'
 
@@ -521,7 +521,7 @@ function resolveInstances(logger: Logger, options: PluginOptions) {
     }
   }
 
-  // Setup instances.
+  // Setup sub-instances.
   if (options.instances != null) {
     for (const instance of options.instances) {
       const type = instance.type ?? 'vue'
@@ -539,7 +539,7 @@ function resolveInstances(logger: Logger, options: PluginOptions) {
         logger.warn(joinText(
           'Duplicated namespaces "',
           instance.namespace,
-          '" in the plugin configuration. Skipped the later one.',
+          '" in the plugin configuration. The later one is skipped.',
         ))
         continue
       }
@@ -558,7 +558,7 @@ function resolveInstances(logger: Logger, options: PluginOptions) {
   return instanceMap
 }
 
-function viteVirtualI18n(options: PluginOptions): Plugin {
+function vueVirtualI18n(options: PluginOptions): Plugin {
   const virtualModuleId = 'virtual:i18n'
   const resolvedModuleId = `\0${virtualModuleId}`
 
@@ -586,7 +586,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
   }
 
   return {
-    name: 'vite-virtual-i18n',
+    name: 'vue-virtual-i18n',
     enforce: 'pre',
 
     configResolved(config) {
@@ -595,7 +595,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       instanceMap = resolveInstances(logger, options)
 
       const dtsPath = options.dtsEmitPath ?? defaultDtsEmitPath
-      dtsFullPath = normalizePath(path.resolve(configRoot, dtsPath))
+      dtsFullPath = path.resolve(configRoot, dtsPath)
 
       context = loadMessageContext(logger, configRoot, instanceMap, slotHandlers)
       const dts = generateDts(virtualModuleId, context, instanceMap, slotHandlers)
@@ -681,4 +681,4 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
   }
 }
 
-export default viteVirtualI18n
+export default vueVirtualI18n
