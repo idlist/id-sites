@@ -10,7 +10,7 @@ type LocaleType = 'vue' | 'static'
 interface LocaleOptions {
   type?: LocaleType
   folder: string
-  defaultLocale: string
+  defaultLocale?: string
 }
 
 interface InstanceOptions extends LocaleOptions {
@@ -24,10 +24,10 @@ export interface PluginOptions extends Partial<LocaleOptions> {
 }
 
 interface LocaleInstance {
+  namespace: string
   type: LocaleType
   folder: string
-  defaultLocale: string
-  namespace: string
+  defaultLocale?: string
 }
 
 type SupportedLocalesPerInstance = Record<string, Set<string>>
@@ -45,7 +45,7 @@ interface MessageContext {
   filesToWatch: string[]
 }
 
-const defaultDtsEmitPath = './src/virtual-i18n.d.ts'
+const defaultDtsEmitPath = 'virtual-i18n.d.ts'
 
 const validKeyPattern = /^[A-Za-z_$][\w$]*$/
 
@@ -331,13 +331,14 @@ function generateJsForVue(
 ): string {
   const tmplCommon = generateJsInCommon(supportedLocales)
   const tmplMessages = generateMessageFunctions(messages, slotHandlers, 'vue')
+  const tmplLocale = instance.defaultLocale!
 
   return code`
 import { ref } from 'vue'
 
 ${tmplCommon}
 
-export const locale = ref('${instance.defaultLocale}')
+export const locale = ref('${tmplLocale}')
 
 export const m = {
   ${tmplMessages}
@@ -497,6 +498,66 @@ declare module '${virtualModuleId}' {
 `
 }
 
+function resolveInstances(logger: Logger, options: PluginOptions) {
+  const instanceMap: InstanceMap = new Map()
+
+  // Setup main namespace if both root folder and root default locale are not null.
+  if (options.folder != null) {
+    const type = options.type ?? 'vue'
+
+    if (type === 'vue' && options.defaultLocale == null) {
+      logger.warn(joinText(
+        'In main instance: ',
+        '"defaultLocale" is not provided when the type of the instance is "vue". ',
+        'Skipped.',
+      ))
+    } else {
+      instanceMap.set('', {
+        type,
+        folder: options.folder,
+        defaultLocale: options.defaultLocale,
+        namespace: '',
+      })
+    }
+  }
+
+  // Setup instances.
+  if (options.instances != null) {
+    for (const instance of options.instances) {
+      const type = instance.type ?? 'vue'
+
+      if (type === 'vue' && instance.defaultLocale == null) {
+        logger.warn(joinText(
+          `In instance "${instance.namespace}": `,
+          '"defaultLocale" is not provided when the type of the instance is "vue". ',
+          'Skipped.',
+        ))
+        continue
+      }
+
+      if (instanceMap.has(instance.namespace)) {
+        logger.warn(joinText(
+          'Duplicated namespaces "',
+          instance.namespace,
+          '" in the plugin configuration. Skipped the later one.',
+        ))
+        continue
+      }
+
+      instanceMap.set(instance.namespace, {
+        ...instance,
+        type,
+      })
+    }
+  }
+
+  if (instanceMap.size === 0) {
+    logger.warn('No instances are configured.')
+  }
+
+  return instanceMap
+}
+
 function viteVirtualI18n(options: PluginOptions): Plugin {
   const virtualModuleId = 'virtual:i18n'
   const resolvedModuleId = `\0${virtualModuleId}`
@@ -505,28 +566,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
   let configRoot = ''
   let dtsFullPath = ''
   let context: MessageContext | null = null
-
-  const instanceMap: InstanceMap = new Map()
-
-  // Setup main namespace if both root folder and root default locale are not null.
-  if (options.folder != null && options.defaultLocale != null) {
-    instanceMap.set('', {
-      type: options.type ?? 'vue',
-      folder: options.folder,
-      defaultLocale: options.defaultLocale,
-      namespace: '',
-    })
-  }
-
-  // Setup instances.
-  if (options.instances != null) {
-    for (const instance of options.instances) {
-      instanceMap.set(instance.namespace, {
-        ...instance,
-        type: instance.type ?? 'vue',
-      })
-    }
-  }
+  let instanceMap: InstanceMap = new Map()
 
   // Setup slot handlers.
   const slotHandlers: Record<string, VirtualI18nSlot> = {}
@@ -552,6 +592,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
     configResolved(config) {
       logger = config.logger
       configRoot = config.configFile ? path.dirname(config.configFile) : config.root
+      instanceMap = resolveInstances(logger, options)
 
       const dtsPath = options.dtsEmitPath ?? defaultDtsEmitPath
       dtsFullPath = normalizePath(path.resolve(configRoot, dtsPath))
@@ -628,7 +669,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
 
       // Invalidate all modules.
       for (const instance of instanceMap.values()) {
-        const id = appendNamespace(virtualModuleId, instance)
+        const id = appendNamespace(resolvedModuleId, instance)
         const thisModule = server.moduleGraph.getModuleById(id)
         if (thisModule == null) continue
 

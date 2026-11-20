@@ -65,12 +65,12 @@ export default defineConfig({
         defaultLocale: 'en',
         instances: [
           {
+            namespace: 'notes',
             type: 'static',
             folder: './src/layouts/locales',
-            defaultLocale: 'en',
-            namespace: 'notes',
           },
         ],
+        dtsEmitPath: './src/virtual-i18n.d.ts',
       }),
       markdown({
         include: [/\.vmd$/],
