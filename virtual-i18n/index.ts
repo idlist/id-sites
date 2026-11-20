@@ -354,6 +354,10 @@ function generateJsForStatic(
   const tmplCommon = generateJsInCommon(supportedLocales)
   const tmplMessages = generateMessageFunctions(messages, slotHandlers, 'static')
 
+  // Generated code for type: 'static' is for SSG,
+  // so the cost of creating a new closure on each `useI18n()` call is at build time.
+  // This is optimizable, but I'm keeping current design so that the code is simpler
+  // and I can reuse the generation of the message functions.
   return code`
 ${tmplCommon}
 
