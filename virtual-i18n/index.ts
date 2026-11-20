@@ -1,12 +1,14 @@
-import fs from 'node:fs'
+import fs, { type Dirent } from 'node:fs'
 import path from 'node:path'
-import { type Logger, normalizePath, type Plugin } from 'vite'
+import { type Logger, type ModuleNode, normalizePath, type Plugin } from 'vite'
 import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots.virtual'
 import { type Token, tokenize } from './tokenizer'
 import { code, codelines, joinText } from './utils'
 
+type LocaleType = 'vue' | 'static'
+
 interface LocaleOptions {
-  type?: 'vue' | 'static'
+  type?: LocaleType
   folder: string
   defaultLocale: string
 }
@@ -22,13 +24,13 @@ export interface PluginOptions extends Partial<LocaleOptions> {
 }
 
 interface LocaleInstance {
-  type: 'vue' | 'static'
+  type: LocaleType
   folder: string
   defaultLocale: string
   namespace: string
 }
 
-type AvailableLocalesPerInstance = Record<string, Set<string>>
+type SupportedLocalesPerInstance = Record<string, Set<string>>
 
 type LangTokensRecord = Record<string, Token[]>
 type Messages = Map<string, LangTokensRecord>
@@ -38,7 +40,7 @@ type InstanceMap = Map<string, LocaleInstance>
 type SlotHandlerRecord = Record<string, VirtualI18nSlot>
 
 interface MessageContext {
-  availableLocalesPerInstance: AvailableLocalesPerInstance
+  supportedLocalesPerInstance: SupportedLocalesPerInstance
   messagesPerInstance: MessagesPerInstance
   filesToWatch: string[]
 }
@@ -68,188 +70,185 @@ function escapeBranches(
   return escapedBranches
 }
 
+function getInstanceName(instance: LocaleInstance) {
+  return instance.namespace === '' ? 'main instance' : `instance "${instance.namespace}"`
+}
+
+function appendNamespace(id: string, instance: LocaleInstance) {
+  return instance.namespace === '' ? id : `${id}/${instance.namespace}`
+}
+
+interface LoadFromEntryResult {
+  filePath: string
+  lang: string
+  json: unknown
+}
+
+function tryLoadFromEntry(
+  logger: Logger,
+  instance: LocaleInstance,
+  entry: Dirent,
+): LoadFromEntryResult | undefined {
+  if (!entry.isFile()) return
+  if (!entry.name.endsWith('.json')) return
+
+  const fileName = path.parse(entry.name).name
+  const lang = fileName.includes('.') ? fileName.split('.').at(-1)! : fileName
+
+  const filePath = path.resolve(entry.parentPath, entry.name)
+  const normalizedFilePath = normalizePath(filePath)
+  let json: unknown
+
+  try {
+    json = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+  } catch {
+    const hint = joinText(
+      `In ${getInstanceName(instance)}: `,
+      `File ${normalizedFilePath} is not a valid JSON. Skipped.`,
+    )
+    logger.warn(hint)
+    return
+  }
+
+  // We do not check schema on JSON.
+  // Basic checks like `json == null` or `typeof json` are still schema checks.
+  return { filePath: normalizedFilePath, lang, json }
+}
+
+function tryTokenizeMessage(
+  logger: Logger,
+  slotHandlers: SlotHandlerRecord,
+  instance: LocaleInstance,
+  lang: string,
+  key: string,
+  message: unknown,
+) {
+  const hintPrefix = `In ${getInstanceName(instance)} - "${lang}"`
+
+  // Verify if the key is valid.
+  if (!validKeyPattern.test(key)) {
+    logger.warn(`${hintPrefix}: key "${key}" is not a valid identifier. Skipped.`)
+    return
+  }
+
+  // Verify if the message is a string.
+  if (typeof message !== 'string') {
+    logger.warn(`${hintPrefix}: key "${key}"'s content is not a string. Skipped.`)
+    return
+  }
+
+  const tokens = tokenize(message)
+
+  // Verify slot tokens.
+  for (const token of tokens) {
+    if (token.type !== 'slot') continue
+
+    // Verify if the handler exists.
+    const handler = slotHandlers[token.slotType]
+    if (!handler) {
+      logger.warn(joinText(
+        `${hintPrefix}, key "${key}": `,
+        `slot type "${token.slotType}" is not registered.`,
+      ))
+      continue
+    }
+
+    // Verify if the branches requried by a slot type is fulfilled.
+    if (!handler.branches) continue
+    const branchesMissing = handler.branches.filter(name => !token.branches[name])
+    if (branchesMissing.length) {
+      logger.warn(joinText(
+        `${hintPrefix}, key "${key}": `,
+        `slot type "${token.slotType}" is missing the branch(es) "`,
+        branchesMissing.join('", "'),
+        '".',
+      ))
+    }
+  }
+
+  return tokens
+}
+
 function loadMessageContext(
   logger: Logger,
   configRoot: string,
   instanceMap: InstanceMap,
   slotHandlers: SlotHandlerRecord,
 ): MessageContext {
-  const availableLocalesPerInstance: AvailableLocalesPerInstance = {}
+  const supportedLocalesPerInstance: SupportedLocalesPerInstance = {}
   const messagesPerInstance: MessagesPerInstance = new Map()
   const filesToWatch: string[] = []
 
   for (const instance of instanceMap.values()) {
-    const availableLocales = new Set<string>()
+    const supportedLocales = new Set<string>()
     const rawJsons: Record<string, Record<string, unknown>> = {}
 
-    const instanceRoot = path.resolve(configRoot, instance.folder)
-    if (!fs.existsSync(instanceRoot)) {
-      logger.warn(`Folder "${instance.folder}" does not exist. Skipped.`)
+    const root = path.resolve(configRoot, instance.folder)
+    if (!fs.existsSync(root)) {
+      const hint = joinText(
+        `In ${getInstanceName(instance)} :`,
+        `Folder "${instance.folder}" does not exist. Skipped.`,
+      )
+      logger.warn(hint)
       continue
     }
 
-    // Subfolders are only for grouping, so the whole folder is walked through.
-    const entries = fs.readdirSync(instanceRoot, { recursive: true, withFileTypes: true })
+    const entries = fs.readdirSync(root, { recursive: true, withFileTypes: true })
 
     for (const entry of entries) {
-      if (!entry.isFile()) continue
-      if (!entry.name.endsWith('.json')) continue
+      const result = tryLoadFromEntry(logger, instance, entry)
+      if (result == null) continue
 
-      // A locale is taken from the second-to-last suffix,
-      // or from the file name if the name carries a single suffix, e.g. "en.json".
-      const stem = path.parse(entry.name).name
-      const lang = stem.includes('.') ? stem.split('.').at(-1)! : stem
+      rawJsons[result.lang] ??= {}
+      Object.assign(rawJsons[result.lang], result.json)
 
-      const filePath = path.resolve(entry.parentPath, entry.name)
-
-      let json: unknown
-      try {
-        json = JSON.parse(fs.readFileSync(filePath, 'utf8'))
-      } catch {
-        logger.warn(`File "${normalizePath(filePath)}" is not valid JSON. Skipped.`)
-        continue
-      }
-
-      if (json === null || typeof json !== 'object' || Array.isArray(json)) {
-        logger.warn(`File "${normalizePath(filePath)}" is not a JSON object. Skipped.`)
-        continue
-      }
-
-      rawJsons[lang] ??= {}
-      Object.assign(rawJsons[lang], json)
-
-      // TODO: collect available loacles
+      supportedLocales.add(result.lang)
+      filesToWatch.push(result.filePath)
     }
 
-    availableLocalesPerInstance[instance.namespace] = availableLocales
+    supportedLocalesPerInstance[instance.namespace] = supportedLocales
     const messages = messagesPerInstance.getOrInsert(instance.namespace, new Map())
 
     for (const [lang, json] of Object.entries(rawJsons)) {
       for (const [key, message] of Object.entries(json)) {
-        // Verify if the key is valid.
-        if (!validKeyPattern.test(key)) {
-          logger.warn(`In "${lang}": key "${key}" is not a valid identifier. Skipped.`)
-          continue
-        }
+        const tokens = tryTokenizeMessage(
+          logger,
+          slotHandlers,
+          instance,
+          lang,
+          key,
+          message,
+        )
+        if (tokens == null) continue
 
-        // Verify if the message is a string.
-        if (typeof message !== 'string') {
-          logger.warn(`In "${lang}": key "${key}"'s content is not a string. Skipped.`)
-          continue
-        }
-
-        const tokens = tokenize(message)
         const langTokensMap = messages.getOrInsert(key, {})
         langTokensMap[lang] = tokens
-
-        // Verify slot tokens.
-        for (const token of tokens) {
-          if (token.type !== 'slot') continue
-
-          // Verify if the handler exists.
-          const handler = slotHandlers[token.slotType]
-          if (!handler) {
-            logger.warn(joinText(
-              `In "${lang}", key "${key}": `,
-              `slot type "${token.slotType}" is not registered.`,
-            ))
-            continue
-          }
-
-          // Verify if the branches requried by a slot type is fulfilled.
-          if (!handler.branches) continue
-          const branchesMissing = handler.branches.filter(name => !token.branches[name])
-          if (branchesMissing.length) {
-            logger.warn(joinText(
-              `In "${lang}", key "${key}": `,
-              `slot type "${token.slotType}" is missing the branch(es) "`,
-              branchesMissing.join('", "'),
-              '".',
-            ))
-          }
-        }
       }
     }
   }
 
   return {
-    availableLocalesPerInstance,
+    supportedLocalesPerInstance,
     messagesPerInstance,
     filesToWatch,
   }
 }
 
-function generateJs(
-  instance: LocaleInstance,
-  messages: Messages,
-  slotHandlers: SlotHandlerRecord,
-  availableLocales: Set<string>,
-): string {
-  switch (instance.type) {
-    case 'vue':
-      return generateJsForVue(instance, messages, slotHandlers, availableLocales)
-    case 'static':
-      return generateJsForStatic(instance, messages, slotHandlers, availableLocales)
-  }
+const switchTargets: Record<LocaleType, string> = {
+  vue: 'locale.value',
+  static: 'locale',
 }
 
-function generateJsForVue(
-  instance: LocaleInstance,
-  messages: Messages,
-  slotHandlers: SlotHandlerRecord,
-  availableLocales: Set<string>,
-): string {
-  const functionTemplates: string[] = []
+function generateJsInCommon(supportedLocales: Set<string>) {
+  const localeValues = supportedLocales.values()
+    .map(lang => `'${lang}'`)
+    .toArray()
+    .join(', ')
 
-  for (const [key, langTokensMap] of messages.entries()) {
-    const branchTemplates: string[] = []
+  return codelines`
+export const allLocales = new Set([${localeValues}])
 
-    for (const [lang, tokens] of Object.entries(langTokensMap)) {
-      const template: string[] = []
-
-      for (const token of tokens) {
-        if (token.type === 'text') {
-          const textEscaped = escapeMessage(token.text)
-          template.push(textEscaped)
-        }
-
-        if (token.type === 'slot') {
-          const handler = slotHandlers[token.slotType] ?? strSlot
-
-          const slotTemplate = handler.generateCode({
-            key,
-            name: token.slotName,
-            branches: escapeBranches(token.branches, token.slotName),
-          })
-          template.push(slotTemplate)
-        }
-      }
-
-      branchTemplates.push(codelines /* ts */`
-case '${lang}': return \`${joinText(template)}\`
-`)
-    }
-
-    functionTemplates.push(codelines /* ts */`
-${key}: (params) => {
-  switch (locale.value) {
-    ${branchTemplates}
-    default: return '${key}'
-  }
-},
-`)
-  }
-
-  const locales = availableLocales.values().map(lang => `'${lang}'`).toArray()
-
-  return code /* ts */`
-import { ref } from 'vue'
-
-export const locale = ref('${instance.defaultLocale}')
-
-export const supportedLocales = new Set([${locales.join(', ')}])
-
-export const allLocales = new Set([${locales.join(', ')}])
+export const supportedLocales = new Set([${localeValues}])
 
 export function toMessage(stringOrMessage) {
   if (typeof stringOrMessage === 'string') {
@@ -257,31 +256,137 @@ export function toMessage(stringOrMessage) {
   } else {
     return stringOrMessage()
   }
+}`
 }
 
+function generateMessageFunctions(
+  messages: Messages,
+  slotHandlers: SlotHandlerRecord,
+  type: LocaleType,
+) {
+  const target = switchTargets[type]
+  const tmplFunctions: string[] = []
+
+  for (const [key, langTokensRecord] of messages.entries()) {
+    const tmplBranches: string[] = []
+
+    for (const [lang, tokens] of Object.entries(langTokensRecord)) {
+      const tmplValues: string[] = []
+
+      for (const token of tokens) {
+        if (token.type === 'text') {
+          const escapedMessage = escapeMessage(token.text)
+          tmplValues.push(escapedMessage)
+        }
+
+        if (token.type === 'slot') {
+          const handler = slotHandlers[token.slotType] ?? strSlot
+
+          const tmplSlot = handler.generateCode({
+            key,
+            name: token.slotName,
+            branches: escapeBranches(token.branches, token.slotName),
+          })
+          tmplValues.push(tmplSlot)
+        }
+      }
+
+      tmplBranches.push(codelines`
+case '${lang}': return \`${joinText(tmplValues)}\`
+`)
+    }
+
+    tmplFunctions.push(codelines`
+${key}: (params) => {
+  switch (${target}) {
+    ${tmplBranches}
+    default: return '${key}'
+  }
+},
+`)
+  }
+
+  return tmplFunctions
+}
+
+function generateJs(
+  instance: LocaleInstance,
+  messages: Messages,
+  slotHandlers: SlotHandlerRecord,
+  supportedLocales: Set<string>,
+): string {
+  switch (instance.type) {
+    case 'vue':
+      return generateJsForVue(instance, messages, slotHandlers, supportedLocales)
+    case 'static':
+      return generateJsForStatic(messages, slotHandlers, supportedLocales)
+  }
+}
+
+function generateJsForVue(
+  instance: LocaleInstance,
+  messages: Messages,
+  slotHandlers: SlotHandlerRecord,
+  supportedLocales: Set<string>,
+): string {
+  const tmplCommon = generateJsInCommon(supportedLocales)
+  const tmplMessages = generateMessageFunctions(messages, slotHandlers, 'vue')
+
+  return code`
+import { ref } from 'vue'
+
+${tmplCommon}
+
+export const locale = ref('${instance.defaultLocale}')
+
 export const m = {
-  ${functionTemplates}
+  ${tmplMessages}
 }
 `
 }
 
 function generateJsForStatic(
-  instance: LocaleInstance,
   messages: Messages,
   slotHandlers: SlotHandlerRecord,
-  availableLocales: Set<string>,
+  supportedLocales: Set<string>,
 ): string {
-  // TODO
-  return ''
+  const tmplCommon = generateJsInCommon(supportedLocales)
+  const tmplMessages = generateMessageFunctions(messages, slotHandlers, 'static')
+
+  return code`
+${tmplCommon}
+
+export function useI18n(locale) {
+  return {
+    m: {
+      ${tmplMessages}
+    }
+  }
+}
+`
 }
 
-function generateDtsOld(
-  messages: Messages,
-  slotHandlers: SlotHandlerRecord,
-  availableLocales: Set<string>,
-  virtualModuleId: string,
-): string {
-  const dtsTemplates: string[] = []
+function generateDtsInCommon(supportedLocales: Set<string>) {
+  const localeTypes = supportedLocales.values()
+    .map(lang => `'${lang}'`)
+    .toArray()
+    .join(' | ')
+
+  return codelines`
+export type VirtualMessage = (...args: unknown[]) => string
+
+export type SupportedLocale = ${localeTypes}
+
+export const allLocales: Set<SupportedLocale>
+
+export const supportedLocales: Set<string>
+
+export function toMessage(stringOrMessage: string | VirtualMessage): string
+`
+}
+
+function generateDtsForMessages(messages: Messages, slotHandlers: SlotHandlerRecord) {
+  const dtsFunctions: string[] = []
 
   for (const [key, langTokensRecord] of messages.entries()) {
     const slotTypeMap = new Map<string, Set<string>>()
@@ -300,40 +405,17 @@ function generateDtsOld(
       }
     }
 
-    const paramsDefs = [...slotTypeMap]
+    const paramsDefs = slotTypeMap.entries()
       .map(([name, types]) => `${name}: ${[...types].join(' | ')}`)
+      .toArray()
       .join(', ')
 
-    dtsTemplates.push(codelines /* ts */`
+    dtsFunctions.push(codelines`
 ${key}: ${paramsDefs ? `(params: { ${paramsDefs} })` : '()'} => string,
 `)
   }
 
-  const locales = availableLocales.values().map(lang => `'${lang}'`).toArray()
-
-  return code /* ts */`
-// Generated by vue-virtual-i18n
-
-declare module '${virtualModuleId}' {
-  import type { Ref } from 'vue'
-
-  export type GeneralVirtualMessage = (...args: unknown[]) => string
-
-  export type SupportedLocales = ${locales.join(' | ')}
-
-  export const locale: Ref<SupportedLocales>
-
-  export const supportedLocales: Set<string>
-
-  export const allLocales: Set<SupportedLocales>
-
-  export function toMessage(stringOrMessage: string | GeneralVirtualMessage): string
-
-  export const m: {
-    ${dtsTemplates}
-  }
-}
-`
+  return dtsFunctions
 }
 
 function generateDts(
@@ -342,23 +424,85 @@ function generateDts(
   instanceMap: InstanceMap,
   slotHandlers: SlotHandlerRecord,
 ): string {
-  // TODO
-  return ''
+  const dtsModules: string[] = []
+
+  for (const instance of instanceMap.values()) {
+    const id = appendNamespace(virtualModuleId, instance)
+
+    const messages = context.messagesPerInstance.get(instance.namespace)!
+    const locales = context.supportedLocalesPerInstance[instance.namespace]
+
+    switch (instance.type) {
+      case 'vue':
+        dtsModules.push(generateDtsForVue(id, slotHandlers, messages, locales))
+        break
+      case 'static':
+        dtsModules.push(generateDtsForStatic(id, slotHandlers, messages, locales))
+        break
+    }
+  }
+
+  return code`
+// Generated by vue-virtual-i18n
+
+${dtsModules}
+`
+}
+
+function generateDtsForVue(
+  virtualModuleId: string,
+  slotHandlers: SlotHandlerRecord,
+  messages: Messages,
+  supportedLocales: Set<string>,
+) {
+  const dtsCommon = generateDtsInCommon(supportedLocales)
+  const dtsMessages = generateDtsForMessages(messages, slotHandlers)
+
+  return code`
+declare module '${virtualModuleId}' {
+  import type { Ref } from 'vue'
+
+  ${dtsCommon}
+
+  export const m: {
+    ${dtsMessages}
+  }
+}
+`
+}
+
+function generateDtsForStatic(
+  virtualModuleId: string,
+  slotHandlers: SlotHandlerRecord,
+  messages: Messages,
+  supportedLocales: Set<string>,
+) {
+  const dtsCommon = generateDtsInCommon(supportedLocales)
+  const dtsMessages = generateDtsForMessages(messages, slotHandlers)
+
+  return code`
+declare module '${virtualModuleId}' {
+  ${dtsCommon}
+
+  interface MessageCollection {
+    m: {
+      ${dtsMessages}
+    }
+  }
+
+  export function useI18n(locale: SupportedLocale): MessageCollection
+}
+`
 }
 
 function viteVirtualI18n(options: PluginOptions): Plugin {
   const virtualModuleId = 'virtual:i18n'
   const resolvedModuleId = `\0${virtualModuleId}`
-  const virtualSubmodulePrefix = `${virtualModuleId}/`
-  const resolvedSubmodulePrefix = `\0${virtualSubmodulePrefix}`
 
   let logger: Logger
   let configRoot = ''
   let dtsFullPath = ''
   let context: MessageContext | null = null
-
-  /** @deprecated */
-  let messagesCache: Messages
 
   const instanceMap: InstanceMap = new Map()
 
@@ -419,13 +563,13 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       if (id === virtualModuleId) {
         return resolvedModuleId
       } else {
-        if (!id.startsWith(virtualSubmodulePrefix)) return
+        if (!id.startsWith(`${virtualModuleId}/`)) return
 
-        const maybeName = id.slice(virtualSubmodulePrefix.length)
+        const maybeName = id.slice(virtualModuleId.length + 1)
         if (maybeName === '') return
         if (!instanceMap.has(maybeName)) return
 
-        return `${resolvedSubmodulePrefix}/${maybeName}`
+        return `${resolvedModuleId}/${maybeName}`
       }
     },
 
@@ -433,20 +577,23 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       if (context == null) return
 
       if (id === resolvedModuleId) {
+        const mainInstance = instanceMap.get('')
+        if (mainInstance == null) return
+
         for (const filePath of context.filesToWatch) {
           this.addWatchFile(filePath)
         }
 
         return generateJs(
-          instanceMap.get('')!,
+          mainInstance,
           context.messagesPerInstance.get('')!,
           slotHandlers,
-          context.availableLocalesPerInstance[''],
+          context.supportedLocalesPerInstance[''],
         )
       } else {
-        if (!id.startsWith(resolvedSubmodulePrefix)) return
+        if (!id.startsWith(`${virtualModuleId}/`)) return
 
-        const maybeName = id.slice(resolvedSubmodulePrefix.length)
+        const maybeName = id.slice(virtualModuleId.length + 1)
         if (maybeName === '') return
 
         const instance = instanceMap.get(maybeName)
@@ -460,7 +607,7 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
           instance,
           context.messagesPerInstance.get(maybeName)!,
           slotHandlers,
-          context.availableLocalesPerInstance[maybeName],
+          context.supportedLocalesPerInstance[maybeName],
         )
       }
     },
@@ -475,9 +622,18 @@ function viteVirtualI18n(options: PluginOptions): Plugin {
       const dts = generateDts(virtualModuleId, context, instanceMap, slotHandlers)
       emitDts(dts)
 
-      const thisModule = server.moduleGraph.getModuleById(resolvedModuleId)
-      if (!thisModule) return
-      return [thisModule]
+      const modulesToInvalidate: ModuleNode[] = []
+
+      // Invalidate all modules.
+      for (const instance of instanceMap.values()) {
+        const id = appendNamespace(virtualModuleId, instance)
+        const thisModule = server.moduleGraph.getModuleById(id)
+        if (thisModule == null) continue
+
+        modulesToInvalidate.push(thisModule)
+      }
+
+      return modulesToInvalidate
     },
   }
 }

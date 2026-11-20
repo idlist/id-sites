@@ -61,12 +61,16 @@ export default defineConfig({
     plugins: [
       svgLoader({ svgo: false }),
       virtualI18n({
-        localeRoot: 'src/locales',
-        localeFiles: {
-          en: ['home.en.json'],
-          zh: ['home.zh.json'],
-        },
+        folder: './src/home/locales',
         defaultLocale: 'en',
+        instances: [
+          {
+            type: 'static',
+            folder: './src/layouts/locales',
+            defaultLocale: 'en',
+            namespace: 'notes',
+          },
+        ],
       }),
       markdown({
         include: [/\.vmd$/],

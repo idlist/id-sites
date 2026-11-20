@@ -1,8 +1,8 @@
-import type { SupportedLocales } from 'virtual:i18n'
+import type { SupportedLocale } from 'virtual:i18n'
 import { numSlot, oneOtherSlot, type StaticI18nSlot, strSlot } from './slots.static'
 import { tokenize } from './tokenizer'
 
-export type MessageCollection = Partial<Record<SupportedLocales, Record<string, string>>>
+export type MessageCollection = Partial<Record<SupportedLocale, Record<string, string>>>
 
 const messageCollection: MessageCollection = {}
 
@@ -19,7 +19,7 @@ export function addSlotHandler(handler: StaticI18nSlot) {
   slotHandlers[handler.id] = handler
 }
 
-export function useI18n(locale: SupportedLocales) {
+export function useI18n(locale: SupportedLocale) {
   const m = (key: string, values?: Record<string, unknown>): string => {
     const message = messageCollection[locale]?.[key]
     if (typeof message === 'undefined') return key
