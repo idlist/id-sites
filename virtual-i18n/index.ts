@@ -1,6 +1,6 @@
 import fs, { type Dirent } from 'node:fs'
 import path from 'node:path'
-import { type Logger, type ModuleNode, normalizePath, type Plugin } from 'vite'
+import { type Logger, normalizePath, type Plugin } from 'vite'
 import { numSlot, oneOtherSlot, strSlot, type VirtualI18nSlot } from './slots'
 import { type Token, tokenize } from './tokenizer'
 import { code, codelines, joinText } from './utils'
@@ -102,11 +102,10 @@ function tryLoadFromEntry(
   try {
     json = JSON.parse(fs.readFileSync(filePath, 'utf8'))
   } catch {
-    const hint = joinText(
+    logger.warn(joinText(
       `In ${getInstanceName(instance)}: `,
       `File ${normalizedFilePath} is not a valid JSON. Skipped.`,
-    )
-    logger.warn(hint)
+    ))
     return
   }
 
@@ -183,13 +182,15 @@ function loadMessageContext(
     const supportedLocales = new Set<string>()
     const rawJsons: Record<string, Record<string, unknown>> = {}
 
+    supportedLocalesPerInstance[instance.namespace] = supportedLocales
+    const messages = messagesPerInstance.getOrInsert(instance.namespace, new Map())
+
     const root = path.resolve(configRoot, instance.folder)
     if (!fs.existsSync(root)) {
-      const hint = joinText(
+      logger.warn(joinText(
         `In ${getInstanceName(instance)} :`,
         `Folder "${instance.folder}" does not exist. Skipped.`,
-      )
-      logger.warn(hint)
+      ))
       continue
     }
 
@@ -205,9 +206,6 @@ function loadMessageContext(
       supportedLocales.add(result.lang)
       filesToWatch.push(result.filePath)
     }
-
-    supportedLocalesPerInstance[instance.namespace] = supportedLocales
-    const messages = messagesPerInstance.getOrInsert(instance.namespace, new Map())
 
     for (const [lang, json] of Object.entries(rawJsons)) {
       for (const [key, message] of Object.entries(json)) {
@@ -375,10 +373,10 @@ function generateDtsInCommon(supportedLocales: Set<string>) {
   const localeTypes = supportedLocales.values()
     .map(lang => `'${lang}'`)
     .toArray()
-    .join(' | ')
+    .join(' | ') || 'never'
 
   return codelines`
-export type VirtualMessage = (...args: unknown[]) => string
+export type VirtualMessage = () => string
 
 export type SupportedLocale = ${localeTypes}
 
@@ -571,6 +569,7 @@ function vueVirtualI18n(options: PluginOptions): Plugin {
   let dtsFullPath = ''
   let context: MessageContext | null = null
   let instanceMap: InstanceMap = new Map()
+  let lastTimestamp = -1
 
   // Setup slot handlers.
   const slotHandlers: Record<string, VirtualI18nSlot> = {}
@@ -608,6 +607,8 @@ function vueVirtualI18n(options: PluginOptions): Plugin {
 
     resolveId(id) {
       if (id === virtualModuleId) {
+        if (instanceMap.get('') == null) return
+
         return resolvedModuleId
       } else {
         if (!id.startsWith(`${virtualModuleId}/`)) return
@@ -659,22 +660,25 @@ function vueVirtualI18n(options: PluginOptions): Plugin {
       }
     },
 
-    handleHotUpdate({ file, server }) {
+    hotUpdate({ file, timestamp }) {
       if (context == null) return
 
       const fullPath = normalizePath(path.resolve(configRoot, file))
       if (!context.filesToWatch.includes(fullPath)) return
 
-      context = loadMessageContext(logger, configRoot, instanceMap, slotHandlers)
-      const dts = generateDts(virtualModuleId, context, instanceMap, slotHandlers)
-      emitDts(dts)
+      if (timestamp !== lastTimestamp) {
+        lastTimestamp = timestamp
+        context = loadMessageContext(logger, configRoot, instanceMap, slotHandlers)
+        const dts = generateDts(virtualModuleId, context, instanceMap, slotHandlers)
+        emitDts(dts)
+      }
 
-      const modulesToInvalidate: ModuleNode[] = []
+      const modulesToInvalidate = []
 
       // Invalidate all modules.
       for (const instance of instanceMap.values()) {
         const id = appendNamespace(resolvedModuleId, instance)
-        const thisModule = server.moduleGraph.getModuleById(id)
+        const thisModule = this.environment.moduleGraph.getModuleById(id)
         if (thisModule == null) continue
 
         modulesToInvalidate.push(thisModule)

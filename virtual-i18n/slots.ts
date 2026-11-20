@@ -24,13 +24,13 @@ export function defineSlot<const T extends string[] = string[]>(
 export const strSlot = defineSlot({
   id: 'str',
   generateType: () => 'string',
-  generateCode: ({ name }) => /* ts */ `\${params.${name}}`,
+  generateCode: ({ name }) => `\${params.${name}}`,
 })
 
 export const numSlot = defineSlot({
   id: 'num',
   generateType: () => 'number',
-  generateCode: ({ name }) => /* ts */ `\${params.${name}}`,
+  generateCode: ({ name }) => `\${params.${name}}`,
 })
 
 export const oneOtherSlot = defineSlot({
@@ -40,6 +40,6 @@ export const oneOtherSlot = defineSlot({
   generateCode: ({ key, name, branches }) => {
     const oneText = branches.one ?? key
     const otherText = branches.other ?? key
-    return /* ts */ `\${params.${name} === 1 ? \`${oneText}\` : \`${otherText}\`}`
+    return `\${params.${name} === 1 ? \`${oneText}\` : \`${otherText}\`}`
   },
 })
